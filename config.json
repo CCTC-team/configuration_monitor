@@ -1,0 +1,33 @@
+{
+    "name": "Project Configuration Changes",
+    "description": "Module that displays the configuration changes in a project",
+    "namespace": "CCTC\\ProjectConfigurationChangesModule",
+  "framework-version": 14,
+    "authors": [
+        {
+            "name": "Mintoo Xavier",
+            "email": "mintoo.xavier1@nhs.net",
+            "institution": "Cambridge University Hospitals NHS Foundation Trust"
+        }
+    ],
+    "project-settings": [
+      {
+        "key": "emailids",
+        "name": "Provide the email address to receive notifications of configuration changes",
+        "type": "email",
+        "repeatable": false,
+        "required": false,
+        "super-users-only": true
+      }
+    ],
+    "links": {
+      "project": [
+        {
+          "name": "Project Configuration Changes",
+          "icon": "fas fa-sun",
+          "url": "index.php",
+          "show-header-and-footer": true
+        }
+      ]
+    }
+}
