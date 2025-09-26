@@ -1,33 +1,74 @@
 {
-    "name": "Project Configuration Changes",
-    "description": "Module that displays the configuration changes in a project",
-    "namespace": "CCTC\\ProjectConfigurationChangesModule",
+  "name": "Project Configuration Changes",
+  "description": "Module that displays the configuration changes in a project",
+  "namespace": "CCTC\\ProjectConfigurationChangesModule",
   "framework-version": 14,
-    "authors": [
-        {
-            "name": "Mintoo Xavier",
-            "email": "mintoo.xavier1@nhs.net",
-            "institution": "Cambridge University Hospitals NHS Foundation Trust"
-        }
-    ],
-    "project-settings": [
-      {
-        "key": "emailids",
-        "name": "Provide the email address to receive notifications of configuration changes",
-        "type": "email",
-        "repeatable": false,
-        "required": false,
-        "super-users-only": true
-      }
-    ],
-    "links": {
-      "project": [
-        {
-          "name": "Project Configuration Changes",
-          "icon": "fas fa-sun",
-          "url": "index.php",
-          "show-header-and-footer": true
-        }
-      ]
+  "authors": [
+    {
+        "name": "Mintoo Xavier",
+        "email": "mintoo.xavier1@nhs.net",
+        "institution": "Cambridge University Hospitals NHS Foundation Trust"
     }
+  ],
+  "project-settings": [
+    {
+      "key": "to-emailids",
+      "name": "Provide the email address to receive notifications of configuration changes",
+      "type": "email",
+      "repeatable": true,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "from-emailid",
+      "name": "Provide the email address from which notifications are send",
+      "type": "email",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "max-days-index",
+      "name": "Provide the maximum number of days to look back for configuration changes. Default is 7 days",
+      "type": "text",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "max-days-email",
+      "name": "Provide the maximum time interval in hours to send email notifications. Default is 3 hours",
+      "type": "text",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "users-view-config",
+      "name": "User who can view the configuration changes.",
+      "type": "user-role-list",
+      "repeatable": true,
+      "required": false,
+      "super-users-only": true
+    }
+  ],
+  "links": {
+    "project": [
+      {
+        "name": "Project Configuration Changes",
+        "icon": "fas fa-sun",
+        "url": "index.php",
+        "show-header-and-footer": true
+      }
+    ]
+  },
+  "crons": [
+    {
+      "cron_name": "project_config_cron",
+      "cron_description": "Checks for any configuration changes in all projects and sends email notifications if any changes are detected.",
+      "method": "projectConfigCron", 
+      "cron_frequency": "60",
+      "cron_max_run_time": "300"
+    }
+  ]
 }
