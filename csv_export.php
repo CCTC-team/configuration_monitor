@@ -8,41 +8,29 @@ $project_id = $Proj->id;
 global $module;
 $modName = $module->getModuleDirectoryName();
 
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataEntryLogModule.php";
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
+// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataEntryLogModule.php";
+// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
 
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/UserDag.php";
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataChange.php";
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
-require_once APP_PATH_DOCROOT . "/Classes/Records.php";
-require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
-require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
+// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataChange.php";
+// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
+// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+// require_once APP_PATH_DOCROOT . "/Classes/Records.php";
+// require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
+// require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
-use CCTC\DataEntryLogModule\GetDbData;
-use CCTC\DataEntryLogModule\DataEntryLogModule;
+use CCTC\ProjectConfigurationChangesModule\GetDbData;
+use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
 
 // Increase memory limit in case needed for intensive processing
 //System::increaseMemory(2048);
 
 // File: getparams.php
+/** @var $projectId */
+/** @var $maxDayHour */
+/** @var $dayOrHour */
 /** @var $skipCount */
 /** @var $pageSize */
 /** @var $dataDirection */
-/** @var $recordId */
-/** @var $minDateDb */
-/** @var $maxDateDb */
-/** @var $dagUser */
-/** @var $editor */
-/** @var $dataevnt */
-/** @var $datagrp */
-/** @var $dataarm */
-/** @var $datainstance */
-/** @var $logDescription */
-/** @var $changeReason */
-/** @var $datafrm */
-/** @var $fieldNameOrLabel */
-/** @var $newDataValue */
 
 include "getparams.php";
 
@@ -64,32 +52,12 @@ if($exportType == 'all_pages' || $exportType == 'everything') {
 
 //set all filters to null
 if($exportType == 'everything') {
-    $recordId = null;
     $minDateDb = null;
     $maxDateDb = null;
-    $editor = null;
-    $datagroup = null;
-    $dataevnt = null;
-    $datainstance = null;
-    $datafrm = null;
-    $fieldnamelabel = null;
-    $newdatavalue = null;
-    $logdescription = null;
-    $changereason = null;
-
-    //includes items with no timestamp
-    $incNoTimestamp = "checked";
+    $role_id = null;
 }
 
-//get the user dag membership
-$user = $module->getUser();
-$username = $user->getUsername();
 
-$userDags = GetDbData::GetUserDags(false, $username);
-$dagUser = count($userDags) > 0 ? $username : null;
-
-//if given, get the regex where fields should always be ignored
-$excludeFieldNameRegex = $module->getProjectSetting('always-exclude-fields-with-regex');
 
 //run the stored proc
 $result = GetDbData::GetDataLogsFromSP(
@@ -98,12 +66,10 @@ $result = GetDbData::GetDataLogsFromSP(
     $fieldNameOrLabel, $newDataValue, $excludeFieldNameRegex);
 
 // Set headers
-$headers = array("timestamp","user name","record","group id", "group name", "event id", "event name",
-    "arm number", "arm name", "instance", "form name", "field", "field label", "value",
-    "reason for change", "action");
+$headers = array("timestamp","role id","changed privilege","old value", "new value", "action");
 
 // Set file name and path
-$filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_data_entry_logs.csv';
+$filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_user_role_changes.csv';
 
 // Begin writing file from query result
 $fp = fopen($filename, 'w');
@@ -127,7 +93,7 @@ if ($fp && $result)
                     : DateTime::createFromFormat('YmdHis', $dc->timestamp)->format('Y-m-d H:i:s');
 
             //add rest of columns
-            $row["user name"] = $dc->editor;
+            $row["role_id"] = $dc->role_id;
             $row["record"] = $dc->recordId;
             $row["group id"] = $dc->groupId;
             $row["group name"] = $dc->groupName;
@@ -151,8 +117,8 @@ if ($fp && $result)
         db_free_result($result);
 
         // Open file for downloading
-        $app_title = strip_tags(label_decode($Proj->project['app_title']));
-        $download_filename = camelCase(html_entity_decode($app_title, ENT_QUOTES)) . "_DataEntryLog_" . date("Y-m-d_Hi") . ".csv";
+        $app_title = $this->getTitle(); // strip_tags(label_decode($Proj->project['app_title']));
+        $download_filename = camelCase(html_entity_decode($app_title, ENT_QUOTES)) . "_UserRoleChanges_" . date("Y-m-d_Hi") . ".csv";
 
         header('Pragma: anytextexeptno-cache', true);
         header("Content-type: application/csv");

@@ -1,0 +1,83 @@
+/*
+    A procedure that provides paged data for viewing the User Role Change queries for a project
+*/
+
+CREATE PROCEDURE GetUserRoleChanges
+    (
+        in projectId int,
+        in maxDay int,           -- maxDay is the maximum number of days to include in the SQL
+        in skipCount int,
+        in pageSize int,
+        in retDirection varchar(4) collate utf8mb4_unicode_ci,
+        in roleid int
+    )
+BEGIN
+
+    DECLARE sqlQuery mediumtext;
+    DECLARE roleidfilter mediumtext;
+
+    SET roleidfilter = '';
+   -- if skip not given then default to 0
+    if skipCount is null then
+        set skipCount = 0;
+    end if;
+
+    -- if pageSize not given then default to 50
+    if pageSize is null then
+        set pageSize = 50;
+    end if;
+
+    -- direction of returned results by ts - either 'asc' or 'desc'
+    if retDirection is null or retDirection = '' then
+        set retDirection = 'desc';
+    end if;
+
+    -- if roleid is given, then filter by it
+    if roleid != -1 then
+        set roleidfilter = 'and role_id = ?';
+    end if;
+
+    -- create the temporary table for the final results
+    drop table if exists user_role_change_temp;
+    create temporary table user_role_change_temp
+    (   
+        id mediumint not null auto_increment primary key,
+        role_id INT(10) DEFAULT NULL,
+        old_value TEXT DEFAULT NULL,
+        new_value TEXT DEFAULT NULL,
+        ts TIMESTAMP DEFAULT NULL,
+        operation_type VARCHAR(100) DEFAULT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    SET sqlQuery =
+         concat('INSERT INTO user_role_change_temp
+                    ( role_id, old_value, new_value, ts, operation_type)
+                SELECT role_id, old_value, new_value, ts, operation_type
+                    FROM user_role_changelog
+                    WHERE project_id = ',  projectId,
+                    ' ', roleidfilter,
+                    ' and ts >= NOW() - INTERVAL ', maxDay, ' DAY;');
+
+    prepare qry FROM sqlQuery;
+    if roleid != -1 then
+        EXECUTE qry using roleid;
+    else
+        EXECUTE qry;
+    end if;
+    
+    DEALLOCATE prepare qry;
+
+    SET sqlQuery =
+         concat('SELECT *
+                FROM user_role_change_temp order by ts ', retDirection, ' LIMIT ', pageSize, ' OFFSET ', skipCount, ';');
+
+    prepare qry FROM sqlQuery;
+    EXECUTE qry;
+    DEALLOCATE prepare qry;
+
+    SELECT DISTINCT role_id from user_role_change_temp ORDER BY role_id;
+
+END;
+
+-- call GetUserRoleChanges(13, 3, NULL, NULL, NULL, -1); -- all roles
+-- call GetUserRoleChanges(13, 3, NULL, NULL, NULL, 24);

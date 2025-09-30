@@ -8,163 +8,78 @@ use REDCap;
 
 class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
-    function createTable() {
-        $table = "CREATE TABLE IF NOT EXISTS user_role_changelog (
-            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            project_id INT(10) DEFAULT NULL,
-            role_id INT(10) DEFAULT NULL,
-            old_value TEXT DEFAULT NULL,
-            new_value TEXT DEFAULT NULL,
-            change_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            operation_type VARCHAR(100) DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-
-        self::exec($table);
-    }
-
-    function exec($query): void
-    {
-        db_query($query);
-    }
-
-function createUpdateTrigger() 
-    {
-        $trigger = "CREATE TRIGGER user_role_update_trigger
-        AFTER UPDATE ON redcap_user_roles
-        FOR EACH ROW
-        BEGIN
-            DECLARE old_values TEXT;
-            DECLARE new_values TEXT;
-
-            -- Compute old and new concatenated values
-            SET old_values = CONCAT_WS('|',
-                OLD.role_name, OLD.unique_role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
-                OLD.data_export_tool, OLD.data_export_instruments, OLD.data_import_tool, OLD.data_comparison_tool, OLD.data_logging,
-                OLD.email_logging, OLD.file_repository, OLD.double_data, OLD.user_rights, OLD.data_access_groups, OLD.graphical,
-                OLD.reports, OLD.design, OLD.alerts, OLD.calendar, OLD.data_entry, OLD.api_export, OLD.api_import, OLD.api_modules,
-                OLD.mobile_app, OLD.mobile_app_download_data, OLD.record_create, OLD.record_rename, OLD.record_delete,
-                OLD.dts, OLD.participants, OLD.data_quality_design, OLD.data_quality_execute, OLD.data_quality_resolution,
-                OLD.random_setup, OLD.random_dashboard, OLD.random_perform, OLD.realtime_webservice_mapping,
-                OLD.realtime_webservice_adjudicate, OLD.external_module_config, OLD.mycap_participants
-            );
-
-            SET new_values = CONCAT_WS('|',
-                NEW.role_name, NEW.unique_role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
-                NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
-                NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
-                NEW.reports, NEW.design, NEW.alerts, NEW.calendar, NEW.data_entry, NEW.api_export, NEW.api_import, NEW.api_modules,
-                NEW.mobile_app, NEW.mobile_app_download_data, NEW.record_create, NEW.record_rename, NEW.record_delete,
-                NEW.dts, NEW.participants, NEW.data_quality_design, NEW.data_quality_execute, NEW.data_quality_resolution,
-                NEW.random_setup, NEW.random_dashboard, NEW.random_perform, NEW.realtime_webservice_mapping,
-                NEW.realtime_webservice_adjudicate, NEW.external_module_config, NEW.mycap_participants
-            );
-
-            -- Only insert if old and new values are different
-            IF ((old_values <> new_values) AND (OLD.unique_role_name = NEW.unique_role_name)) THEN
-                INSERT INTO user_role_changelog (
-                    project_id, role_id, old_value, new_value,
-                    operation_type
-                ) VALUES (
-                    COALESCE(NEW.project_id, OLD.project_id),
-                    COALESCE(NEW.role_id, OLD.role_id),
-                    old_values,
-                    new_values,
-                    'UPDATE'
-                );
-            END IF;
-        END;";
-            
-        self::exec($trigger);
-    }
     
-    function createInsertTrigger() 
+    public function validateSettings($settings): ?string
     {
-        $trigger = "CREATE TRIGGER user_role_insert_trigger
-        AFTER INSERT ON redcap_user_roles
-        FOR EACH ROW
-        BEGIN
-            DECLARE new_values TEXT;
+        if (array_key_exists("to-emailids", $settings) && array_key_exists("from-emailid", $settings)) {
+            $lastIndex = array_key_last($settings['to-emailids']);
+            if(empty($settings['to-emailids'][$lastIndex]) or empty($settings['from-emailid'])) {
+                return "Please ensure Project Configuration Changes External Module settings are configured.";
+            }
+        }
 
-            -- Compute new concatenated values
-            SET new_values = CONCAT_WS('|',
-                NEW.role_name, NEW.unique_role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
-                NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
-                NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
-                NEW.reports, NEW.design, NEW.alerts, NEW.calendar, NEW.data_entry, NEW.api_export, NEW.api_import, NEW.api_modules,
-                NEW.mobile_app, NEW.mobile_app_download_data, NEW.record_create, NEW.record_rename, NEW.record_delete,
-                NEW.dts, NEW.participants, NEW.data_quality_design, NEW.data_quality_execute, NEW.data_quality_resolution,
-                NEW.random_setup, NEW.random_dashboard, NEW.random_perform, NEW.realtime_webservice_mapping,
-                NEW.realtime_webservice_adjudicate, NEW.external_module_config, NEW.mycap_participants
-            );
-			INSERT INTO user_role_changelog (
-				project_id, role_id, new_value, operation_type
-			) VALUES (
-				NEW.project_id,
-				NEW.role_id,
-				new_values,
-				'INSERT'
-			);
-        END;";
-            
-        self::exec($trigger);
+        if (array_key_exists("max-days-index", $settings) and !empty($settings['max-days-index'])) {
+            if(intval($settings['max-days-index']) != $settings['max-days-index']) {
+                return "The maximum number of days should be a number";
+            }
+        }
+
+        if (array_key_exists("max-days-email", $settings) and !empty($settings['max-days-email'])) {
+            if(intval($settings['max-days-email']) != $settings['max-days-email']) {
+                return "The maximum number of hours for email should be a number";
+            }
+        }
+    
+        return null;
     }
-
-    function createDeleteTrigger() 
+   
+    function execFromFile($file): void
     {
-        $trigger = "CREATE TRIGGER user_role_delete_trigger
-        AFTER DELETE ON redcap_user_roles
-        FOR EACH ROW
-        BEGIN
-            DECLARE old_values TEXT;
-
-            -- Compute old concatenated values
-            SET old_values = CONCAT_WS('|',
-                OLD.role_name, OLD.unique_role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
-                OLD.data_export_tool, OLD.data_export_instruments, OLD.data_import_tool, OLD.data_comparison_tool, OLD.data_logging,
-                OLD.email_logging, OLD.file_repository, OLD.double_data, OLD.user_rights, OLD.data_access_groups, OLD.graphical,
-                OLD.reports, OLD.design, OLD.alerts, OLD.calendar, OLD.data_entry, OLD.api_export, OLD.api_import, OLD.api_modules,
-                OLD.mobile_app, OLD.mobile_app_download_data, OLD.record_create, OLD.record_rename, OLD.record_delete,
-                OLD.dts, OLD.participants, OLD.data_quality_design, OLD.data_quality_execute, OLD.data_quality_resolution,
-                OLD.random_setup, OLD.random_dashboard, OLD.random_perform, OLD.realtime_webservice_mapping,
-                OLD.realtime_webservice_adjudicate, OLD.external_module_config, OLD.mycap_participants
-            );
-			INSERT INTO user_role_changelog (
-				project_id, role_id, old_value, operation_type
-			) VALUES (
-				OLD.project_id,
-				OLD.role_id,
-				old_values,
-				'DELETE'
-			);
-        END;";
-            
-        self::exec($trigger);
+        $sql = file_get_contents(dirname(__FILE__) . "/sql-setup/$file");
+        db_query($sql);
     }
 
     function redcap_module_system_enable($version): void
     {
-        self::createTable();
-        self::createInsertTrigger();
-        self::createUpdateTrigger();
-        self::createDeleteTrigger();
-
+        // Create the necessary table and triggers when the module is enabled
+        self::execFromFile("0010_create_table_user_role_changelog.sql");
+        self::execFromFile("0020_create_InsertTrigger.sql");
+        self::execFromFile("0030_create_UpdateTrigger.sql");
+        self::execFromFile("0040_create_DeleteTrigger.sql");
+        self::execFromFile("0050_create_UserRoleChange_proc.sql");
     } 
 
     function redcap_module_system_disable($version): void
     {
+        // Clean up the database objects when the module is disabled
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
-        self::exec("DROP TABLE IF EXISTS user_role_changelog;");
-        self::exec("DROP TRIGGER IF EXISTS user_role_insert_trigger;");
-        self::exec("DROP TRIGGER IF EXISTS user_role_update_trigger;");
-        self::exec("DROP TRIGGER IF EXISTS user_role_delete_trigger;");
+        // db_query("DROP TABLE IF EXISTS user_role_changelog;");
+        db_query("DROP TRIGGER IF EXISTS user_role_insert_trigger;");
+        db_query("DROP TRIGGER IF EXISTS user_role_update_trigger;");
+        db_query("DROP TRIGGER IF EXISTS user_role_delete_trigger;");
+        db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
     }
 
-    function userRoleChanges($roleID, $old, $new, $timestamp, $action): string
+    static function createRow($roleID, $privilege, $oldValue, $newValue, $ts, $action): string
+    {
+
+        return
+            "<tr>
+                <td>$roleID</td>
+                <td>$privilege</td>
+                <td>$oldValue</td>
+                <td>$newValue</td>
+                <td>$ts</td>
+                <td>$action</td>
+            </tr>";
+    }
+
+    function userRoleChanges($roleID, $old, $new, $ts, $action): string
     {
         if ($action !== 'UPDATE') {
             // For INSERT and DELETE actions, return a single row with all values
-            return self::createRow($roleID, 'All Privileges', $old ?: 'N/A', $new ?: 'N/A', $timestamp, $action);
+            return self::createRow($roleID, 'All Privileges', $old ?: 'N/A', $new ?: 'N/A', $ts, $action);
         }
 
         //For update action, compare old and new values and return only changed privileges
@@ -205,54 +120,41 @@ function createUpdateTrigger()
                         if (isset($nresult[$key])) {         // Key exists in both arrays
                             $nval = $nresult[$key];
                             if ($oval != $nval) {           // Value differs
-                                $row .= self::createRow($roleID, $userroleColumnNames[$i], "[$key,$oval]", "[$key,$nval]", $timestamp, $action);
+                                $row .= self::createRow($roleID, $userroleColumnNames[$i], "[$key,$oval]", "[$key,$nval]", $ts, $action);
                             }
                         }
                     }
                 } else {
                     // For other privileges, show full difference
-                    $row .= self::createRow($roleID, $userroleColumnNames[$i], $o, $n, $timestamp, $action);
+                    $row .= self::createRow($roleID, $userroleColumnNames[$i], $o, $n, $ts, $action);
                 }
             }
         }
         return $row;
     }
     
-    static function createRow($roleID, $privilege, $oldValue, $newValue, $timestamp, $action): string
-    {
+    
 
-        return
-            "<tr>
-                <td>$roleID</td>
-                <td>$privilege</td>
-                <td>$oldValue</td>
-                <td>$newValue</td>
-                <td>$timestamp</td>
-                <td>$action</td>
-            </tr>";
-    }
-
-    function userRoleQuery($projId, $max, $hourOrDay): \mysqli_result
+    function userRoleQuery($projId, $max): \mysqli_result
     {
-        $query = "SELECT role_id, old_value, new_value, change_timestamp, operation_type
+        $query = "SELECT role_id, old_value, new_value, ts, operation_type
                   FROM user_role_changelog
                   WHERE project_id = $projId 
-                  and change_timestamp >= NOW() - INTERVAL $max $hourOrDay"; // Adjust the interval as needed
+                  and ts >= NOW() - INTERVAL $max HOUR"; // Adjust the interval as needed
 
         return db_query($query);
     }
 
     function sendEmail(): void
     {
+        global $Proj;
         $projId = $this->getProjectId();
         $max_days_email = $this->getProjectSetting('max-days-email') ?? 3; // Default to 3 hours if not set
-        // $query = "SELECT role_id, old_value, new_value, change_timestamp, operation_type
-        //           FROM user_role_changelog
-        //           WHERE project_id = $projId 
-        //           and change_timestamp >= NOW() - INTERVAL $max_days_email HOUR"; // Adjust the interval as needed
 
-        // $result = db_query($query);
-        $result = $this->userRoleQuery($projId, $max_days_email, 'HOUR');
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //   Change this to use SP ??
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        $result = $this->userRoleQuery($projId, $max_days_email);
 
         if ($result->num_rows != 0) { // Only send email if there are changes
             
@@ -267,8 +169,8 @@ function createUpdateTrigger()
             $from = $this->getProjectSetting('from-emailid');
             $subject = "Project Configuration Changes Log";
             $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $max_days_email hours.<br>";
-    
-            $projectTitle = REDCap::getProjectTitle($projId);
+ 
+            $projectTitle = $this->getTitle();
     
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
             $body .= "<h4>Changes in User Role Privileges</h4>";
@@ -289,7 +191,7 @@ function createUpdateTrigger()
             while ($row = db_fetch_assoc($result)) {
                 // Use the userRoleChanges function to find difference and format each row
                 $updateTable .= $this->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'],
-                     $row['change_timestamp'], $row['operation_type']);
+                     $row['ts'], $row['operation_type']);
             }
 
             $updateTable .= "</tbody></table>";
@@ -311,7 +213,7 @@ function createUpdateTrigger()
         }
     }
 
-    function projectConfigCron($cronInfo) {
+    function projectConfigCron($cronInfo = array()) {
         try {
             $this->log("Starting the \"{$cronInfo['cron_description']}\" cron job...");
             foreach ($this->getProjectsWithModuleEnabled() as $localProjectId) {
@@ -327,28 +229,4 @@ function createUpdateTrigger()
             return "The \"{$cronInfo['cron_name']}\" cron job failed: " . $e->getMessage();
         }
     }
-
-    // function userHasViewAccess(): bool
-    // {
-    //     if ($this->isSuperUser()) { // Super Users can view the configuration page
-    //         return true;
-    //     }
-
-    //     $viewUsers = $this->getProjectSetting('users-view-config');
-    //     $user = $this->getUser();
-    //     $rights = $user->getRights();
-
-    //     // echo "<br> User: " . $user . " rights: " . $rights;
-    //     foreach ($viewUsers as $viewUser) {
-    //         if($rights['role_id'] == (int)$viewUsers) {
-    //             // echo "<br> User has view access: " . $viewUser;
-    //             // echo "<br> rights['role_id']: " . $rights['role_id'];
-    //             // echo "<br> (int)viewUsers: " . (int)$viewUsers;
-    //             return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-
 }
