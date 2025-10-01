@@ -5,7 +5,8 @@
 CREATE PROCEDURE GetUserRoleChanges
     (
         in projectId int,
-        in maxDay int,           -- maxDay is the maximum number of days to include in the SQL
+        in maxTime int,           -- maxTime is the maximum number of days or Hours to include in the SQL
+        in dayOrHour varchar(5) collate utf8mb4_unicode_ci,    -- DAY or HOUR
         in skipCount int,
         in pageSize int,
         in retDirection varchar(4) collate utf8mb4_unicode_ci,
@@ -56,7 +57,7 @@ BEGIN
                     FROM user_role_changelog
                     WHERE project_id = ',  projectId,
                     ' ', roleidfilter,
-                    ' and ts >= NOW() - INTERVAL ', maxDay, ' DAY;');
+                    ' and ts >= NOW() - INTERVAL ', maxTime, ' ', dayOrHour, ';');
 
     prepare qry FROM sqlQuery;
     if roleid != -1 then
@@ -79,5 +80,5 @@ BEGIN
 
 END;
 
--- call GetUserRoleChanges(13, 3, NULL, NULL, NULL, -1); -- all roles
--- call GetUserRoleChanges(13, 3, NULL, NULL, NULL, 24);
+-- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, -1); -- all roles
+-- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, 24);

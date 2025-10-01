@@ -20,7 +20,7 @@ $max_days = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 d
 echo "<h6><i>Displaying changes made in the last $max_days days.</i></h6>";
 
 
-$result = "call GetUserRoleChanges('$projId', $max_days, 'DAY');";
+// $result = "call GetUserRoleChanges('$projId', $max_days, 'DAY');";
 
 if ($result->num_rows == 0) {
     echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";

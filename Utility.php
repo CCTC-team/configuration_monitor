@@ -30,6 +30,12 @@ class Utility {
         return date_create(date('Y-m-d H:i:s'));
     }
 
+    //users preferred format
+    static function UserDateFormat() : string
+    {
+        return DateTimeRC::get_user_format_php();
+    }
+
     //returns the date time now adjusted with the given modifier
     public static function NowAdjusted(?string $modifier) : string
     {

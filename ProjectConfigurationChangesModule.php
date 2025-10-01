@@ -2,9 +2,11 @@
 
 namespace CCTC\ProjectConfigurationChangesModule;
 
-use ExternalModules\AbstractExternalModule;
+use CCTC\ProjectConfigurationChangesModule\GetDbData;
+use CCTC\ProjectConfigurationChangesModule\Rendering;
 
 use REDCap;
+use ExternalModules\AbstractExternalModule;
 
 class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
@@ -132,32 +134,51 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         }
         return $row;
     }
-    
-    
 
-    function userRoleQuery($projId, $max): \mysqli_result
+    function MakeUserRoleTable($dcs, $userDateFormat) : string
     {
-        $query = "SELECT role_id, old_value, new_value, ts, operation_type
-                  FROM user_role_changelog
-                  WHERE project_id = $projId 
-                  and ts >= NOW() - INTERVAL $max HOUR"; // Adjust the interval as needed
+        // global $module;
+        $table = "<table id='user_role_change_table' border='1'>
+        <thead><tr style='background-color: #FFFFE0;'>
+            <th style='width: 5%;padding: 5px'>Role ID</th>
+            <th style='width: 15%;padding: 5px'>Changed Privilege</th>
+            <th style='width: 15%;padding: 5px'>Old Value</th>
+            <th style='width: 15%;padding: 5px'>New Value</th>
+            <th style='width: 15%;padding: 5px'>Timestamp</th>
+            <th style='width: 15%;padding: 5px'>Action</th>
+        </tr></thead><tbody>";
 
-        return db_query($query);
+        foreach($dcs as $dc) {
+            // ?? CHECK THIS
+            // $date = DateTime::createFromFormat('YmdHis', $dc->timestamp);
+            // $formattedDate = $date->format($userDateFormat);
+            $table .= $this->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $dc["timestamp"], $dc["action"]);
+        }
+    
+        return $table .= "</tbody></table>";
     }
 
     function sendEmail(): void
     {
         global $Proj;
+        $modName = $this->getModuleDirectoryName();
+
+        require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
+        require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+
         $projId = $this->getProjectId();
-        $max_days_email = $this->getProjectSetting('max-days-email') ?? 3; // Default to 3 hours if not set
+        $maxTime = $this->getProjectSetting('max-days-email') ?? 3; // Default to 3 hours if not set
 
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //   Change this to use SP ??
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        $result = $this->userRoleQuery($projId, $max_days_email);
+        //run the stored proc
+        $logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "HOUR", 0, 25, "DESC", -1);
 
-        if ($result->num_rows != 0) { // Only send email if there are changes
+        $dcs = $logDataSets['dataChanges'];
+        $showingCount = count($dcs);
+
+        if ($showingCount != 0) { // Only send email if there are changes
             
+            $table = self::MakeUserRoleTable($dcs, $userDateFormat);
+
             // Prepare to-email parameters
             $to_emails = $this->getProjectSetting('to-emailids');
             $to = null;
@@ -176,26 +197,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             $body .= "<h4>Changes in User Role Privileges</h4>";
             $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
 
-
-            // Generate the HTML table content
-            $updateTable = "<table id='user_role_change_table' border='1'>
-            <thead><tr style='background-color: #FFFFE0;'>
-                <th style='width: 5%;padding: 5px'>Role ID</th>
-                <th style='width: 15%;padding: 5px'>Changed Privilege</th>
-                <th style='width: 15%;padding: 5px'>Old Value</th>
-                <th style='width: 15%;padding: 5px'>New Value</th>
-                <th style='width: 15%;padding: 5px'>Timestamp</th>
-                <th style='width: 15%;padding: 5px'>Action</th>
-            </tr></thead><tbody>";
-
-            while ($row = db_fetch_assoc($result)) {
-                // Use the userRoleChanges function to find difference and format each row
-                $updateTable .= $this->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'],
-                     $row['ts'], $row['operation_type']);
-            }
-
-            $updateTable .= "</tbody></table>";
-            $body .= $updateTable;
+            $body .= $table;
             $body .= "<br><br>Best regards,<br>Your REDCap Team";
 
             $email_sent = REDCap::email(
@@ -206,9 +208,9 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             );
         
             if ($email_sent) {
-                echo "<br>Email sent successfully!";
+                $this->log("Email sent successfully!");
             } else {
-                echo "<br>Failed to send email.";
+                $this->log("Failed to send email.");
             }
         }
     }

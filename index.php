@@ -5,7 +5,6 @@ $modName = $module->getModuleDirectoryName();
 
 require_once APP_PATH_DOCROOT . "/Classes/REDCap.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataChange.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
 
@@ -36,10 +35,10 @@ if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
 
 // global $conn;
 $projId = $module->getProjectId();
-$maxDays = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
+$maxTime = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
 // include "getparams.php";
 
-$dataDirection = "desc";
+$dataDirection = "DESC";
 if (isset($_GET['retdirection'])) {
     $dataDirection = $_GET['retdirection'];
 }
@@ -60,61 +59,16 @@ if (isset($_GET['role_id'])) {
 }
 
 echo "<h3>Changes in User Role Privileges</h3>";
-echo "<p><i>This log shows changes made to user role privileges in the last $max_days days.</i></p>";
+echo "<p><i>This log shows changes made to user role privileges in the last $maxTime days.</i></p>";
 // echo "<br> projId: $projId<br>";
-// echo "<br> max_days: $max_days<br>";
+// echo "<br> maxTime: $maxTime<br>";
 // echo "<br> skipCount: $skipCount<br>";
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
 // echo "<br> dataDirection: $dataDirection<br>";
-// $query = "call GetUserRoleChanges($projId, $max_days, $skipCount, $pageSize, '$dataDirection', $roleID);";
-// $num_rows = 0;
-// $currentIndex = 0;
 
-
-// if (mysqli_multi_query($conn, $query)) {
-//     $updateTable = "<table id='user_role_change_table' border='1'>
-//         <thead><tr style='background-color: #FFFFE0;'>
-//             <th style='width: 5%;padding: 5px'>Role ID</th>
-//             <th style='width: 15%;padding: 5px'>Changed Privilege</th>
-//             <th style='width: 15%;padding: 5px'>Old Value</th>
-//             <th style='width: 15%;padding: 5px'>New Value</th>
-//             <th style='width: 15%;padding: 5px'>Timestamp</th>
-//             <th style='width: 15%;padding: 5px'>Action</th>
-//         </tr></thead><tbody>";
-
-//     do {
-//         if ($result = mysqli_store_result($conn)) {
-//             echo "<br>result num rows $currentIndex: " . $result->num_rows . "<br>";
-//             if($currentIndex == 0) {
-//                 $num_rows = $result->num_rows;
-//                 while ($row = mysqli_fetch_assoc($result)) {
-//                     $updateTable .= $module->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'], $row['ts'], $row['operation_type']);
-//                 }
-//             }
-
-//             if ($currentIndex == 1) {
-//                 while ($row = mysqli_fetch_assoc($result)) {
-//                     // echo "<br>role_id: " . $row['role_id'] . "<br>";
-//                     $roleIds[] = $row['role_id'];
-//                     // print_r($roleIds);
-//                 }
-//             }
-//             mysqli_free_result($result);
-//             $currentIndex++;
-
-//         }
-//     } while (mysqli_next_result($conn));
-
-//     $updateTable .= "</tbody></table>";
-//     // echo $updateTable;
-
-// } else {
-//     echo "Error: " . $conn->error;
-// }
-
- //run the stored proc
-$logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxDays, $skipCount, $pageSize, $dataDirection, $roleID);
+//run the stored proc
+$logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "DAY", $skipCount, $pageSize, $dataDirection, $roleID);
 
 $runMessage = "";
 
@@ -146,9 +100,15 @@ else {
 
     $diff = $actMaxAsDate->diff($actMinAsDate);
 
-    
     //gets the users preferred data format which is used as data attribute on the datetimepicker field
     global $datetime_format;
+
+    $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+    if(ends_with($datetime_format, "_24")){
+        $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+    } else {
+        $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+    }
 
     $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
@@ -178,22 +138,8 @@ else {
     $roleIds = $logDataSets['roleIds'];
     $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
 
-    $updateTable = "<table id='user_role_change_table' border='1'>
-        <thead><tr style='background-color: #FFFFE0;'>
-            <th style='width: 5%;padding: 5px'>Role ID</th>
-            <th style='width: 15%;padding: 5px'>Changed Privilege</th>
-            <th style='width: 15%;padding: 5px'>Old Value</th>
-            <th style='width: 15%;padding: 5px'>New Value</th>
-            <th style='width: 15%;padding: 5px'>Timestamp</th>
-            <th style='width: 15%;padding: 5px'>Action</th>
-        </tr></thead><tbody>";
-
-    foreach($dcs as $dc) {
-        // $date = DateTime::createFromFormat('YmdHis', $dc->timestamp);
-        // $formattedDate = $date->format($userDateFormat);
-        $updateTable .= $module->userRoleChanges($dc->roleID, $dc->oldValue, $dc->newValue, $dc->timestamp, $dc->action);
-    }
-    $updateTable .= "</tbody></table>";
+    $table = $module->MakeUserRoleTable($dcs, $userDateFormat);
+   
     echo "<script type='text/javascript'>
             function cleanUpParamsAndRun(moduleName, projId, exportType) {
                 
@@ -303,7 +249,7 @@ else {
     //     $updateTable .= $module->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'], $row['ts'], $row['operation_type']);
     // }
 
-    echo $exportIcons. $updateTable;
+    echo $exportIcons. $table;
 }
 
 // $module->sendEmail();
@@ -336,7 +282,6 @@ else {
 
 <script>
 
-    //fix for #104 and #106
     //gets the date format to use from the built-in format from REDCap for use with js rather than the format
     //used for $userDateFormat
     let dateFormat = user_date_format_jquery
