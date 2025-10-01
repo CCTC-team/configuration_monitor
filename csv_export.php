@@ -8,29 +8,25 @@ $project_id = $Proj->id;
 global $module;
 $modName = $module->getModuleDirectoryName();
 
-// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataEntryLogModule.php";
-// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
+require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/ProjectConfigurationChangesModule.php";
 
-// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataChange.php";
-// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
-// require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
+require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
 // require_once APP_PATH_DOCROOT . "/Classes/Records.php";
 // require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
-// require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
+require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
-use CCTC\ProjectConfigurationChangesModule\GetDbData;
-use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
 
 // Increase memory limit in case needed for intensive processing
 //System::increaseMemory(2048);
 
 // File: getparams.php
 /** @var $projectId */
-/** @var $maxDayHour */
-/** @var $dayOrHour */
+/** @var $maxDay */
 /** @var $skipCount */
 /** @var $pageSize */
 /** @var $dataDirection */
+/** @var $roleid */
 
 include "getparams.php";
 
@@ -52,9 +48,9 @@ if($exportType == 'all_pages' || $exportType == 'everything') {
 
 //set all filters to null
 if($exportType == 'everything') {
-    $minDateDb = null;
-    $maxDateDb = null;
-    $role_id = null;
+    // $minDateDb = null;
+    // $maxDateDb = null;
+    $role_id = -1;
 }
 
 

@@ -24,6 +24,12 @@ class Utility {
         return $urlMatches[0];
     }
 
+    //now
+    public static function Now() : DateTime
+    {
+        return date_create(date('Y-m-d H:i:s'));
+    }
+
     //returns the date time now adjusted with the given modifier
     public static function NowAdjusted(?string $modifier) : string
     {
@@ -36,6 +42,12 @@ class Utility {
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    //default min date
+    public static function DefaultMinDate() : DateTime
+    {
+        return date_create(date("2022-01-01 00:00:00"));
     }
 
     // returns a nullable string date as a format compatible with the timestamp function

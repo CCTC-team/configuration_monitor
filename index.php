@@ -5,10 +5,15 @@ $modName = $module->getModuleDirectoryName();
 
 require_once APP_PATH_DOCROOT . "/Classes/REDCap.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
+require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/DataChange.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
+
+require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
 use CCTC\ProjectConfigurationChangesModule\Utility;
 use CCTC\ProjectConfigurationChangesModule\Rendering;
+use CCTC\ProjectConfigurationChangesModule\GetDbData;
 
 $user = $module->getUser();
 $rights = $user->getRights();
@@ -29,9 +34,10 @@ if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
     return '2';
 }
 
-global $conn;
+// global $conn;
 $projId = $module->getProjectId();
-$max_days = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
+$maxDays = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
+// include "getparams.php";
 
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
@@ -48,9 +54,9 @@ if (isset($_GET['pagenum'])) {
 
 $skipCount = (int)$pageSize * (int)$pageNum;
 
-$setRoleId = -1; //default to -1 meaning all roles
+$roleID = -1; //default to -1 meaning all roles
 if (isset($_GET['role_id'])) {
-    $setRoleId = $_GET['role_id'];
+    $roleID = $_GET['role_id'];
 }
 
 echo "<h3>Changes in User Role Privileges</h3>";
@@ -61,58 +67,89 @@ echo "<p><i>This log shows changes made to user role privileges in the last $max
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
 // echo "<br> dataDirection: $dataDirection<br>";
-$query = "call GetUserRoleChanges($projId, $max_days, $skipCount, $pageSize, '$dataDirection', $setRoleId);";
-$num_rows = 0;
-$currentIndex = 0;
-$roleIds = array();
+// $query = "call GetUserRoleChanges($projId, $max_days, $skipCount, $pageSize, '$dataDirection', $roleID);";
+// $num_rows = 0;
+// $currentIndex = 0;
 
-if (mysqli_multi_query($conn, $query)) {
-    $updateTable = "<table id='user_role_change_table' border='1'>
-        <thead><tr style='background-color: #FFFFE0;'>
-            <th style='width: 5%;padding: 5px'>Role ID</th>
-            <th style='width: 15%;padding: 5px'>Changed Privilege</th>
-            <th style='width: 15%;padding: 5px'>Old Value</th>
-            <th style='width: 15%;padding: 5px'>New Value</th>
-            <th style='width: 15%;padding: 5px'>Timestamp</th>
-            <th style='width: 15%;padding: 5px'>Action</th>
-        </tr></thead><tbody>";
 
-    do {
-        if ($result = mysqli_store_result($conn)) {
-            echo "<br>result num rows $currentIndex: " . $result->num_rows . "<br>";
-            if($currentIndex == 0) {
-                $num_rows = $result->num_rows;
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $updateTable .= $module->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'], $row['ts'], $row['operation_type']);
-                }
-            }
+// if (mysqli_multi_query($conn, $query)) {
+//     $updateTable = "<table id='user_role_change_table' border='1'>
+//         <thead><tr style='background-color: #FFFFE0;'>
+//             <th style='width: 5%;padding: 5px'>Role ID</th>
+//             <th style='width: 15%;padding: 5px'>Changed Privilege</th>
+//             <th style='width: 15%;padding: 5px'>Old Value</th>
+//             <th style='width: 15%;padding: 5px'>New Value</th>
+//             <th style='width: 15%;padding: 5px'>Timestamp</th>
+//             <th style='width: 15%;padding: 5px'>Action</th>
+//         </tr></thead><tbody>";
 
-            if ($currentIndex == 1) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    // echo "<br>role_id: " . $row['role_id'] . "<br>";
-                    $roleIds[] = $row['role_id'];
-                    // print_r($roleIds);
-                }
-            }
-            mysqli_free_result($result);
-            $currentIndex++;
+//     do {
+//         if ($result = mysqli_store_result($conn)) {
+//             echo "<br>result num rows $currentIndex: " . $result->num_rows . "<br>";
+//             if($currentIndex == 0) {
+//                 $num_rows = $result->num_rows;
+//                 while ($row = mysqli_fetch_assoc($result)) {
+//                     $updateTable .= $module->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'], $row['ts'], $row['operation_type']);
+//                 }
+//             }
 
-        }
-    } while (mysqli_next_result($conn));
+//             if ($currentIndex == 1) {
+//                 while ($row = mysqli_fetch_assoc($result)) {
+//                     // echo "<br>role_id: " . $row['role_id'] . "<br>";
+//                     $roleIds[] = $row['role_id'];
+//                     // print_r($roleIds);
+//                 }
+//             }
+//             mysqli_free_result($result);
+//             $currentIndex++;
 
-    $updateTable .= "</tbody></table>";
-    // echo $updateTable;
+//         }
+//     } while (mysqli_next_result($conn));
 
-} else {
-    echo "Error: " . $conn->error;
-}
+//     $updateTable .= "</tbody></table>";
+//     // echo $updateTable;
 
-if ($num_rows == 0) {
+// } else {
+//     echo "Error: " . $conn->error;
+// }
+
+ //run the stored proc
+$logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxDays, $skipCount, $pageSize, $dataDirection, $roleID);
+
+$runMessage = "";
+
+$dcs = $logDataSets['dataChanges'];
+$showingCount = count($dcs);
+// echo "<br>showingCount: $showingCount<br>";
+
+if ($showingCount == 0) {
     echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";
 }
 else {
 
-    $showingCount = $num_rows; //number of rows returned by the query
+    $minDate = $oneWeekAgo;
+    if (isset($_GET['startdt'])) {
+        $minDate = $_GET['startdt'];
+    }
+    $maxDate = null;
+    if (isset($_GET['enddt'])) {
+        $maxDate = $_GET['enddt'];
+    }
+
+
+    $minDateDb = Utility::DateStringToDbFormat($minDate);
+    $maxDateDb = Utility::DateStringToDbFormat($maxDate);
+
+    $actMinAsDate = $minDate == "" ? Utility::DefaultMinDate() : Utility::DateStringAsDateTime($minDate);
+    $actMaxAsDate = $maxDate == "" ? Utility::Now() : Utility::DateStringAsDateTime($maxDate);
+    $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
+
+    $diff = $actMaxAsDate->diff($actMinAsDate);
+
+    
+    //gets the users preferred data format which is used as data attribute on the datetimepicker field
+    global $datetime_format;
+
     $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
     // adjust skipTo in cases where last page isn't a full page
@@ -121,6 +158,8 @@ else {
     } else {
         $skipTo = $skipCount + (int)$pageSize;
     }
+
+    $csvExportPage = $module->getUrl('csv_export.php');
 
     $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
     $runMessage = "Messages will appear here after running an export.";
@@ -136,9 +175,25 @@ else {
     $doReset = "window.location.href='$resetUrl';";
     $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
     $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
-    $roleSelect = Rendering::MakeRoleSelect($roleIds, $setRoleId);
+    $roleIds = $logDataSets['roleIds'];
+    $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
 
+    $updateTable = "<table id='user_role_change_table' border='1'>
+        <thead><tr style='background-color: #FFFFE0;'>
+            <th style='width: 5%;padding: 5px'>Role ID</th>
+            <th style='width: 15%;padding: 5px'>Changed Privilege</th>
+            <th style='width: 15%;padding: 5px'>Old Value</th>
+            <th style='width: 15%;padding: 5px'>New Value</th>
+            <th style='width: 15%;padding: 5px'>Timestamp</th>
+            <th style='width: 15%;padding: 5px'>Action</th>
+        </tr></thead><tbody>";
 
+    foreach($dcs as $dc) {
+        // $date = DateTime::createFromFormat('YmdHis', $dc->timestamp);
+        // $formattedDate = $date->format($userDateFormat);
+        $updateTable .= $module->userRoleChanges($dc->roleID, $dc->oldValue, $dc->newValue, $dc->timestamp, $dc->action);
+    }
+    $updateTable .= "</tbody></table>";
     echo "<script type='text/javascript'>
             function cleanUpParamsAndRun(moduleName, projId, exportType) {
                 
@@ -193,7 +248,7 @@ else {
                     <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
                     
                     <td>
-                        <div class='btn-group bg-white' role='group';  style='margin-left: 20px;'>                
+                        <div class='btn-group bg-white' role='group';  style='margin-left: 30px;'>                
                             <button type='button' class='btn btn-outline-primary btn-xs $customActive' onclick='setCustomRange()'>Custom range</button>
                             <button type='button' class='btn btn-outline-primary btn-xs $dayActive' onclick='setTimeFrame(\"onedayago\")'>Past day</button>
                             <button type='button' class='btn btn-outline-primary btn-xs $weekActive' onclick='setTimeFrame(\"oneweekago\")'>Past week</button>
@@ -252,3 +307,155 @@ else {
 }
 
 // $module->sendEmail();
+
+
+?>
+
+<style>
+
+    #filterForm > table > tbody > tr > td:nth-child(2) {
+        width: 150px;
+    }
+
+    #startdt + button, #enddt + button {
+        background-color: transparent;
+        border: none;
+    }
+
+    .clear-button {
+        background-color: transparent;
+        border: none;
+        color: #0a53be;
+        margin-right: 4px;
+        margin-left: 4px;
+        margin-top: 1px;
+    }
+
+    
+</style>
+
+<script>
+
+    //fix for #104 and #106
+    //gets the date format to use from the built-in format from REDCap for use with js rather than the format
+    //used for $userDateFormat
+    let dateFormat = user_date_format_jquery
+
+    $('#startdt').datetimepicker({
+        dateFormat: dateFormat,
+        showOn: 'button', buttonImage: app_path_images+'date.png',
+        onClose: function () {
+            if(document.getElementById('startdt').value) {
+                document.getElementById('defaulttimefilter').value = 'customrange';
+                submitForm('startdt');
+            }
+        }
+    });
+    $('#enddt').datetimepicker({
+        dateFormat: dateFormat,
+        showOn: 'button', buttonImage: app_path_images+'date.png',
+        onClose: function () {
+            if(document.getElementById('enddt').value) {
+                document.getElementById('defaulttimefilter').value = 'customrange';
+                submitForm('enddt');
+            }
+        }
+    });
+
+    function setCustomRange() {
+        document.getElementById('defaulttimefilter').value = 'customrange';
+        document.querySelector('#startdt + button').click();
+    }
+
+    function setTimeFrame(timeframe) {
+        document.getElementById('startdt').value = document.getElementById(timeframe).value;
+        document.getElementById('enddt').value = '';
+        document.getElementById('defaulttimefilter').value = timeframe;
+        resetPaging();
+        submitForm('startdt');
+    }
+
+    function resetEditor() {
+        let editor = document.getElementById('editor');
+        editor.value = '';
+    }
+
+    function resetDataForm() {
+        let dataForm = document.getElementById('datafrm');
+        dataForm.value = '';
+    }
+
+    function nextPage() {
+        let currPage = document.getElementById('pagenum');
+        let totPages = document.getElementById('totpages');
+        if (currPage.value < totPages.value) {
+            currPage.value = Number(currPage.value) + 1;
+            submitForm('pagenum');
+        }
+    }
+
+    function prevPage() {
+        let currPage = document.getElementById('pagenum');
+        if(currPage.value > 0) {
+            currPage.value = Number(currPage.value) - 1;
+            submitForm('pagenum');
+        }
+    }
+
+    function resetPaging() {
+        let currPage = document.getElementById('pagenum');
+        currPage.value = 0;
+        let totPages = document.getElementById('totpages');
+        totPages.value = 0;
+    }
+
+    function onDirectionChanged() {
+        submitForm('retdirection');
+    }
+
+    function onFilterChanged(id) {
+        resetPaging();
+        submitForm(id);
+    }
+
+    // use this when a field changes so can run request on any change
+    function submitForm(src) {
+        showProgress(1);
+
+        let frm = document.getElementById('filterForm');
+        // apply this for the role_id drop down to work
+        let logRole = document.getElementById('role_id');
+        logRole.name = 'role_id';
+
+        //clear the csrfToken
+        let csrfToken = document.querySelector('input[name="redcap_csrf_token"]');
+        csrfToken.value = '';
+
+        frm.submit();
+    }
+
+    function resetDate(dateId) {
+        if(document.getElementById(dateId).value) {
+            document.getElementById(dateId).value = '';
+            document.getElementById('defaulttimefilter').value = 'customrange';
+            submitForm(dateId);
+        }
+    }
+
+    function clearFilter(id) {
+        if(document.getElementById(id).value) {
+            document.getElementById(id).value = '';
+            submitForm(id);
+        }
+    }
+
+    $(window).on('load', function() {
+
+        //handle disabling nav buttons when not applicable
+        let currPage = document.getElementById('pagenum');
+        let totPages = document.getElementById('totpages');
+
+        document.getElementById('btnprevpage').disabled = currPage.value === '0';
+        document.getElementById('btnnextpage').disabled = parseInt(currPage.value) + 1 === parseInt(totPages.value);
+
+    });

@@ -53,6 +53,11 @@ if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
+$setRoleId = -1; //default to -1 meaning all roles
+if (isset($_GET['role_id'])) {
+    $setRoleId = $_GET['role_id'];
+}
+
 $skipCount = (int)$pageSize * (int)$pageNum;
 $minDateDb = Utility::DateStringToDbFormat($minDate);
 $maxDateDb = Utility::DateStringToDbFormat($maxDate);
