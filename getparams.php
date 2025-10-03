@@ -53,11 +53,14 @@ if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
-$setRoleId = -1; //default to -1 meaning all roles
+$roleID = NULL; //default to NULL meaning all roles
 if (isset($_GET['role_id'])) {
-    $setRoleId = $_GET['role_id'];
+    $roleID = $_GET['role_id'];
 }
 
 $skipCount = (int)$pageSize * (int)$pageNum;
 $minDateDb = Utility::DateStringToDbFormat($minDate);
 $maxDateDb = Utility::DateStringToDbFormat($maxDate);
+
+
+echo "Result(getparams): $projId, $maxTime, $skipCount, $pageSize, $dataDirection, $roleID";

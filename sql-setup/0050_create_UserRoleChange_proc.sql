@@ -10,14 +10,13 @@ CREATE PROCEDURE GetUserRoleChanges
         in skipCount int,
         in pageSize int,
         in retDirection varchar(4) collate utf8mb4_unicode_ci,
-        in roleid int
+        in roleId int
     )
 BEGIN
 
     DECLARE sqlQuery mediumtext;
     DECLARE roleidfilter mediumtext;
 
-    SET roleidfilter = '';
    -- if skip not given then default to 0
     if skipCount is null then
         set skipCount = 0;
@@ -32,12 +31,7 @@ BEGIN
     if retDirection is null or retDirection = '' then
         set retDirection = 'desc';
     end if;
-
-    -- if roleid is given, then filter by it
-    if roleid != -1 then
-        set roleidfilter = 'and role_id = ?';
-    end if;
-
+ 
     -- create the temporary table for the final results
     drop table if exists user_role_change_temp;
     create temporary table user_role_change_temp
@@ -56,16 +50,12 @@ BEGIN
                 SELECT role_id, old_value, new_value, ts, operation_type
                     FROM user_role_changelog
                     WHERE project_id = ',  projectId,
-                    ' ', roleidfilter,
-                    ' and ts >= NOW() - INTERVAL ', maxTime, ' ', dayOrHour, ';');
+                    ' -- role_id filter
+					and (? is null or role_id = ?) 
+					and ts >= NOW() - INTERVAL ', maxTime, ' ', dayOrHour, ';');
 
     prepare qry FROM sqlQuery;
-    if roleid != -1 then
-        EXECUTE qry using roleid;
-    else
-        EXECUTE qry;
-    end if;
-    
+    EXECUTE qry using roleId, roleId;
     DEALLOCATE prepare qry;
 
     SET sqlQuery =
@@ -76,9 +66,13 @@ BEGIN
     EXECUTE qry;
     DEALLOCATE prepare qry;
 
+    -- return distinct role ids in the result
     SELECT DISTINCT role_id from user_role_change_temp ORDER BY role_id;
+
+    -- return total count
+    select count(*) as total_count from user_role_change_temp;
 
 END;
 
--- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, -1); -- all roles
+-- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, NULL); -- all roles
 -- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, 24);

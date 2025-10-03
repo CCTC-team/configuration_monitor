@@ -15,7 +15,8 @@
     "project": [
       {
         "name": "Project Configuration Changes",
-        "icon": "fas fa-sun",
+        "key": "project-configuration-changes",
+        "icon": "fas fa-clipboard-list",
         "url": "index.php",
         "show-header-and-footer": true
       }
@@ -62,7 +63,7 @@
       "cron_description": "project_config_cron: Checks for any configuration changes in all projects and sends email notifications if any changes are detected.",
       "method": "projectConfigCron", 
       "cron_frequency": "60",
-      "cron_max_run_time": "300"
+      "cron_max_run_time": "3000"
     }
   ]
 }

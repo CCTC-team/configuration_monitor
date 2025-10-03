@@ -34,6 +34,18 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     
         return null;
     }
+
+    public function redcap_module_link_check_display($project_id, $link) {
+
+        $user = $this->getUser();
+        $rights = $user->getRights();
+
+        if($rights['user_rights'] or $this->isSuperUser()) {
+            return $link;
+        } else {
+            return 0;
+        }
+    }
    
     function execFromFile($file): void
     {
@@ -152,6 +164,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             // ?? CHECK THIS
             // $date = DateTime::createFromFormat('YmdHis', $dc->timestamp);
             // $formattedDate = $date->format($userDateFormat);
+            // echo "Formatted date" . $formattedDate;
             $table .= $this->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $dc["timestamp"], $dc["action"]);
         }
     
@@ -168,9 +181,9 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
         $projId = $this->getProjectId();
         $maxTime = $this->getProjectSetting('max-days-email') ?? 3; // Default to 3 hours if not set
-
+        $roleID = NULL; //all roles
         //run the stored proc
-        $logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "HOUR", 0, 25, "DESC", -1);
+        $logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "HOUR", 0, 25, "desc", $roleID);
 
         $dcs = $logDataSets['dataChanges'];
         $showingCount = count($dcs);

@@ -3,148 +3,189 @@
 
 $modName = $module->getModuleDirectoryName();
 
-require_once APP_PATH_DOCROOT . "/Classes/REDCap.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
 
+require_once APP_PATH_DOCROOT . "/Classes/Records.php";
+require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
 use CCTC\ProjectConfigurationChangesModule\Utility;
 use CCTC\ProjectConfigurationChangesModule\Rendering;
 use CCTC\ProjectConfigurationChangesModule\GetDbData;
 
-$user = $module->getUser();
-$rights = $user->getRights();
-// echo "<br>rights[user_rights]: " . $rights['user_rights'];
-// echo "<br>isSuperUser: " . ($module->isSuperUser() ? 'true' : 'false') . "<br>";
 
-// Only users with valid user rights (excluding 'No Access') or super users can access this page
-if (($rights['user_rights'] == 0) && !$module->isSuperUser())   {
-    echo "<br><b>You do not have permission to view this page.</b><br>";
-    return;
-}
-
-// Check user's expiration date (if exists)
-if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
-{
-    $GLOBALS['no_access'] = 1;
-    // Instead of returning 'false', return '2' specifically so we can note to user that the password has expired
-    return '2';
-}
-
+// // Check user's expiration date (if exists)
+// if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
+// {
+//     $GLOBALS['no_access'] = 1;
+//     // Instead of returning 'false', return '2' specifically so we can note to user that the password has expired
+//     return '2';
+// }
 // global $conn;
 $projId = $module->getProjectId();
 $maxTime = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
 // include "getparams.php";
+$page = "index";
 
-$dataDirection = "DESC";
+//gets the users preferred data format which is used as data attribute on the datetimepicker field
+global $datetime_format;
+
+$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+if(ends_with($datetime_format, "_24")){
+    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+} else {
+    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+}
+echo "<br>userDateFormat: $userDateFormat<br>";
+
+echo "
+<div class='projhdr'>
+    <div style='float:left;'>
+        <i class='fas fa-clipboard-list'></i> Changes in User Role Privileges
+    </div>   
+</div>
+<br/>
+<p>
+    This log shows changes made to user role privileges in the last $maxTime days.
+</p>
+";
+
+//set the helper dates for use in the quick links
+$oneDayAgo = Utility::NowAdjusted('-1 days');
+$oneWeekAgo = Utility::NowAdjusted('-7 days');
+$oneMonthAgo = Utility::NowAdjusted('-1 months');
+$oneYearAgo = Utility::NowAdjusted('-1 years');
+
+//get form values
+$minDate = $oneWeekAgo;
+if (isset($_GET['startdt'])) {
+    $minDate = $_GET['startdt'];
+}
+$maxDate = null;
+if (isset($_GET['enddt'])) {
+    $maxDate = $_GET['enddt'];
+}
+
+//set the default to one week
+$defaultTimeFilter = "oneweekago";
+$customActive = "";
+$dayActive = "";
+$weekActive = "active";
+$monthActive = "";
+$yearActive = "";
+
+if (isset($_GET['defaulttimefilter'])) {
+    $defaultTimeFilter = $_GET['defaulttimefilter'];
+    $customActive = $defaultTimeFilter == "customrange" ? "active" : "";
+    $dayActive = $defaultTimeFilter == "onedayago" ? "active" : "";
+    $weekActive = $defaultTimeFilter == "oneweekago" ? "active" : "";
+    $monthActive = $defaultTimeFilter == "onemonthago" ? "active" : "";
+    $yearActive = $defaultTimeFilter == "oneyearago" ? "active" : "";
+}
+
+$roleID = NULL; //default to NULL meaning all roles
+if (isset($_GET['role_id'])) {
+    $roleID = $_GET['role_id'];
+}
+
+$dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
     $dataDirection = $_GET['retdirection'];
 }
-$pageSize = 25;
+
+$pageSize = 10;
 if (isset($_GET['pagesize'])) {
     $pageSize = $_GET['pagesize'];
 }
+
 $pageNum = 0;
 if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
 $skipCount = (int)$pageSize * (int)$pageNum;
+ 
+$minDateDb = Utility::DateStringToDbFormat($minDate);
+$maxDateDb = Utility::DateStringToDbFormat($maxDate);
 
-$roleID = -1; //default to -1 meaning all roles
-if (isset($_GET['role_id'])) {
-    $roleID = $_GET['role_id'];
-}
+$actMinAsDate = $minDate == "" ? Utility::DefaultMinDate() : Utility::DateStringAsDateTime($minDate);
+$actMaxAsDate = $maxDate == "" ? Utility::Now() : Utility::DateStringAsDateTime($maxDate);
+$fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
 
-echo "<h3>Changes in User Role Privileges</h3>";
-echo "<p><i>This log shows changes made to user role privileges in the last $maxTime days.</i></p>";
+$diff = $actMaxAsDate->diff($actMinAsDate);
+
+
+// echo "<br>Base Url: " . Utility::GetBaseUrl();
+// echo "<br>Project ID: $projId<br>";
+// echo"<br> Module directory name: $moduleName<br>";
+
+
+
+
+// $runMessage = "";
+
+// echo "<h3>Changes in User Role Privileges</h3>";
+// echo "<p><i>This log shows changes made to user role privileges in the last $maxTime days.</i></p>";
 // echo "<br> projId: $projId<br>";
 // echo "<br> maxTime: $maxTime<br>";
 // echo "<br> skipCount: $skipCount<br>";
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
-// echo "<br> dataDirection: $dataDirection<br>";
 
 //run the stored proc
 $logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "DAY", $skipCount, $pageSize, $dataDirection, $roleID);
 
-$runMessage = "";
-
+$roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
+$totalCount = $logDataSets['totalCount'];
 $showingCount = count($dcs);
+echo "<br> totalCount: $totalCount<br>";
+$totPages = ceil($totalCount / $pageSize);
+$actPage = (int)$pageNum + 1;
+echo "<br> dataDirection: $dataDirection<br>";
+
 // echo "<br>showingCount: $showingCount<br>";
 
 if ($showingCount == 0) {
     echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";
+    return;
 }
-else {
+// else {
 
-    $minDate = $oneWeekAgo;
-    if (isset($_GET['startdt'])) {
-        $minDate = $_GET['startdt'];
-    }
-    $maxDate = null;
-    if (isset($_GET['enddt'])) {
-        $maxDate = $_GET['enddt'];
-    }
+$table = $module->MakeUserRoleTable($dcs, $userDateFormat);
+$roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
 
+$skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
-    $minDateDb = Utility::DateStringToDbFormat($minDate);
-    $maxDateDb = Utility::DateStringToDbFormat($maxDate);
+// adjust skipTo in cases where last page isn't a full page
+if($showingCount < $pageSize) {
+    $skipTo = $skipCount + $showingCount;
+} else {
+    $skipTo = $skipCount + (int)$pageSize;
+}
 
-    $actMinAsDate = $minDate == "" ? Utility::DefaultMinDate() : Utility::DateStringAsDateTime($minDate);
-    $actMaxAsDate = $maxDate == "" ? Utility::Now() : Utility::DateStringAsDateTime($maxDate);
-    $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
+ // $csvExportPage = $module->getUrl('csv_export.php');
 
-    $diff = $actMaxAsDate->diff($actMinAsDate);
+$pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
+$runMessage = "Messages will appear here after running an export.";
+$moduleName = "project_configuration_changes";
+$page = "index.php";
+//create the reset to return to default original state
+$resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
+$doReset = "window.location.href='$resetUrl';";
+$pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
+$retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
+    
 
-    //gets the users preferred data format which is used as data attribute on the datetimepicker field
-    global $datetime_format;
-
-    $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-    if(ends_with($datetime_format, "_24")){
-        $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-    } else {
-        $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-    }
-
-    $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
-
-    // adjust skipTo in cases where last page isn't a full page
-    if($showingCount < $pageSize) {
-        $skipTo = $skipCount + $showingCount;
-    } else {
-        $skipTo = $skipCount + (int)$pageSize;
-    }
-
-    $csvExportPage = $module->getUrl('csv_export.php');
-
-    $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
-    $runMessage = "Messages will appear here after running an export.";
-    $moduleName = $module->getModuleName();
-    $page = "index.php";
-
-    // echo "<br>Base Url: " . Utility::GetBaseUrl();
-    // echo "<br>Project ID: $projId<br>";
-    // echo"<br> Module directory name: $moduleName<br>";
-
-    //create the reset to return to default original state
-    $resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
-    $doReset = "window.location.href='$resetUrl';";
-    $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
-    $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
-    $roleIds = $logDataSets['roleIds'];
-    $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
-
-    $table = $module->MakeUserRoleTable($dcs, $userDateFormat);
    
+
     echo "<script type='text/javascript'>
             function cleanUpParamsAndRun(moduleName, projId, exportType) {
-                
                 //construct the params from the current page params
-                let finalUrl = APP_PATH_WEBROOT+'ExternalModules/?prefix=' + moduleName + '&page=csv_export&pid=' + projId;
+                let finalUrl = app_path_webroot+'ExternalModules/?prefix=' + moduleName + '&page=csv_export&pid=' + projId;
+
                 let params = new URLSearchParams(window.location.search);
                 //ignore some params
                 params.forEach((v, k) => {            
@@ -164,7 +205,7 @@ else {
                 $doReset 
             }
         </script>";
-
+    echo "<br>totalpages: $totPages<br>";
     $exportIcons = 
         "<div class='blue' style='padding-left:8px; padding-right:8px; border-width:1px; '>    
         <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
@@ -206,11 +247,10 @@ else {
                 <tr>
                     <td><label for='role_id'>Userrole</label></td>
                     <td>$roleSelect</td>
-                    <td/>      
                     <td><label for='retdirection'>Order by</label></td>                
                     <td>$retDirectionSelect</td>
-                    <td/>
-                    <td style='width: 50px'><label for='pagesize' class='mr-2'>Page size</label></td>                
+                    <td></td>
+                    <td><label for='pagesize' class='mr-2'>Page size</label></td>                
                     <td>$pageSizeSelect</td>                
                 </tr>                             
             </table>
@@ -250,7 +290,7 @@ else {
     // }
 
     echo $exportIcons. $table;
-}
+// }
 
 // $module->sendEmail();
 
@@ -320,10 +360,10 @@ else {
         submitForm('startdt');
     }
 
-    function resetEditor() {
-        let editor = document.getElementById('editor');
-        editor.value = '';
-    }
+    // function resetRoleID() {
+    //     let editor = document.getElementById('role_id');
+    //     editor.value = '';
+    // }
 
     function resetDataForm() {
         let dataForm = document.getElementById('datafrm');
@@ -365,17 +405,18 @@ else {
 
     // use this when a field changes so can run request on any change
     function submitForm(src) {
+        // alert("submitForm called with src: " + src);
         showProgress(1);
 
         let frm = document.getElementById('filterForm');
-        // apply this for the role_id drop down to work
-        let logRole = document.getElementById('role_id');
-        logRole.name = 'role_id';
+        // // apply this for the role_id drop down to work
+        // let logRole = document.getElementById('role_id');
+        // logRole.name = 'role_id';
 
         //clear the csrfToken
         let csrfToken = document.querySelector('input[name="redcap_csrf_token"]');
         csrfToken.value = '';
-
+        // alert("Submitting form with " + src + " changed");
         frm.submit();
     }
 
@@ -404,3 +445,5 @@ else {
         document.getElementById('btnnextpage').disabled = parseInt(currPage.value) + 1 === parseInt(totPages.value);
 
     });
+
+</script>

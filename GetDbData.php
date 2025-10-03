@@ -34,6 +34,7 @@ class GetDbData
 
         global $module;
         global $conn;
+        $roleId = $roleId == null ? "null" : $roleId;
 
         $query = "call GetUserRoleChanges($projId, $maxTime, '$dayOrHour', $skipCount, $pageSize, '$dataDirection', $roleId);";
 
@@ -59,6 +60,15 @@ class GetDbData
                             // print_r($roleIds);
                         }
                     }
+
+                    if ($currentIndex == 2) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            // echo "<br>role_id: " . $row['role_id'] . "<br>";
+                            $totalCount = $row['total_count'];
+                            // print_r($roleIds);
+                        }
+                    }
+
                     mysqli_free_result($result);
                     $currentIndex++;
 
@@ -75,6 +85,7 @@ class GetDbData
             [
                 "dataChanges" => $dataChanges,
                 "roleIds" => $roleIds,
+                "totalCount" => $totalCount
             ];
     }
 
