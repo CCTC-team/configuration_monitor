@@ -12,10 +12,24 @@ $oneWeekAgo = Utility::NowAdjusted('-7 days');
 $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
-$userDateFormat = DateTimeRC::get_user_format_jquery();
+// $userDateFormat = DateTimeRC::get_user_format_jquery();
+
+global $datetime_format;
+
+$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+if(ends_with($datetime_format, "_24")){
+    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+} else {
+    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+}
+
+$projId = $module->getProjectId();
+$maxDay = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
 
 //get form values
-$minDate = $oneWeekAgo;
+$minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
+// $minDate = $oneWeekAgo;
+
 if (isset($_GET['startdt'])) {
     $minDate = $_GET['startdt'];
 }
@@ -63,4 +77,4 @@ $minDateDb = Utility::DateStringToDbFormat($minDate);
 $maxDateDb = Utility::DateStringToDbFormat($maxDate);
 
 
-echo "Result(getparams): $projId, $maxTime, $skipCount, $pageSize, $dataDirection, $roleID";
+// echo "Result(getparams): $projId, $maxTime, $skipCount, $pageSize, $dataDirection, $roleID";

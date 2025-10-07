@@ -4,6 +4,6 @@ CREATE TABLE IF NOT EXISTS user_role_changelog (
     role_id INT(10) DEFAULT NULL,
     old_value TEXT DEFAULT NULL,
     new_value TEXT DEFAULT NULL,
-    ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ts BIGINT(14) DEFAULT NULL,
     operation_type VARCHAR(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

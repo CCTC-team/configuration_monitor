@@ -17,11 +17,12 @@ BEGIN
 		NEW.realtime_webservice_adjudicate, NEW.external_module_config, NEW.mycap_participants
 	);
 	INSERT INTO user_role_changelog (
-		project_id, role_id, new_value, operation_type
+		project_id, role_id, new_value, ts, operation_type
 	) VALUES (
 		NEW.project_id,
 		NEW.role_id,
 		new_values,
+		NOW(),
 		'INSERT'
 	);
 END;

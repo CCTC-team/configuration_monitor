@@ -28,15 +28,17 @@ class GetDbData
 
     // calls the GetUserRoleChanges stored procedure with the given parameters and returns the relevant data
     public static function GetUserRoleChangesFromSP(
-        $projId, $maxTime, $dayOrHour, $skipCount, $pageSize, $dataDirection, $roleId)
+        $projId, $minDate, $maxDate, $skipCount, $pageSize, $dataDirection, $roleId)
     : array
     {
 
         global $module;
         global $conn;
         $roleId = $roleId == null ? "null" : $roleId;
+        $minDate = $minDate == null ? "null" : $minDate;
+        $maxDate = $maxDate == null ? "null" : $maxDate;
 
-        $query = "call GetUserRoleChanges($projId, $maxTime, '$dayOrHour', $skipCount, $pageSize, '$dataDirection', $roleId);";
+        $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId);";
 
         
         $num_rows = 0;

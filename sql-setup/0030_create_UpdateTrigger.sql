@@ -32,13 +32,13 @@ BEGIN
 	-- Only insert if old and new values are different
 	IF ((old_values <> new_values) AND (OLD.unique_role_name = NEW.unique_role_name)) THEN
 		INSERT INTO user_role_changelog (
-			project_id, role_id, old_value, new_value,
-			operation_type
+			project_id, role_id, old_value, new_value, ts, operation_type
 		) VALUES (
 			COALESCE(NEW.project_id, OLD.project_id),
 			COALESCE(NEW.role_id, OLD.role_id),
 			old_values,
 			new_values,
+			NOW(),
 			'UPDATE'
 		);
 	END IF;

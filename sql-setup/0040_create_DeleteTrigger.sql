@@ -17,11 +17,12 @@ BEGIN
 		OLD.realtime_webservice_adjudicate, OLD.external_module_config, OLD.mycap_participants
 	);
 	INSERT INTO user_role_changelog (
-		project_id, role_id, old_value, operation_type
+		project_id, role_id, old_value, ts, operation_type
 	) VALUES (
 		OLD.project_id,
 		OLD.role_id,
 		old_values,
+		NOW(),
 		'DELETE'
 	);
 END;

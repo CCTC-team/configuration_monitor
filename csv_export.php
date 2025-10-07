@@ -2,6 +2,7 @@
 
 require_once APP_PATH_DOCROOT . "/Config/init_project.php";
 $lang = Language::getLanguage('English');
+// use DateTime;
 
 global $Proj;
 $project_id = $Proj->id;
@@ -13,6 +14,7 @@ require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
 
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+
 require_once APP_PATH_DOCROOT . "/Classes/Records.php";
 require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
@@ -60,6 +62,8 @@ if($exportType == 'everything') {
 
 
 $projId = $module->getProjectId();
+
+// console.log("projId type: " . gettype($projId) . "\n project_id type: " . gettype($project_id));
 $maxTime = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
 // $skipCount = 0;
 // $pageSize = 25;
@@ -68,10 +72,10 @@ $maxTime = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 da
 
 
 //run the stored proc
-$result = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "DAY", $skipCount, $pageSize, $dataDirection, $roleID);
+$result = GetDbData::GetUserRoleChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $roleID);
 
 // Set headers
-$headers = array("role id", "old value", "new value", "action", "timestamp");
+$headers = array("role id", "changed privilege", "old value", "new value", "action", "timestamp");
 
 // Set file name and path
 $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_user_role_changes.csv';
@@ -91,19 +95,30 @@ if ($fp && $result)
         // Set values for this row and write to file
         foreach ($result["dataChanges"] as $dc) {
 
-            $row["roleID"] = $dc["roleID"];
-            $row["oldValue"] = $dc["oldValue"];
-            $row["newValue"] = $dc["newValue"];
-            $row["action"] = $dc["action"];
-            $row["timestamp"] = $dc["timestamp"];
-            // //timestamp
-            // $row["timestamp"] =
-            //     $dc["timestamp"] == null || $dc["timestamp"] == ""
-            //         ? ""
-            //         : DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format('Y-m-d H:i:s');
+            $dcChanges = $module->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $dc["timestamp"], $dc["action"]);
+            if (is_array($dcChanges)) {
+                foreach ($dcChanges as $dc) {
+                    // $r['roleID'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['ts'], $r['action']
+                    $row["roleID"] = $dc["roleID"];
+                    $row["privilege"] = $dc["privilege"];
+                    $row["oldValue"] = $dc["oldValue"];
+                    $row["newValue"] = $dc["newValue"];
+                    $row["action"] = $dc["action"];
+                    //timestamp
+                    $row["timestamp"] = 
+                        $dc["timestamp"] == null || $dc["timestamp"] == ""
+                            ? ""
+                            : DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format($userDateFormat);
+                    fputcsv($fp, $row, $delim);
+
+                    
+                
+                }
+            }
+            
             
 
-            fputcsv($fp, $row, $delim);
+            // fputcsv($fp, $row, $delim);
         }
 
         // Close file for writing

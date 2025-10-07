@@ -5,8 +5,8 @@
 CREATE PROCEDURE GetUserRoleChanges
     (
         in projectId int,
-        in maxTime int,           -- maxTime is the maximum number of days or Hours to include in the SQL
-        in dayOrHour varchar(5) collate utf8mb4_unicode_ci,    -- DAY or HOUR
+        in minDate bigint,
+        in maxDate bigint,
         in skipCount int,
         in pageSize int,
         in retDirection varchar(4) collate utf8mb4_unicode_ci,
@@ -40,7 +40,7 @@ BEGIN
         role_id INT(10) DEFAULT NULL,
         old_value TEXT DEFAULT NULL,
         new_value TEXT DEFAULT NULL,
-        ts TIMESTAMP DEFAULT NULL,
+        ts BIGINT(14) DEFAULT NULL,
         operation_type VARCHAR(100) DEFAULT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -52,10 +52,16 @@ BEGIN
                     WHERE project_id = ',  projectId,
                     ' -- role_id filter
 					and (? is null or role_id = ?) 
-					and ts >= NOW() - INTERVAL ', maxTime, ' ', dayOrHour, ';');
+					-- minDate
+                    and (? is null or ts >= ?)
+                    -- maxDate
+                    and (? is null or ts <= ?)');
 
     prepare qry FROM sqlQuery;
-    EXECUTE qry using roleId, roleId;
+    EXECUTE qry using 
+        roleId, roleId,
+        minDate,minDate,
+        maxDate,maxDate;
     DEALLOCATE prepare qry;
 
     SET sqlQuery =

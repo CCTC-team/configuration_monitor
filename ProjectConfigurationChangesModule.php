@@ -6,6 +6,7 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 use CCTC\ProjectConfigurationChangesModule\Rendering;
 
 use REDCap;
+use DateTime;
 use ExternalModules\AbstractExternalModule;
 
 class ProjectConfigurationChangesModule extends AbstractExternalModule {
@@ -26,8 +27,8 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             }
         }
 
-        if (array_key_exists("max-days-email", $settings) and !empty($settings['max-days-email'])) {
-            if(intval($settings['max-days-email']) != $settings['max-days-email']) {
+        if (array_key_exists("max-hours-email", $settings) and !empty($settings['max-hours-email'])) {
+            if(intval($settings['max-hours-email']) != $settings['max-hours-email']) {
                 return "The maximum number of hours for email should be a number";
             }
         }
@@ -75,11 +76,22 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
     }
 
-    static function createRow($roleID, $privilege, $oldValue, $newValue, $ts, $action): string
+    static function createRow($roleID, $privilege, $oldValue, $newValue, $ts, $action, $countChanges, $dcCount): string
     {
+        if($dcCount % 2 == 0) {
+            $bgColor = "#e2eafa"; // Light blue for even rows
+        } else {
+            $bgColor = "#FFFFFF"; // White for odd rows
+        }
+        // Only show roleID, action, and timestamp for the first changed privilege in a set
+        if ($countChanges !=1) {
+            $roleID = ""; // Only show roleID for the first changed privilege in a set
+            $action = ""; // Only show action for the first changed privilege in a set
+            $ts = "";     // Only show timestamp for the first changed privilege in a set
+        }
 
         return
-            "<tr>
+            "<tr style='background-color: $bgColor;'>
                 <td>$roleID</td>
                 <td>$privilege</td>
                 <td>$oldValue</td>
@@ -89,66 +101,99 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             </tr>";
     }
 
-    function userRoleChanges($roleID, $old, $new, $ts, $action): string
+    function userRoleChanges($roleID, $old, $new, $ts, $action): array
     {
+        // $finalRow = array();
         if ($action !== 'UPDATE') {
             // For INSERT and DELETE actions, return a single row with all values
-            return self::createRow($roleID, 'All Privileges', $old ?: 'N/A', $new ?: 'N/A', $ts, $action);
-        }
+            // return self::createRow($roleID, 'All Privileges', $old ?: 'N/A', $new ?: 'N/A', $ts, $action);
+            $finalRow[] = [
+                'roleID' => $roleID,
+                'privilege' => 'All Privileges',
+                'oldValue' => $old ?: 'N/A',
+                'newValue' => $new ?: 'N/A',
+                'timestamp' => $ts,
+                'action' => $action
+            ];
+        } else {
 
-        //For update action, compare old and new values and return only changed privileges
-        // Column names corresponding to the order of values in the concatenated string
-        $userroleColumnNames = array("Role Name", "Unique Role Name", "Lock Record", "Lock Record Multiform", "Lock Record Customize", "Data Export Instruments", "Data Import Tool", "Data Comparison Tool", "Data Logging", "Email Logging", "File Repository", "Double Data", "User Rights", "Data Access Groups", "Graphical", "Reports", "Design", "Alerts", "Calendar", "Data Entry", "API Export", "API Import", "API Modules", "Mobile App", "Mobile App Download Data", "Record Create", "Record Rename", "Record Delete", "Dts", "Participants", "Data Quality Design", "Data Quality Execute", "Data Quality Resolution", "Random Setup", "Random Dashboard", "Random Perform", "Realtime Webservice Mapping", "Realtime Webservice Adjudicate", "External Module Config", "Mycap Participants");
+            //For update action, compare old and new values and return only changed privileges
+            // Column names corresponding to the order of values in the concatenated string
+            $userroleColumnNames = array("Role Name", "Unique Role Name", "Lock Record", "Lock Record Multiform", "Lock Record Customize", "Data Export Instruments", "Data Import Tool", "Data Comparison Tool", "Data Logging", "Email Logging", "File Repository", "Double Data", "User Rights", "Data Access Groups", "Graphical", "Reports", "Design", "Alerts", "Calendar", "Data Entry", "API Export", "API Import", "API Modules", "Mobile App", "Mobile App Download Data", "Record Create", "Record Rename", "Record Delete", "Dts", "Participants", "Data Quality Design", "Data Quality Execute", "Data Quality Resolution", "Random Setup", "Random Dashboard", "Random Perform", "Realtime Webservice Mapping", "Realtime Webservice Adjudicate", "External Module Config", "Mycap Participants");
 
-        $old_parts = explode("|", $old);
-        $new_parts = explode("|", $new);
-    
-        $max = max(count($old_parts), count($new_parts));
-        $row = "";
-        for ($i = 0; $i < $max; $i++) {
-            $o = $old_parts[$i] ?? '';
-            $n = $new_parts[$i] ?? '';
-            
-            if ($o !== $n) {
-                // Data_Export_Instruments and Data_Entry privileges need special handling. 
-                // They contain multiple values in the format [text,number]
-                if ($i == 5 || $i == 19) {
-                    preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $n, $nmatches, PREG_SET_ORDER);
-                    preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $o, $omatches, PREG_SET_ORDER);
+            $old_parts = explode("|", $old);
+            $new_parts = explode("|", $new);
+        
+            $max = max(count($old_parts), count($new_parts));
+            for ($i = 0; $i < $max; $i++) {
+                $o = $old_parts[$i] ?? '';
+                $n = $new_parts[$i] ?? '';
+                
+                if ($o !== $n) {
+                    // Data_Export_Instruments and Data_Entry privileges need special handling. 
+                    // They contain multiple values in the format [text,number]
+                    if ($i == 5 || $i == 19) {
+                        preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $n, $nmatches, PREG_SET_ORDER);
+                        preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $o, $omatches, PREG_SET_ORDER);
 
-                    $nresult = []; // Array for new values
-                    foreach ($nmatches as $nmatch) {
-                        $key = $nmatch[1];   // text before comma
-                        $val = $nmatch[2];   // number after comma
-                        $nresult[$key] = $val;
-                    }
+                        $nresult = []; // Array for new values
+                        foreach ($nmatches as $nmatch) {
+                            $key = $nmatch[1];   // text before comma
+                            $val = $nmatch[2];   // number after comma
+                            $nresult[$key] = $val;
+                        }
 
-                    $oresult = []; // Array for old values
-                    foreach ($omatches as $omatch) {
-                        $key = $omatch[1];   // text before comma
-                        $val = $omatch[2];   // number after comma
-                        $oresult[$key] = $val;
-                    }
-                    
-                    foreach ($oresult as $key => $oval) {
-                        if (isset($nresult[$key])) {         // Key exists in both arrays
-                            $nval = $nresult[$key];
-                            if ($oval != $nval) {           // Value differs
-                                $row .= self::createRow($roleID, $userroleColumnNames[$i], "[$key,$oval]", "[$key,$nval]", $ts, $action);
+                        $oresult = []; // Array for old values
+                        foreach ($omatches as $omatch) {
+                            $key = $omatch[1];   // text before comma
+                            $val = $omatch[2];   // number after comma
+                            $oresult[$key] = $val;
+                        }
+                        
+                        foreach ($oresult as $key => $oval) {
+                            if (isset($nresult[$key])) {         // Key exists in both arrays
+                                $nval = $nresult[$key];
+                                // $row = array();
+                                if ($oval != $nval) {           // Value differs
+                                    // $row .= self::createRow($roleID, $userroleColumnNames[$i], "[$key,$oval]", "[$key,$nval]", $ts, $action);
+                                
+                                    $row = [
+                                        'roleID' => $roleID,
+                                        'privilege' => $userroleColumnNames[$i],
+                                        'oldValue' => "[$key,$oval]",
+                                        'newValue' => "[$key,$nval]",
+                                        'timestamp' => $ts,
+                                        'action' => $action
+                                    ];
+
+                                    $finalRow[] = $row;
+                                }
                             }
                         }
+                    } else {
+                        // For other privileges, show full difference
+                        // $row .= self::createRow($roleID, $userroleColumnNames[$i], $o, $n, $ts, $action);
+                        $finalRow[] = [
+                            'roleID' => $roleID,
+                            'privilege' => $userroleColumnNames[$i],
+                            'oldValue' => $o,
+                            'newValue' => $n,
+                            'timestamp' => $ts,
+                            'action' => $action
+                        ];
+
                     }
-                } else {
-                    // For other privileges, show full difference
-                    $row .= self::createRow($roleID, $userroleColumnNames[$i], $o, $n, $ts, $action);
                 }
             }
         }
-        return $row;
+
+        return $finalRow;
     }
 
     function MakeUserRoleTable($dcs, $userDateFormat) : string
     {
+        // totalCount passed by reference to return total count of changes
+        $row = array();
         // global $module;
         $table = "<table id='user_role_change_table' border='1'>
         <thead><tr style='background-color: #FFFFE0;'>
@@ -161,13 +206,25 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         </tr></thead><tbody>";
 
         foreach($dcs as $dc) {
-            // ?? CHECK THIS
-            // $date = DateTime::createFromFormat('YmdHis', $dc->timestamp);
-            // $formattedDate = $date->format($userDateFormat);
-            // echo "Formatted date" . $formattedDate;
-            $table .= $this->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $dc["timestamp"], $dc["action"]);
+            static $dcCount = 1; // Number of data changes
+            $date = DateTime::createFromFormat('YmdHis', $dc["timestamp"]);
+            $formattedDate = $date->format($userDateFormat);
+
+            $row = $this->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $formattedDate, $dc["action"]);
+            if (is_array($row)) {
+                $countChanges = 0; // Number of changed privileges within a single data change
+                foreach ($row as $r) {
+                    $countChanges++;
+                    // echo "dcCount: $dcCount<br>";
+                    $table .= self::createRow($r['roleID'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['timestamp'], $r['action'], $countChanges, $dcCount);
+                }
+            }
+
+            $dcCount++;
         }
-    
+
+        $totalCount = $count;
+
         return $table .= "</tbody></table>";
     }
 
@@ -178,18 +235,31 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
         require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
         require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+        require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
 
         $projId = $this->getProjectId();
-        $maxTime = $this->getProjectSetting('max-days-email') ?? 3; // Default to 3 hours if not set
+        $maxHour = $this->getProjectSetting('max-hours-email') ?? 3; // Default to 3 hours if not set
         $roleID = NULL; //all roles
+        $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
+        $minDateDb = Utility::DateStringToDbFormat($minDate);
+        $maxDateDb = NULL; //no max date
         //run the stored proc
-        $logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "HOUR", 0, 25, "desc", $roleID);
+        $logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", $roleID);
 
         $dcs = $logDataSets['dataChanges'];
         $showingCount = count($dcs);
 
         if ($showingCount != 0) { // Only send email if there are changes
-            
+
+        global $datetime_format;
+
+        $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+        if(ends_with($datetime_format, "_24")){
+            $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+        } else {
+            $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+        }
+
             $table = self::MakeUserRoleTable($dcs, $userDateFormat);
 
             // Prepare to-email parameters
@@ -207,6 +277,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             $projectTitle = $this->getTitle();
     
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
+            // $body .= "<h3>userDateFormat: $userDateFormat</h3>";
             $body .= "<h4>Changes in User Role Privileges</h4>";
             $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
 

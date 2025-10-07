@@ -25,7 +25,7 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 // }
 // global $conn;
 $projId = $module->getProjectId();
-$maxTime = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
+$maxDay = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
 // include "getparams.php";
 $page = "index";
 
@@ -33,12 +33,12 @@ $page = "index";
 global $datetime_format;
 
 $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+
 if(ends_with($datetime_format, "_24")){
     $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
 } else {
     $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
 }
-echo "<br>userDateFormat: $userDateFormat<br>";
 
 echo "
 <div class='projhdr'>
@@ -48,7 +48,7 @@ echo "
 </div>
 <br/>
 <p>
-    This log shows changes made to user role privileges in the last $maxTime days.
+    This log shows changes made to user role privileges.
 </p>
 ";
 
@@ -58,8 +58,11 @@ $oneWeekAgo = Utility::NowAdjusted('-7 days');
 $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
+$minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
+
+// echo "minDate: $minDate<br>";
+
 //get form values
-$minDate = $oneWeekAgo;
 if (isset($_GET['startdt'])) {
     $minDate = $_GET['startdt'];
 }
@@ -69,10 +72,10 @@ if (isset($_GET['enddt'])) {
 }
 
 //set the default to one week
-$defaultTimeFilter = "oneweekago";
-$customActive = "";
+$defaultTimeFilter = "customrange";
+$customActive = "active";
 $dayActive = "";
-$weekActive = "active";
+$weekActive = "";
 $monthActive = "";
 $yearActive = "";
 
@@ -121,30 +124,24 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 // echo "<br>Project ID: $projId<br>";
 // echo"<br> Module directory name: $moduleName<br>";
 
-
-
-
 // $runMessage = "";
 
 // echo "<h3>Changes in User Role Privileges</h3>";
-// echo "<p><i>This log shows changes made to user role privileges in the last $maxTime days.</i></p>";
+// echo "<p><i>This log shows changes made to user role privileges in the last $maxDay days.</i></p>";
 // echo "<br> projId: $projId<br>";
-// echo "<br> maxTime: $maxTime<br>";
+// echo "<br> maxDay: $maxDay<br>";
 // echo "<br> skipCount: $skipCount<br>";
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
 
+
 //run the stored proc
-$logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $maxTime, "DAY", $skipCount, $pageSize, $dataDirection, $roleID);
+$logDataSets = GetDbData::GetUserRoleChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $roleID);
 
 $roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
-$totalCount = $logDataSets['totalCount'];
-$showingCount = count($dcs);
-echo "<br> totalCount: $totalCount<br>";
-$totPages = ceil($totalCount / $pageSize);
-$actPage = (int)$pageNum + 1;
-echo "<br> dataDirection: $dataDirection<br>";
+$totalCount = $logDataSets['totalCount']; // number of User Roles being changed
+$showingCount = count($dcs); // number of User Roles being shown on this page
 
 // echo "<br>showingCount: $showingCount<br>";
 
@@ -152,11 +149,15 @@ if ($showingCount == 0) {
     echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";
     return;
 }
-// else {
 
 $table = $module->MakeUserRoleTable($dcs, $userDateFormat);
 $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
-
+// echo "<br> showingCount: $showingCount<br>";
+// echo "<br> totalCount: $totalCount<br>";
+$totPages = ceil($totalCount / $pageSize);
+$actPage = (int)$pageNum + 1;
+// echo "<br> dataDirection: $dataDirection<br>";
+// $showingCount = $totalCount;
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
 // adjust skipTo in cases where last page isn't a full page
@@ -177,122 +178,110 @@ $resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$
 $doReset = "window.location.href='$resetUrl';";
 $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
 $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
-    
 
-   
+echo "<script type='text/javascript'>
+        function cleanUpParamsAndRun(moduleName, projId, exportType) {
+            //construct the params from the current page params
+            let finalUrl = app_path_webroot+'ExternalModules/?prefix=' + moduleName + '&page=csv_export&pid=' + projId;
 
-    echo "<script type='text/javascript'>
-            function cleanUpParamsAndRun(moduleName, projId, exportType) {
-                //construct the params from the current page params
-                let finalUrl = app_path_webroot+'ExternalModules/?prefix=' + moduleName + '&page=csv_export&pid=' + projId;
-
-                let params = new URLSearchParams(window.location.search);
-                //ignore some params
-                params.forEach((v, k) => {            
-                    if(k !== 'prefix' && k !== 'page' && k !== 'pid' && k !== 'redcap_csrf_token' ) {                
-                        finalUrl += '&' + k + '=' + encodeURIComponent(v);                                    
-                    }
-                });
-                
-                //add the param to determine what to export        
-                finalUrl += '&export_type=' + exportType;
-                
-                window.location.href=finalUrl;                
-            }
+            let params = new URLSearchParams(window.location.search);
+            //ignore some params
+            params.forEach((v, k) => {            
+                if(k !== 'prefix' && k !== 'page' && k !== 'pid' && k !== 'redcap_csrf_token' ) {                
+                    finalUrl += '&' + k + '=' + encodeURIComponent(v);                                    
+                }
+            });
             
-            function resetForm() { 
-                showProgress(1);        
-                $doReset 
-            }
-        </script>";
-    echo "<br>totalpages: $totPages<br>";
-    $exportIcons = 
-        "<div class='blue' style='padding-left:8px; padding-right:8px; border-width:1px; '>    
-        <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
-            <input type='hidden' id='prefix' name='prefix' value='$moduleName'>
-            <input type='hidden' id='page' name='page' value='$page'>
-            <input type='hidden' id='pid' name='pid' value='$projId'>
-            <input type='hidden' id='totpages' name='totpages' value='$totPages'>
-            <input type='hidden' id='pagenum' name='pagenum' value='$pageNum'>
+            //add the param to determine what to export        
+            finalUrl += '&export_type=' + exportType;
             
-            <input type='hidden' id='defaulttimefilter' name='defaulttimefilter' value='$defaultTimeFilter'>
-            <input type='hidden' id='onedayago' name='onedayago' value='$oneDayAgo'>
-            <input type='hidden' id='oneweekago' name='oneweekago' value='$oneWeekAgo'>
-            <input type='hidden' id='onemonthago' name='onemonthago' value='$oneMonthAgo'>
-            <input type='hidden' id='oneyearago' name='oneyearago' value='$oneYearAgo'>
-                                                                        
-            <table>
-                <tr>
-                              
-                </tr>
-                <tr>
-                    <td><label for='min_date'>Min edit date</label></td>
-                    <td><input id='startdt' style='width: 150px' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
-                    <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                    
-                    <td><label for='max_date'>Max edit date</label></td>
-                    <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
-                    <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                    
-                    <td>
-                        <div class='btn-group bg-white' role='group';  style='margin-left: 30px;'>                
-                            <button type='button' class='btn btn-outline-primary btn-xs $customActive' onclick='setCustomRange()'>Custom range</button>
-                            <button type='button' class='btn btn-outline-primary btn-xs $dayActive' onclick='setTimeFrame(\"onedayago\")'>Past day</button>
-                            <button type='button' class='btn btn-outline-primary btn-xs $weekActive' onclick='setTimeFrame(\"oneweekago\")'>Past week</button>
-                            <button type='button' class='btn btn-outline-primary btn-xs $monthActive' onclick='setTimeFrame(\"onemonthago\")'>Past month</button>
-                            <button type='button' class='btn btn-outline-primary btn-xs $yearActive' onclick='setTimeFrame(\"oneyearago\")'>Past year</button>
-                        </div>                                        
-                    </td>                                    
-                </tr>                       
-                <tr>
-                    <td><label for='role_id'>Userrole</label></td>
-                    <td>$roleSelect</td>
-                    <td><label for='retdirection'>Order by</label></td>                
-                    <td>$retDirectionSelect</td>
-                    <td></td>
-                    <td><label for='pagesize' class='mr-2'>Page size</label></td>                
-                    <td>$pageSizeSelect</td>                
-                </tr>                             
-            </table>
-            <div class='p-2 mt-1' style='display: flex; flex-direction: row;'>
-                <button id='btnprevpage' type='button' class='btn btn-outline-primary btn-xs mr-2' onclick='prevPage()'>
-                    <i class='fas fa-arrow-left fa-fw' style='font-size: medium; margin-top: 1px;'></i>
+            window.location.href=finalUrl;                
+        }
+        
+        function resetForm() { 
+            showProgress(1);        
+            $doReset 
+        }
+    </script>";
+// echo "<br>totalpages: $totPages<br>";
+$exportIcons = 
+    "<div class='blue' style='padding-left:8px; padding-right:8px; border-width:1px; '>    
+    <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
+        <input type='hidden' id='prefix' name='prefix' value='$moduleName'>
+        <input type='hidden' id='page' name='page' value='$page'>
+        <input type='hidden' id='pid' name='pid' value='$projId'>
+        <input type='hidden' id='totpages' name='totpages' value='$totPages'>
+        <input type='hidden' id='pagenum' name='pagenum' value='$pageNum'>
+        
+        <input type='hidden' id='defaulttimefilter' name='defaulttimefilter' value='$defaultTimeFilter'>
+        <input type='hidden' id='onedayago' name='onedayago' value='$oneDayAgo'>
+        <input type='hidden' id='oneweekago' name='oneweekago' value='$oneWeekAgo'>
+        <input type='hidden' id='onemonthago' name='onemonthago' value='$oneMonthAgo'>
+        <input type='hidden' id='oneyearago' name='oneyearago' value='$oneYearAgo'>
+                                                                    
+        <table>
+            <tr>
+                            
+            </tr>
+            <tr>
+                <td><label for='min_date'>Min edit date</label></td>
+                <td style='width: 200px;'><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
+                <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
+                <td><label for='max_date'>Max edit date</label></td>
+                <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
+                <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
+                
+                <td>
+                    <div class='btn-group bg-white' role='group';  style='margin-left: 30px;'>                
+                        <button type='button' class='btn btn-outline-primary btn-xs $customActive' onclick='setCustomRange()'>Custom range</button>
+                        <button type='button' class='btn btn-outline-primary btn-xs $dayActive' onclick='setTimeFrame(\"onedayago\")'>Past day</button>
+                        <button type='button' class='btn btn-outline-primary btn-xs $weekActive' onclick='setTimeFrame(\"oneweekago\")'>Past week</button>
+                        <button type='button' class='btn btn-outline-primary btn-xs $monthActive' onclick='setTimeFrame(\"onemonthago\")'>Past month</button>
+                        <button type='button' class='btn btn-outline-primary btn-xs $yearActive' onclick='setTimeFrame(\"oneyearago\")'>Past year</button>
+                    </div>                                        
+                </td>                                    
+            </tr>                       
+            <tr>
+                <td><label for='role_id'>Userrole</label></td>
+                <td>$roleSelect</td>
+                <td><label for='retdirection'>Order by</label></td>                
+                <td>$retDirectionSelect</td>
+                <td></td>
+                <td><label for='pagesize' class='mr-2'>Page size</label></td>                
+                <td>$pageSizeSelect</td>                
+            </tr>                             
+        </table>
+        <div class='p-2 mt-1' style='display: flex; flex-direction: row;'>
+            <button id='btnprevpage' type='button' class='btn btn-outline-primary btn-xs mr-2' onclick='prevPage()'>
+                <i class='fas fa-arrow-left fa-fw' style='font-size: medium; margin-top: 1px;'></i>
+            </button>
+            <button id='btnnextpage' type='button' class='btn btn-outline-primary btn-xs mr-4' onclick='nextPage()'>
+                <i class='fas fa-arrow-right fa-fw' style='font-size: medium; margin-top: 1px;'></i>
+            </button>     
+            $pagingInfo
+            <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
+            <div class='ms-auto'>            
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\")'>
+                    <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
+                    Export current page
                 </button>
-                <button id='btnnextpage' type='button' class='btn btn-outline-primary btn-xs mr-4' onclick='nextPage()'>
-                    <i class='fas fa-arrow-right fa-fw' style='font-size: medium; margin-top: 1px;'></i>
-                </button>     
-                $pagingInfo
-                <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
-                <div class='ms-auto'>            
-                    <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\")'>
-                        <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
-                        Export current page
-                    </button>
-                    <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\")'>
-                        <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
-                        Export all pages
-                    </button>
-                    <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\")'>
-                        <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
-                        Export everything ignoring filters
-                    </button>                                    
-                </div>                               
-            </div>                 
-        </form>
-        $runMessage      
-        </div>
-        <br/>";
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\")'>
+                    <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
+                    Export all pages
+                </button>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\")'>
+                    <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
+                    Export everything ignoring filters
+                </button>                                    
+            </div>                               
+        </div>                 
+    </form>
+    $runMessage      
+    </div>
+    <br/>";
     
 
-    // while ($row = db_fetch_assoc($result)) {
-    //     // Use the userRoleChanges function to find difference and format each row
-    //     $updateTable .= $module->userRoleChanges($row['role_id'], $row['old_value'], $row['new_value'], $row['ts'], $row['operation_type']);
-    // }
-
-    echo $exportIcons. $table;
-// }
-
-// $module->sendEmail();
+echo $exportIcons. $table;
 
 
 ?>
