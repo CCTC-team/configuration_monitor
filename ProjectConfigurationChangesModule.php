@@ -76,31 +76,6 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
     }
 
-    static function createRow($roleID, $privilege, $oldValue, $newValue, $ts, $action, $countChanges, $dcCount): string
-    {
-        if($dcCount % 2 == 0) {
-            $bgColor = "#e2eafa"; // Light blue for even rows
-        } else {
-            $bgColor = "#FFFFFF"; // White for odd rows
-        }
-        // Only show roleID, action, and timestamp for the first changed privilege in a set
-        if ($countChanges !=1) {
-            $roleID = ""; // Only show roleID for the first changed privilege in a set
-            $action = ""; // Only show action for the first changed privilege in a set
-            $ts = "";     // Only show timestamp for the first changed privilege in a set
-        }
-
-        return
-            "<tr style='background-color: $bgColor;'>
-                <td>$roleID</td>
-                <td>$privilege</td>
-                <td>$oldValue</td>
-                <td>$newValue</td>
-                <td>$ts</td>
-                <td>$action</td>
-            </tr>";
-    }
-
     function userRoleChanges($roleID, $old, $new, $ts, $action): array
     {
         // $finalRow = array();
@@ -193,39 +168,67 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     function MakeUserRoleTable($dcs, $userDateFormat) : string
     {
         // totalCount passed by reference to return total count of changes
-        $row = array();
+        $roleChanges = array();
         // global $module;
         $table = "<table id='user_role_change_table' border='1'>
         <thead><tr style='background-color: #FFFFE0;'>
             <th style='width: 5%;padding: 5px'>Role ID</th>
+            <th style='width: 15%;padding: 5px'>Timestamp</th>
+            <th style='width: 15%;padding: 5px'>Action</th>
             <th style='width: 15%;padding: 5px'>Changed Privilege</th>
             <th style='width: 15%;padding: 5px'>Old Value</th>
             <th style='width: 15%;padding: 5px'>New Value</th>
-            <th style='width: 15%;padding: 5px'>Timestamp</th>
-            <th style='width: 15%;padding: 5px'>Action</th>
         </tr></thead><tbody>";
 
         foreach($dcs as $dc) {
-            static $dcCount = 1; // Number of data changes
+            // static $dcCount = 1; // Number of data changes
             $date = DateTime::createFromFormat('YmdHis', $dc["timestamp"]);
             $formattedDate = $date->format($userDateFormat);
 
-            $row = $this->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $formattedDate, $dc["action"]);
-            if (is_array($row)) {
-                $countChanges = 0; // Number of changed privileges within a single data change
-                foreach ($row as $r) {
-                    $countChanges++;
-                    // echo "dcCount: $dcCount<br>";
-                    $table .= self::createRow($r['roleID'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['timestamp'], $r['action'], $countChanges, $dcCount);
-                }
-            }
+            $roleChanges = self::userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $formattedDate, $dc["action"]);
+            // foreach ($roleChanges as $r) {
+            //     echo "<br><br>";
+            //     print_r($r);
+            // }
+            //
+            // print_r($roleChanges);
+            $table .= self::createRow($roleChanges);
+            // if (is_array($row)) {
+            //     $countChanges = 0; // Number of changed privileges within a single data change
+            //     foreach ($row as $r) {
+            //         $countChanges++;
+            //         // echo "dcCount: $dcCount<br>";
+            //         $table .= self::createRow($r['roleID'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['timestamp'], $r['action'], $countChanges, $dcCount);
+            //     }
+            // }
 
-            $dcCount++;
+            // $dcCount++;
         }
 
-        $totalCount = $count;
+        // $totalCount = $count;
 
         return $table .= "</tbody></table>";
+    }
+
+    function createRow($roleChanges): string
+    {
+        $span = count($roleChanges);
+        // echo "<br>span: $span<br>";
+        $row = "<tr style='background-color: $bgColor;'>
+                <td rowspan='$span'>" . $roleChanges[0]['roleID'] . "</td>
+                <td rowspan='$span'>" . $roleChanges[0]['timestamp'] . "</td>
+                <td rowspan='$span'>" . $roleChanges[0]['action'] . "</td>";
+
+        foreach ($roleChanges as $r) {
+            // $countChanges++;
+            // echo "dcCount: $dcCount<br>";
+            $row .= "<td>" . $r['privilege'] . "</td>
+                <td>" . $r['oldValue'] . "</td>
+                <td>" . $r['newValue'] . "</td></tr>" ;
+        }
+
+        // $row .= "</tr>";
+        return $row;
     }
 
     function sendEmail(): void
