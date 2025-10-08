@@ -2,11 +2,7 @@
 
 require_once APP_PATH_DOCROOT . "/Config/init_project.php";
 $lang = Language::getLanguage('English');
-// use DateTime;
 
-global $Proj;
-$project_id = $Proj->id;
-global $module;
 $modName = $module->getModuleDirectoryName();
 
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/ProjectConfigurationChangesModule.php";
@@ -27,10 +23,26 @@ use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
 //System::increaseMemory(2048);
 
 // File: getparams.php
+/** @var $projId */
+/** @var $minDateDb */
+/** @var $maxDateDb */
 /** @var $skipCount */
 /** @var $pageSize */
 /** @var $dataDirection */
 /** @var $roleID */
+/** @var $defaultTimeFilter */
+/** @var $oneDayAgo */
+/** @var $oneWeekAgo */
+/** @var $oneMonthAgo */
+/** @var $oneYearAgo */
+/** @var $customActive */
+/** @var $dayActive */
+/** @var $weekActive */
+/** @var $monthActive */
+/** @var $yearActive */
+/** @var $maxDate */
+/** @var $minDate */
+/** @var $userDateFormat */
 
 include "getparams.php";
 
@@ -61,10 +73,7 @@ if($exportType == 'everything') {
 }
 
 
-$projId = $module->getProjectId();
 
-// console.log("projId type: " . gettype($projId) . "\n project_id type: " . gettype($project_id));
-$maxTime = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
 // $skipCount = 0;
 // $pageSize = 25;
 // $dataDirection = "desc";
@@ -143,7 +152,7 @@ if ($fp && $result)
         unlink($filename);
 
         // Logging
-        Logging::logEvent("", Logging::getLogEventTable($project_id),"MANAGE",$project_id,"project_id = $project_id", "Export user role changes (custom)");
+        Logging::logEvent("", Logging::getLogEventTable($projId),"MANAGE",$projId,"project_id = $projId", "Export user role changes (custom)");
 
     } catch (Exception $e) {
         $module->log("ex: ". $e->getMessage());

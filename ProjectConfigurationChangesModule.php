@@ -254,14 +254,14 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
         if ($showingCount != 0) { // Only send email if there are changes
 
-        global $datetime_format;
+            global $datetime_format;
 
-        $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-        if(ends_with($datetime_format, "_24")){
-            $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-        } else {
-            $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-        }
+            $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+            if(ends_with($datetime_format, "_24")){
+                $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+            } else {
+                $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+            }
 
             $table = self::MakeUserRoleTable($dcs, $userDateFormat);
 
