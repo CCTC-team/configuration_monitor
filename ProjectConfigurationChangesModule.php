@@ -58,9 +58,9 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     {
         // Create the necessary table and triggers when the module is enabled
         self::execFromFile("0010_create_table_user_role_changelog.sql");
-        self::execFromFile("0020_create_InsertTrigger.sql");
-        self::execFromFile("0030_create_UpdateTrigger.sql");
-        self::execFromFile("0040_create_DeleteTrigger.sql");
+        self::execFromFile("0020_roles_create_InsertTrigger.sql");
+        self::execFromFile("0030_roles_create_UpdateTrigger.sql");
+        self::execFromFile("0040_roles_create_DeleteTrigger.sql");
         self::execFromFile("0050_create_UserRoleChange_proc.sql");
     } 
 
@@ -167,9 +167,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
     function MakeUserRoleTable($dcs, $userDateFormat) : string
     {
-        // totalCount passed by reference to return total count of changes
         $roleChanges = array();
-        // global $module;
         $table = "<table id='user_role_change_table' border='1'>
         <thead><tr style='background-color: #FFFFE0;'>
             <th style='width: 5%;padding: 5px'>Role ID</th>
@@ -181,31 +179,13 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         </tr></thead><tbody>";
 
         foreach($dcs as $dc) {
-            // static $dcCount = 1; // Number of data changes
+
             $date = DateTime::createFromFormat('YmdHis', $dc["timestamp"]);
             $formattedDate = $date->format($userDateFormat);
 
             $roleChanges = self::userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $formattedDate, $dc["action"]);
-            // foreach ($roleChanges as $r) {
-            //     echo "<br><br>";
-            //     print_r($r);
-            // }
-            //
-            // print_r($roleChanges);
             $table .= self::createRow($roleChanges);
-            // if (is_array($row)) {
-            //     $countChanges = 0; // Number of changed privileges within a single data change
-            //     foreach ($row as $r) {
-            //         $countChanges++;
-            //         // echo "dcCount: $dcCount<br>";
-            //         $table .= self::createRow($r['roleID'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['timestamp'], $r['action'], $countChanges, $dcCount);
-            //     }
-            // }
-
-            // $dcCount++;
         }
-
-        // $totalCount = $count;
 
         return $table .= "</tbody></table>";
     }
@@ -214,20 +194,17 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     {
         $span = count($roleChanges);
         // echo "<br>span: $span<br>";
-        $row = "<tr style='background-color: $bgColor;'>
+        $row = "<tr>
                 <td rowspan='$span'>" . $roleChanges[0]['roleID'] . "</td>
                 <td rowspan='$span'>" . $roleChanges[0]['timestamp'] . "</td>
                 <td rowspan='$span'>" . $roleChanges[0]['action'] . "</td>";
 
         foreach ($roleChanges as $r) {
-            // $countChanges++;
-            // echo "dcCount: $dcCount<br>";
             $row .= "<td>" . $r['privilege'] . "</td>
                 <td>" . $r['oldValue'] . "</td>
                 <td>" . $r['newValue'] . "</td></tr>" ;
         }
 
-        // $row .= "</tr>";
         return $row;
     }
 

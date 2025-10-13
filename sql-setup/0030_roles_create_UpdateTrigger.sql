@@ -29,7 +29,9 @@ BEGIN
 		NEW.realtime_webservice_adjudicate, NEW.external_module_config, NEW.mycap_participants
 	);
 
-	-- Only insert if old and new values are different
+	-- Only insert if old and new values are different.
+	-- Have to check if unique_role_name is the same to avoid logging changes when role is inserted.
+	-- Insert is treated as insert defualt values and then update with actual values.
 	IF ((old_values <> new_values) AND (OLD.unique_role_name = NEW.unique_role_name)) THEN
 		INSERT INTO user_role_changelog (
 			project_id, role_id, old_value, new_value, ts, operation_type

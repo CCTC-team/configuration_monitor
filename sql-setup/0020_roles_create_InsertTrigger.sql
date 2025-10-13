@@ -6,8 +6,9 @@ BEGIN
 	DECLARE new_values TEXT;
 
 	-- Compute new concatenated values
+	-- unique_role_name is updated later after insert, so not include here as it will be empty string
 	SET new_values = CONCAT_WS('|',
-		NEW.role_name, NEW.unique_role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
+		NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
 		NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
 		NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
 		NEW.reports, NEW.design, NEW.alerts, NEW.calendar, NEW.data_entry, NEW.api_export, NEW.api_import, NEW.api_modules,

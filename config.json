@@ -62,7 +62,7 @@
       "cron_name": "project_config_cron",
       "cron_description": "project_config_cron: Checks for any configuration changes in all projects and sends email notifications if any changes are detected.",
       "method": "projectConfigCron", 
-      "cron_frequency": "60",
+      "cron_frequency": "3600",
       "cron_max_run_time": "3000"
     }
   ]

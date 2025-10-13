@@ -1,5 +1,4 @@
 <?php
-// use CCTC\ProjectConfigurationChangesModule\ProjectConfigurationChangesModule;
 
 $modName = $module->getModuleDirectoryName();
 
@@ -15,7 +14,6 @@ use CCTC\ProjectConfigurationChangesModule\Utility;
 use CCTC\ProjectConfigurationChangesModule\Rendering;
 use CCTC\ProjectConfigurationChangesModule\GetDbData;
 
-
 // // Check user's expiration date (if exists)
 // if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
 // {
@@ -23,10 +21,8 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 //     // Instead of returning 'false', return '2' specifically so we can note to user that the password has expired
 //     return '2';
 // }
-// global $conn;
 $projId = $module->getProjectId();
 $maxDay = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
-// include "getparams.php";
 $page = "index";
 
 //gets the users preferred data format which is used as data attribute on the datetimepicker field
