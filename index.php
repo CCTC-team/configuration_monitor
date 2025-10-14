@@ -23,7 +23,6 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 // }
 $projId = $module->getProjectId();
 $maxDay = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
-$page = "index";
 
 //gets the users preferred data format which is used as data attribute on the datetimepicker field
 global $datetime_format;
@@ -120,19 +119,16 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 // echo "<br>Project ID: $projId<br>";
 // echo"<br> Module directory name: $moduleName<br>";
 
-// $runMessage = "";
-
-// echo "<h3>Changes in User Role Privileges</h3>";
-// echo "<p><i>This log shows changes made to user role privileges in the last $maxDay days.</i></p>";
 // echo "<br> projId: $projId<br>";
 // echo "<br> maxDay: $maxDay<br>";
 // echo "<br> skipCount: $skipCount<br>";
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
 
+$tableName = 'user_role_changes';
 
 //run the stored proc
-$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, 'redcap_user_roles', $roleID);
+$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID);
 
 $roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
@@ -146,7 +142,7 @@ if ($showingCount == 0) {
     return;
 }
 
-$table = $module->MakeUserRoleTable($dcs, $userDateFormat, "redcap_user_roles");
+$table = $module->MakeUserRoleTable($dcs, $userDateFormat, $tableName);
 $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
 // echo "<br> showingCount: $showingCount<br>";
 // echo "<br> totalCount: $totalCount<br>";
@@ -167,7 +163,8 @@ if($showingCount < $pageSize) {
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
 $runMessage = "Messages will appear here after running an export.";
 $moduleName = "project_configuration_changes";
-$page = "index.php";
+$page = "index";
+
 //create the reset to return to default original state
 $resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
 $doReset = "window.location.href='$resetUrl';";
@@ -175,7 +172,7 @@ $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
 $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
 
 echo "<script type='text/javascript'>
-        function cleanUpParamsAndRun(moduleName, projId, exportType) {
+        function cleanUpParamsAndRun(moduleName, projId, exportType, tableName) {
             //construct the params from the current page params
             let finalUrl = app_path_webroot+'ExternalModules/?prefix=' + moduleName + '&page=csv_export&pid=' + projId;
 
@@ -189,7 +186,8 @@ echo "<script type='text/javascript'>
             
             //add the param to determine what to export        
             finalUrl += '&export_type=' + exportType;
-            
+            finalUrl += '&tableName=' + tableName;
+
             window.location.href=finalUrl;                
         }
         
@@ -256,15 +254,15 @@ $exportIcons =
             $pagingInfo
             <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
             <div class='ms-auto'>            
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export current page
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export all pages
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export everything ignoring filters
                 </button>                                    

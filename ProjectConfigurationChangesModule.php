@@ -234,7 +234,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                                     "hide_filled_forms", "hide_disabled_forms", "form_activation_survey_autocontinue", "sendgrid_enabled", "sendgrid_project_api_key", "mycap_enabled", 
                                     "file_repository_total_size", "ehr_id", "allow_econsent_allow_edit", "store_in_vault_snapshots_containing_completed_econsent");
             
-            $columnNames = ($tableName == 'redcap_user_roles') ? $userroleColumnNames : $projectColumnNames;
+            $columnNames = ($tableName == 'user_role_changes') ? $userroleColumnNames : $projectColumnNames;
             $old_parts = explode("|", $dc["oldValue"]);
             $new_parts = explode("|", $dc["newValue"]);
 
@@ -247,7 +247,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 if ($o !== $n) {
                     // Data_Export_Instruments and Data_Entry privileges need special handling. 
                     // They contain multiple values in the format [text,number]
-                    if (($i == 4 || $i == 18) && $tableName == 'redcap_user_roles') {
+                    if (($i == 4 || $i == 18) && $tableName == 'user_role_changes') {
                         preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $n, $nmatches, PREG_SET_ORDER);
                         preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $o, $omatches, PREG_SET_ORDER);
 
@@ -284,16 +284,15 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                         }
                     } else {
                         // For other privileges, show full difference
-                        // $row .= self::createRow($id, $columnNames[$i], $o, $n, $ts, $action);
-                        // if ($tableName == 'redcap_user_roles') {
-                            $finalRow[] = [
-                                'id' => $dc["id"] ?? null, // Project changes do not have id
-                                'privilege' => $columnNames[$i],
-                                'oldValue' => $o,
-                                'newValue' => $n,
-                                'timestamp' => $dc["timestamp"],
-                                'action' => $dc["action"]
-                            ];
+
+                        $finalRow[] = [
+                            'id' => $dc["id"] ?? null, // Project changes do not have id
+                            'privilege' => $columnNames[$i],
+                            'oldValue' => $o,
+                            'newValue' => $n,
+                            'timestamp' => $dc["timestamp"],
+                            'action' => $dc["action"]
+                        ];
                     }
                 }
             }
@@ -305,7 +304,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     function MakeUserRoleTable($dcs, $userDateFormat, $tableName) : string
     {
         $changes = array();
-        if ($tableName == "redcap_user_roles") {
+        if ($tableName == "user_role_changes") {
             $table = "<table id='user_role_change_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 5%;padding: 5px'>Role ID</th>
@@ -342,7 +341,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $span = count($changes);
         $row = "<tr>";
 
-        if ($tableName == "redcap_user_roles") 
+        if ($tableName == "user_role_changes")
             $row .= "<td rowspan='$span'>" . $changes[0]['id'] . "</td>";
                
  
@@ -374,23 +373,23 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $minDateDb = Utility::DateStringToDbFormat($minDate);
         $maxDateDb = NULL; //no max date
         //run the stored proc
-        $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "redcap_user_roles", $roleID);
+        $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
 
         $dcs = $logDataSets['dataChanges'];
         $showingCount = count($dcs);
 
         if ($showingCount != 0) { // Only send email if there are changes
 
-            global $datetime_format;
+            global $default_datetime_format;
 
-            $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-            if(ends_with($datetime_format, "_24")){
+            $userDateFormat = str_replace('y', 'Y', strtolower($default_datetime_format));
+            if(ends_with($default_datetime_format, "_24")){
                 $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
             } else {
                 $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
             }
 
-            $table = self::MakeUserRoleTable($dcs, $userDateFormat, "redcap_user_roles");
+            $table = self::MakeUserRoleTable($dcs, $userDateFormat, "user_role_changes");
 
             // Prepare to-email parameters
             $to_emails = $this->getProjectSetting('to-emailids');
@@ -401,16 +400,13 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             }
 
             $from = $this->getProjectSetting('from-emailid');
+            $projectTitle = $this->getTitle();
+
             $subject = "Project Configuration Changes Log";
             $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $max_days_email hours.<br>";
- 
-            $projectTitle = $this->getTitle();
-    
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
-            // $body .= "<h3>userDateFormat: $userDateFormat</h3>";
             $body .= "<h4>Changes in User Role Privileges</h4>";
             $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
-
             $body .= $table;
             $body .= "<br><br>Best regards,<br>Your REDCap Team";
 

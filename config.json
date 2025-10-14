@@ -24,7 +24,7 @@
         "name": "Project Changes",
         "key": "project-changes",
         "icon": "fas fa-clipboard-list",
-        "url": "project_changes.php",
+        "url": "projectChanges.php",
         "show-header-and-footer": true
       }
     ]

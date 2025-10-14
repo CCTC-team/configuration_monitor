@@ -67,6 +67,17 @@ if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
+if (isset($_GET['tableName'])) {
+    $tableName = $_GET['tableName'];
+}
+
+//use the export_type param to determine what to export and adjust params accordingly
+$exportType = 'everything'; //default
+if (isset($_GET['export_type'])) {
+    $exportType = $_GET['export_type'];
+}
+
+
 $roleID = NULL; //default to NULL meaning all roles
 if (isset($_GET['role_id'])) {
     $roleID = $_GET['role_id'];

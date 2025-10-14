@@ -10,5 +10,4 @@ create table project_changelog
 
 
 -- drop table project_changelog;
--- select * from redcap_projects where project_id =13;
 -- select * from project_changelog;

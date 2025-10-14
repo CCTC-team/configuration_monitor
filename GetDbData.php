@@ -9,7 +9,7 @@ class GetDbData
     {
         $dataChanges = array();
 
-        if($tableName == "redcap_user_roles") {
+        if($tableName == "user_role_changes") {
             while ($row = db_fetch_assoc($result))
             {  
                 $dc = [
@@ -52,7 +52,7 @@ class GetDbData
         $minDate = $minDate == null ? "null" : $minDate;
         $maxDate = $maxDate == null ? "null" : $maxDate;
 
-        if($tableName == "redcap_user_roles") {
+        if($tableName == "user_role_changes") {
             $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId);";
         } else {
             $query = "call GetProjectChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
@@ -77,7 +77,7 @@ class GetDbData
                         }
                     }
 
-                    if ($currentIndex == 2 && $tableName == "redcap_user_roles") {
+                    if ($currentIndex == 2 && $tableName == "user_role_changes") {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $roleIds[] = $row['role_id'];
                         }
@@ -95,7 +95,7 @@ class GetDbData
             echo "Error: " . $conn->error;
         }
 
-        if($tableName == "redcap_user_roles") {
+        if($tableName == "user_role_changes") {
             return
             [
                 "dataChanges" => $dataChanges,
