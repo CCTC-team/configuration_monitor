@@ -6,7 +6,7 @@ BEGIN
 	DECLARE new_values TEXT;
 
 	-- Compute new concatenated values
-	-- unique_role_name is updated later after insert, so not include here as it will be empty string
+	-- During insert, values are inserted and then unique_role_name is updated, so not include here as it will be empty string
 	SET new_values = CONCAT_WS('|',
 		NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
 		NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
@@ -27,3 +27,5 @@ BEGIN
 		'INSERT'
 	);
 END;
+
+-- drop trigger user_role_insert_trigger;

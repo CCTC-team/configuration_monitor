@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS user_role_changelog (
     new_value TEXT DEFAULT NULL,
     ts BIGINT(14) DEFAULT NULL,
     operation_type VARCHAR(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

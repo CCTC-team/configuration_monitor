@@ -81,7 +81,7 @@ if($exportType == 'everything') {
 
 
 //run the stored proc
-$result = GetDbData::GetUserRoleChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $roleID);
+$result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, 'redcap_user_roles', $roleID);
 
 // Set headers
 $headers = array("role id", "changed privilege", "old value", "new value", "action", "timestamp");
@@ -104,11 +104,11 @@ if ($fp && $result)
         // Set values for this row and write to file
         foreach ($result["dataChanges"] as $dc) {
 
-            $dcChanges = $module->userRoleChanges($dc["roleID"], $dc["oldValue"], $dc["newValue"], $dc["timestamp"], $dc["action"]);
+            $dcChanges = $module->tableDiff($dc["id"], $dc["oldValue"], $dc["newValue"], $dc["timestamp"], $dc["action"], 'redcap_user_roles');
             if (is_array($dcChanges)) {
                 foreach ($dcChanges as $dc) {
-                    // $r['roleID'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['ts'], $r['action']
-                    $row["roleID"] = $dc["roleID"];
+                    // $r['id'], $r['privilege'], $r['oldValue'], $r['newValue'], $r['ts'], $r['action']
+                    $row["id"] = $dc["id"];
                     $row["privilege"] = $dc["privilege"];
                     $row["oldValue"] = $dc["oldValue"];
                     $row["newValue"] = $dc["newValue"];

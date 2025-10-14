@@ -7,8 +7,10 @@ BEGIN
 	DECLARE new_values TEXT;
 
 	-- Compute old and new concatenated values
+	-- During insert, values are inserted and then unique_role_name is updated.
+	-- So not including unique_role_name here else an update record will be created during insert.
 	SET old_values = CONCAT_WS('|',
-		OLD.role_name, OLD.unique_role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
+		OLD.role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
 		OLD.data_export_tool, OLD.data_export_instruments, OLD.data_import_tool, OLD.data_comparison_tool, OLD.data_logging,
 		OLD.email_logging, OLD.file_repository, OLD.double_data, OLD.user_rights, OLD.data_access_groups, OLD.graphical,
 		OLD.reports, OLD.design, OLD.alerts, OLD.calendar, OLD.data_entry, OLD.api_export, OLD.api_import, OLD.api_modules,
@@ -19,7 +21,7 @@ BEGIN
 	);
 
 	SET new_values = CONCAT_WS('|',
-		NEW.role_name, NEW.unique_role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
+		NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
 		NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
 		NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
 		NEW.reports, NEW.design, NEW.alerts, NEW.calendar, NEW.data_entry, NEW.api_export, NEW.api_import, NEW.api_modules,
@@ -30,9 +32,7 @@ BEGIN
 	);
 
 	-- Only insert if old and new values are different.
-	-- Have to check if unique_role_name is the same to avoid logging changes when role is inserted.
-	-- Insert is treated as insert defualt values and then update with actual values.
-	IF ((old_values <> new_values) AND (OLD.unique_role_name = NEW.unique_role_name)) THEN
+	IF ((old_values <> new_values)) THEN
 		INSERT INTO user_role_changelog (
 			project_id, role_id, old_value, new_value, ts, operation_type
 		) VALUES (
@@ -45,3 +45,5 @@ BEGIN
 		);
 	END IF;
 END;
+
+-- drop trigger user_role_update_trigger;

@@ -19,6 +19,13 @@
         "icon": "fas fa-clipboard-list",
         "url": "index.php",
         "show-header-and-footer": true
+      },
+      {
+        "name": "Project Changes",
+        "key": "project-changes",
+        "icon": "fas fa-clipboard-list",
+        "url": "project_changes.php",
+        "show-header-and-footer": true
       }
     ]
   },

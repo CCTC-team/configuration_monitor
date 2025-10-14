@@ -7,7 +7,7 @@ BEGIN
 
 	-- Compute old concatenated values
 	SET old_values = CONCAT_WS('|',
-		OLD.role_name, OLD.unique_role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
+		OLD.role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
 		OLD.data_export_tool, OLD.data_export_instruments, OLD.data_import_tool, OLD.data_comparison_tool, OLD.data_logging,
 		OLD.email_logging, OLD.file_repository, OLD.double_data, OLD.user_rights, OLD.data_access_groups, OLD.graphical,
 		OLD.reports, OLD.design, OLD.alerts, OLD.calendar, OLD.data_entry, OLD.api_export, OLD.api_import, OLD.api_modules,
@@ -26,3 +26,5 @@ BEGIN
 		'DELETE'
 	);
 END;
+
+-- drop trigger user_role_delete_trigger;

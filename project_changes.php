@@ -39,12 +39,12 @@ if(ends_with($datetime_format, "_24")){
 echo "
 <div class='projhdr'>
     <div style='float:left;'>
-        <i class='fas fa-clipboard-list'></i> Changes in User Role Privileges
+        <i class='fas fa-clipboard-list'></i> Changes in Project Settings
     </div>   
 </div>
 <br/>
 <p>
-    This log shows changes made to user role privileges.
+    This log shows changes made to project settings.
 </p>
 ";
 
@@ -84,11 +84,6 @@ if (isset($_GET['defaulttimefilter'])) {
     $yearActive = $defaultTimeFilter == "oneyearago" ? "active" : "";
 }
 
-$roleID = NULL; //default to NULL meaning all roles
-if (isset($_GET['role_id'])) {
-    $roleID = $_GET['role_id'];
-}
-
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
     $dataDirection = $_GET['retdirection'];
@@ -122,8 +117,6 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 
 // $runMessage = "";
 
-// echo "<h3>Changes in User Role Privileges</h3>";
-// echo "<p><i>This log shows changes made to user role privileges in the last $maxDay days.</i></p>";
 // echo "<br> projId: $projId<br>";
 // echo "<br> maxDay: $maxDay<br>";
 // echo "<br> skipCount: $skipCount<br>";
@@ -132,9 +125,8 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 
 
 //run the stored proc
-$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, 'redcap_user_roles', $roleID);
+$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, 'redcap_projects');
 
-$roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
 $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
@@ -142,17 +134,17 @@ $showingCount = count($dcs); // number of User Roles being shown on this page
 // echo "<br>showingCount: $showingCount<br>";
 
 if ($showingCount == 0) {
-    echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";
+    echo "<br><i>No changes to project settings have been made in this project.</i><br>";
     return;
 }
 
-$table = $module->MakeUserRoleTable($dcs, $userDateFormat, "redcap_user_roles");
-$roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
+$table = $module->MakeUserRoleTable($dcs, $userDateFormat, 'redcap_projects');
 // echo "<br> showingCount: $showingCount<br>";
 // echo "<br> totalCount: $totalCount<br>";
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
 // echo "<br> dataDirection: $dataDirection<br>";
+// $showingCount = $totalCount;
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
 // adjust skipTo in cases where last page isn't a full page
@@ -237,8 +229,6 @@ $exportIcons =
                 </td>                                    
             </tr>                       
             <tr>
-                <td><label for='role_id'>Userrole</label></td>
-                <td>$roleSelect</td>
                 <td><label for='retdirection'>Order by</label></td>                
                 <td>$retDirectionSelect</td>
                 <td></td>
@@ -344,11 +334,6 @@ echo $exportIcons. $table;
         submitForm('startdt');
     }
 
-    // function resetRoleID() {
-    //     let editor = document.getElementById('role_id');
-    //     editor.value = '';
-    // }
-
     function resetDataForm() {
         let dataForm = document.getElementById('datafrm');
         dataForm.value = '';
@@ -393,10 +378,6 @@ echo $exportIcons. $table;
         showProgress(1);
 
         let frm = document.getElementById('filterForm');
-        // // apply this for the role_id drop down to work
-        // let logRole = document.getElementById('role_id');
-        // logRole.name = 'role_id';
-
         //clear the csrfToken
         let csrfToken = document.querySelector('input[name="redcap_csrf_token"]');
         csrfToken.value = '';
