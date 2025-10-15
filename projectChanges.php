@@ -150,7 +150,6 @@ if($showingCount < $pageSize) {
 }
 
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
-$runMessage = "Messages will appear here after running an export.";
 $moduleName = "project_configuration_changes";
 $page = "projectChanges";
 
@@ -256,7 +255,6 @@ $exportIcons =
             </div>                               
         </div>                 
     </form>
-    $runMessage      
     </div>
     <br/>";
     

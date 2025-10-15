@@ -73,7 +73,7 @@ if($tableName == 'user_role_changes') {
     $headers = array("role id", "timestamp", "action", "changed privilege", "old value", "new value");
     $download_filename = "_UserRoleChanges_";
 } else {
-    $headers = array("timestamp", "action", "changed privilege", "old value", "new value");
+    $headers = array("timestamp", "changed privilege", "old value", "new value");
     $download_filename = "_ProjectChanges_";
 }
 
@@ -124,7 +124,6 @@ if ($fp && $result)
                             $dc["timestamp"] == null || $dc["timestamp"] == ""
                                 ? ""
                                 : DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format($userDateFormat);
-                        $row["action"] = $dc["action"];
                         $row["privilege"] = $dc["privilege"];
                         $row["oldValue"] = $dc["oldValue"];
                         $row["newValue"] = $dc["newValue"];

@@ -161,7 +161,6 @@ if($showingCount < $pageSize) {
  // $csvExportPage = $module->getUrl('csv_export.php');
 
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
-$runMessage = "Messages will appear here after running an export.";
 $moduleName = "project_configuration_changes";
 $page = "userRoleChanges";
 
@@ -269,7 +268,6 @@ $exportIcons =
             </div>                               
         </div>                 
     </form>
-    $runMessage      
     </div>
     <br/>";
     

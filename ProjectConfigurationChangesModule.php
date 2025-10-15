@@ -111,7 +111,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     }
 
     function tableDiff($dc, $tableName): array
-    {   
+    {
         //Only UserRoleChanges has insert and delete actions
         if ($dc["action"] !== 'UPDATE') {
             // For INSERT and DELETE actions, return a single row with all values
@@ -132,32 +132,33 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                                     "API Import", "API Modules", "Mobile App", "Mobile App Download Data", "Record Create", "Record Rename", "Record Delete", 
                                     "Dts", "Participants", "Data Quality Design", "Data Quality Execute", "Data Quality Resolution", "Random Setup", "Random Dashboard", 
                                     "Random Perform", "Realtime Webservice Mapping", "Realtime Webservice Adjudicate", "External Module Config", "Mycap Participants");
-            $projectColumnNames = array("project_name", "app_title", "status", "inactive_time", "completed_time", "completed_by", "data_locked", "draft_mode", "surveys_enabled", 
-                                    "repeatforms", "scheduling", "purpose", "purpose_other", "show_which_records", "count_project", "investigators", "project_note", "online_offline", 
-                                    "auth_meth", "double_data_entry", "project_language", "project_encoding", "is_child_of", "date_shift_max", "institution", "site_org_type", 
-                                    "grant_cite", "project_contact_name", "project_contact_email", "headerlogo", "auto_inc_set", "custom_data_entry_note", "custom_index_page_note", 
-                                    "order_id_by", "custom_reports", "report_builder", "disable_data_entry", "google_translate_default", "require_change_reason", "dts_enabled", "project_pi_firstname", "project_pi_mi", "project_pi_lastname", 
-                                    "project_pi_email", "project_pi_alias", "project_pi_username", "project_pi_pub_exclude", "project_pub_matching_institution", "project_irb_number", 
-                                    "project_grant_number", "history_widget_enabled", "secondary_pk", "secondary_pk_display_value", "secondary_pk_display_label", "custom_record_label", 
-                                    "display_project_logo_institution", "imported_from_rs", "display_today_now_button", "auto_variable_naming", "randomization", "enable_participant_identifiers", 
-                                    "survey_email_participant_field", "survey_phone_participant_field", "data_entry_trigger_url", "template_id", "date_deleted", "data_resolution_enabled", 
-                                    "field_comment_edit_delete", "drw_hide_closed_queries_from_dq_results", "realtime_webservice_enabled", "realtime_webservice_type", "realtime_webservice_offset_days", 
-                                    "realtime_webservice_offset_plusminus", "edoc_upload_max", "file_attachment_upload_max", "survey_queue_custom_text", "survey_queue_hide", "survey_auth_enabled", 
-                                    "survey_auth_field1", "survey_auth_event_id1", "survey_auth_field2", "survey_auth_event_id2", "survey_auth_field3", "survey_auth_event_id3", "survey_auth_min_fields", 
-                                    "survey_auth_apply_all_surveys", "survey_auth_custom_message", 
-                                    "survey_auth_fail_limit", "survey_auth_fail_window", "twilio_enabled", "twilio_modules_enabled", "twilio_hide_in_project", "twilio_account_sid", 
-                                    "twilio_auth_token", "twilio_from_number", "twilio_voice_language", "twilio_option_voice_initiate", "twilio_option_sms_initiate", 
-                                    "twilio_option_sms_invite_make_call", "twilio_option_sms_invite_receive_call", "twilio_option_sms_invite_web", "twilio_default_delivery_preference", 
-                                    "twilio_request_inspector_checked", "twilio_request_inspector_enabled", "twilio_append_response_instructions", "twilio_multiple_sms_behavior", 
-                                    "twilio_delivery_preference_field_map", "mosio_api_key", "mosio_hide_in_project", "two_factor_exempt_project", "two_factor_force_project", "disable_autocalcs", 
-                                    "custom_public_survey_links", "pdf_custom_header_text", "pdf_show_logo_url", "pdf_hide_secondary_field", "pdf_hide_record_id", "shared_library_enabled", 
-                                    "allow_delete_record_from_log", "delete_file_repository_export_files", "custom_project_footer_text", "custom_project_footer_text_link", "google_recaptcha_enabled", 
-                                    "datamart_allow_repeat_revision", "datamart_allow_create_revision", "datamart_enabled", "break_the_glass_enabled", "datamart_cron_enabled", "datamart_cron_end_date", 
-                                    "fhir_include_email_address_project", "file_upload_vault_enabled", "file_upload_versioning_enabled", "missing_data_codes", "record_locking_pdf_vault_enabled", 
-                                    "record_locking_pdf_vault_custom_text", "fhir_cdp_auto_adjudication_enabled", "fhir_cdp_auto_adjudication_cronjob_enabled", "project_dashboard_min_data_points", 
-                                    "bypass_branching_erase_field_prompt", "protected_email_mode", "protected_email_mode_custom_text", "protected_email_mode_trigger", "protected_email_mode_logo", 
-                                    "hide_filled_forms", "hide_disabled_forms", "form_activation_survey_autocontinue", "sendgrid_enabled", "sendgrid_project_api_key", "mycap_enabled", 
-                                    "file_repository_total_size", "ehr_id", "allow_econsent_allow_edit", "store_in_vault_snapshots_containing_completed_econsent");
+            $projectColumnNames = array("Project Name", "App Title", "Status", "Inactive Time", "Completed Time", "Completed By", "Data Locked", "Draft Mode", "Surveys Enabled",
+                                    "Repeat Forms", "Scheduling", "Purpose", "Purpose Other", "Show Which Records", "Count Project", "Investigators", "Project Note", "Online Offline",
+                                    "Auth Meth", "Double Data Entry", "Project Language", "Project Encoding", "Is Child Of", "Date Shift Max", "Institution", "Site Org Type",
+                                    "Grant Cite", "Project Contact Name", "Project Contact Email", "Header Logo", "Auto Inc Set", "Custom Data Entry Note", "Custom Index Page Note",
+                                    "Order Id By", "Custom Reports", "Report Builder", "Disable Data Entry", "Google Translate Default", "Require Change Reason", "Dts Enabled", "Project Pi Firstname", "Project Pi Mi", "Project Pi Lastname",
+                                    "Project Pi Email", "Project Pi Alias", "Project Pi Username", "Project Pi Pub Exclude", "Project Pub Matching Institution", "Project Irb Number",
+                                    "Project Grant Number", "History Widget Enabled", "Secondary Pk", "Secondary Pk Display Value", "Secondary Pk Display Label", "Custom Record Label",
+                                    "Display Project Logo Institution", "Imported From Rs", "Display Today Now Button", "Auto Variable Naming", "Randomization", "Enable Participant Identifiers",
+                                    "Survey Email Participant Field", "Survey Phone Participant Field", "Data Entry Trigger Url", "Template Id", "Date Deleted", "Data Resolution Enabled",
+                                    "Field Comment Edit Delete", "Drw Hide Closed Queries From Dq Results", "Realtime Webservice Enabled", "Realtime Webservice Type", "Realtime Webservice Offset Days",
+                                    "Realtime Webservice Offset Plusminus", "Edoc Upload Max", "File Attachment Upload Max", "Survey Queue Custom Text", "Survey Queue Hide", "Survey Auth Enabled",
+                                    "Survey Auth Field1", "Survey Auth Event Id1", "Survey Auth Field2", "Survey Auth Event Id2", "Survey Auth Field3", "Survey Auth Event Id3", "Survey Auth Min Fields",
+                                    "Survey Auth Apply All Surveys", "Survey Auth Custom Message",
+                                    "Survey Auth Fail Limit", "Survey Auth Fail Window", "Twilio Enabled", "Twilio Modules Enabled", "Twilio Hide In Project", "Twilio Account Sid",
+                                    "Twilio Auth Token", "Twilio From Number", "Twilio Voice Language", "Twilio Option Voice Initiate", "Twilio Option Sms Initiate",
+                                    "Twilio Option Sms Invite Make Call", "Twilio Option Sms Invite Receive Call", "Twilio Option Sms Invite Web", "Twilio Default Delivery Preference",
+                                    "Twilio Request Inspector Checked", "Twilio Request Inspector Enabled", "Twilio Append Response Instructions", "Twilio Multiple Sms Behavior",
+                                    "Twilio Delivery Preference Field Map", "Mosio Api Key", "Mosio Hide In Project", "Two Factor Exempt Project", "Two Factor Force Project", "Disable Autocalcs",
+                                    "Custom Public Survey Links", "Pdf Custom Header Text", "Pdf Show Logo Url", "Pdf Hide Secondary Field", "Pdf Hide Record Id", "Shared Library Enabled",
+                                    "Allow Delete Record From Log", "Delete File Repository Export Files", "Custom Project Footer Text", "Custom Project Footer Text Link", "Google Recaptcha Enabled",
+                                    "Datamart Allow Repeat Revision", "Datamart Allow Create Revision", "Datamart Enabled", "Break The Glass Enabled", "Datamart Cron Enabled", "Datamart Cron End Date",
+                                    "Fhir Include Email Address Project", "File Upload Vault Enabled", "File Upload Versioning Enabled", "Missing Data Codes", "Record Locking Pdf Vault Enabled",
+                                    "Record Locking Pdf Vault Custom Text", "Fhir Cdp Auto Adjudication Enabled", "Fhir Cdp Auto Adjudication Cronjob Enabled", "Project Dashboard Min Data Points",
+                                    "Bypass Branching Erase Field Prompt", "Protected Email Mode", "Protected Email Mode Custom Text", "Protected Email Mode Trigger", "Protected Email Mode Logo",
+                                    "Hide Filled Forms", "Hide Disabled Forms", "Form Activation Survey Autocontinue", "Sendgrid Enabled", "Sendgrid Project Api Key", "Mycap Enabled",
+                                    "File Repository Total Size", "Ehr Id", "Allow Econsent Allow Edit", "Store In Vault Snapshots Containing Completed Econsent"
+                                    );
             
             $columnNames = ($tableName == 'user_role_changes') ? $userroleColumnNames : $projectColumnNames;
             $old_parts = explode("|", $dc["oldValue"]);
@@ -243,7 +244,6 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             $table = "<table id='project_change_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 15%;padding: 5px'>Timestamp</th>
-                <th style='width: 15%;padding: 5px'>Action</th>
                 <th style='width: 15%;padding: 5px'>Changed Property</th>
                 <th style='width: 15%;padding: 5px'>Old Value</th>
                 <th style='width: 15%;padding: 5px'>New Value</th>
@@ -266,12 +266,12 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $span = count($changes);
         $row = "<tr>";
 
-        if ($tableName == "user_role_changes")
-            $row .= "<td rowspan='$span'>" . $changes[0]['id'] . "</td>";
-               
- 
-        $row .= "<td rowspan='$span'>" . $changes[0]['timestamp'] . "</td>
-                <td rowspan='$span'>" . $changes[0]['action'] . "</td>";        
+        if ($tableName == "user_role_changes") {
+            $row .= "<td rowspan='$span'>" . $changes[0]['id'] . "</td>
+                    <td rowspan='$span'>" . $changes[0]['action'] . "</td>";
+        }
+
+        $row .= "<td rowspan='$span'>" . $changes[0]['timestamp'] . "</td>";
 
         foreach ($changes as $r) {
             $row .= "<td>" . $r['privilege'] . "</td>
