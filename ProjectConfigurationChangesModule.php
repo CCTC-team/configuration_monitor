@@ -14,9 +14,9 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     
     public function validateSettings($settings): ?string
     {
-        if (array_key_exists("to-emailids", $settings) && array_key_exists("from-emailid", $settings)) {
+        if (array_key_exists("to-emailids", $settings) && array_key_exists("from-emailid", $settings) && array_key_exists("user-role-changes-enable", $settings) && array_key_exists("project-changes-enable", $settings)) {
             $lastIndex = array_key_last($settings['to-emailids']);
-            if(empty($settings['to-emailids'][$lastIndex]) or empty($settings['from-emailid'])) {
+            if(empty($settings['to-emailids'][$lastIndex]) or empty($settings['from-emailid']) or (empty($settings['user-role-changes-enable']) and empty($settings['project-changes-enable']))) {
                 return "Please ensure Project Configuration Changes External Module settings are configured.";
             }
         }
@@ -89,102 +89,10 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
         // db_query("DROP TABLE IF EXISTS project_changelog;");
-        // db_query("DROP TRIGGER IF EXISTS projects_insert_trigger;");
         db_query("DROP TRIGGER IF EXISTS projects_update_trigger;");
-        // db_query("DROP TRIGGER IF EXISTS projects_delete_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetProjectChanges;");
     }
 
-    // function userRoleChanges($id, $old, $new, $ts, $action): array
-    // {
-    //     // $finalRow = array();
-    //     if ($action !== 'UPDATE') {
-    //         // For INSERT and DELETE actions, return a single row with all values
-    //         // return self::createRow($id, 'All Privileges', $old ?: 'N/A', $new ?: 'N/A', $ts, $action);
-    //         $finalRow[] = [
-    //             'id' => $id,
-    //             'privilege' => 'All Privileges',
-    //             'oldValue' => $old ?: 'N/A',
-    //             'newValue' => $new ?: 'N/A',
-    //             'timestamp' => $ts,
-    //             'action' => $action
-    //         ];
-    //     } else {
-
-    //         //For update action, compare old and new values and return only changed privileges
-    //         // Column names corresponding to the order of values in the concatenated string
-    //         $userroleColumnNames = array("Role Name", "Lock Record", "Lock Record Multiform", "Lock Record Customize", "Data Export Instruments", "Data Import Tool", "Data Comparison Tool", "Data Logging", "Email Logging", "File Repository", "Double Data", "User Rights", "Data Access Groups", "Graphical", "Reports", "Design", "Alerts", "Calendar", "Data Entry", "API Export", "API Import", "API Modules", "Mobile App", "Mobile App Download Data", "Record Create", "Record Rename", "Record Delete", "Dts", "Participants", "Data Quality Design", "Data Quality Execute", "Data Quality Resolution", "Random Setup", "Random Dashboard", "Random Perform", "Realtime Webservice Mapping", "Realtime Webservice Adjudicate", "External Module Config", "Mycap Participants");
-
-    //         $old_parts = explode("|", $old);
-    //         $new_parts = explode("|", $new);
-        
-    //         $max = max(count($old_parts), count($new_parts));
-    //         for ($i = 0; $i < $max; $i++) {
-    //             $o = $old_parts[$i] ?? '';
-    //             $n = $new_parts[$i] ?? '';
-                
-    //             if ($o !== $n) {
-    //                 // Data_Export_Instruments and Data_Entry privileges need special handling. 
-    //                 // They contain multiple values in the format [text,number]
-    //                 if ($i == 4 || $i == 18) {
-    //                     preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $n, $nmatches, PREG_SET_ORDER);
-    //                     preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $o, $omatches, PREG_SET_ORDER);
-
-    //                     $nresult = []; // Array for new values
-    //                     foreach ($nmatches as $nmatch) {
-    //                         $key = $nmatch[1];   // text before comma
-    //                         $val = $nmatch[2];   // number after comma
-    //                         $nresult[$key] = $val;
-    //                     }
-
-    //                     $oresult = []; // Array for old values
-    //                     foreach ($omatches as $omatch) {
-    //                         $key = $omatch[1];   // text before comma
-    //                         $val = $omatch[2];   // number after comma
-    //                         $oresult[$key] = $val;
-    //                     }
-                        
-    //                     foreach ($oresult as $key => $oval) {
-    //                         if (isset($nresult[$key])) {         // Key exists in both arrays
-    //                             $nval = $nresult[$key];
-    //                             // $row = array();
-    //                             if ($oval != $nval) {           // Value differs
-    //                                 // $row .= self::createRow($id, $userroleColumnNames[$i], "[$key,$oval]", "[$key,$nval]", $ts, $action);
-                                
-    //                                 $row = [
-    //                                     'id' => $id,
-    //                                     'privilege' => $userroleColumnNames[$i],
-    //                                     'oldValue' => "[$key,$oval]",
-    //                                     'newValue' => "[$key,$nval]",
-    //                                     'timestamp' => $ts,
-    //                                     'action' => $action
-    //                                 ];
-
-    //                                 $finalRow[] = $row;
-    //                             }
-    //                         }
-    //                     }
-    //                 } else {
-    //                     // For other privileges, show full difference
-    //                     // $row .= self::createRow($id, $userroleColumnNames[$i], $o, $n, $ts, $action);
-    //                     $finalRow[] = [
-    //                         'id' => $id,
-    //                         'privilege' => $userroleColumnNames[$i],
-    //                         'oldValue' => $o,
-    //                         'newValue' => $n,
-    //                         'timestamp' => $ts,
-    //                         'action' => $action
-    //                     ];
-
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return $finalRow;
-    // }
-
-    // function tableDiff($id, $old, $new, $ts, $action, $tableName): array
     function tableDiff($dc, $tableName): array
     {   
         //Only UserRoleChanges has insert and delete actions
@@ -245,9 +153,9 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 $n = $new_parts[$i] ?? '';
                 
                 if ($o !== $n) {
-                    // Data_Export_Instruments and Data_Entry privileges need special handling. 
+                    // "Data Export Instruments" and "Data Entry" privileges need special handling.
                     // They contain multiple values in the format [text,number]
-                    if (($i == 4 || $i == 18) && $tableName == 'user_role_changes') {
+                    if (in_array($columnNames[$i], ["Data Export Instruments", "Data Entry"]) && $tableName == 'user_role_changes') {
                         preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $n, $nmatches, PREG_SET_ORDER);
                         preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $o, $omatches, PREG_SET_ORDER);
 
@@ -372,13 +280,18 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
         $minDateDb = Utility::DateStringToDbFormat($minDate);
         $maxDateDb = NULL; //no max date
+
         //run the stored proc
-        $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
+        $logDataSetsUserRoles = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
+        $logDataSetsProj = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "project_changes");
 
-        $dcs = $logDataSets['dataChanges'];
-        $showingCount = count($dcs);
+        $dcs1 = $logDataSetsUserRoles['dataChanges'];
+        $showingCount1 = count($dcs1);
 
-        if ($showingCount != 0) { // Only send email if there are changes
+        $dcs2 = $logDataSetsProj['dataChanges'];
+        $showingCount2 = count($dcs2);
+
+        if ($showingCount1 != 0 or $showingCount2 != 0) { // Only send email if there are changes
 
             global $default_datetime_format;
 
@@ -388,8 +301,6 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             } else {
                 $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
             }
-
-            $table = self::MakeUserRoleTable($dcs, $userDateFormat, "user_role_changes");
 
             // Prepare to-email parameters
             $to_emails = $this->getProjectSetting('to-emailids');
@@ -405,9 +316,24 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             $subject = "Project Configuration Changes Log";
             $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $max_days_email hours.<br>";
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
-            $body .= "<h4>Changes in User Role Privileges</h4>";
-            $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
-            $body .= $table;
+
+            if ($showingCount1 != 0) {
+                $table1 = self::MakeUserRoleTable($dcs1, $userDateFormat, "user_role_changes");
+                $body .= "<h4>Changes in User Role Privileges</h4>";
+                $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
+                $body .= $table1;
+                $body .= "<br><br>";
+            }
+
+            if ($showingCount2 != 0) {
+                $table2 = self::MakeUserRoleTable($dcs2, $userDateFormat, "project_changes");
+                $body .= "<h4>Changes in Project settings</h4>";
+                $body .= "<p><i>This log shows changes made to project settings.</i></p>";
+                $body .= $table2;
+                $body .= "<br><br>";
+            }
+
+            $body .= "<b style='color: #f00a0aff;'>Note: This is an automated email. Please do not reply to this message.</b>";
             $body .= "<br><br>Best regards,<br>Your REDCap Team";
 
             $email_sent = REDCap::email(
@@ -416,7 +342,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 $subject,      // Email subject
                 $body      // Email body
             );
-        
+
             if ($email_sent) {
                 $this->log("Email sent successfully!");
             } else {

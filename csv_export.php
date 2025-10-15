@@ -47,7 +47,7 @@ use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
 
 include "getparams.php";
 
-//run the query using the same params as on the index page when the query called
+//run the query using the same params as on the page when the query called
 //runForExport means it only returns the actual data requested (and not data for filters)
 
 //if current_page then keep the params already captured from getparams.php

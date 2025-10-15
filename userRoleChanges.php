@@ -163,7 +163,7 @@ if($showingCount < $pageSize) {
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
 $runMessage = "Messages will appear here after running an export.";
 $moduleName = "project_configuration_changes";
-$page = "index";
+$page = "userRoleChanges";
 
 //create the reset to return to default original state
 $resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
