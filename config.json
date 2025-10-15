@@ -33,7 +33,7 @@
   "project-settings": [
     {
       "key": "user-role-changes-enable",
-      "name": "Enable/Disable User Role Changes page",
+      "name": "Enable User Role Changes",
       "type": "checkbox",
       "repeatable": false,
       "required": false,
@@ -41,7 +41,7 @@
     },
     {
       "key": "project-changes-enable",
-      "name": "Enable/Disable Project Changes page",
+      "name": "Enable Project Changes",
       "type": "checkbox",
       "repeatable": false,
       "required": false,

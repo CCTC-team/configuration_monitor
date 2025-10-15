@@ -1,4 +1,4 @@
-create table project_changelog
+create table IF NOT EXISTS project_changelog
 (   
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	project_id INT(10) DEFAULT NULL,

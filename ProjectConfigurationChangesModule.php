@@ -41,11 +41,29 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $user = $this->getUser();
         $rights = $user->getRights();
 
-        if($rights['user_rights'] or $this->isSuperUser()) {
-            return $link;
-        } else {
-            return 0;
+        // Hide from non-privileged users
+        if(!($rights['user_rights'] or $this->isSuperUser())) {
+            return null;
         }
+
+        // Get the URL from the link (whether it's an array or string)
+        $url = is_array($link) ? $link['url'] : $link;
+
+        // // DEBUG: Log what we're checking
+        // REDCap::logEvent("Link Check Debug",
+        //     "URL: $url\n" .
+        //     "user-role-changes-enable: " . var_export($this->getProjectSetting('user-role-changes-enable'), true) . "\n" .
+        //     "project-changes-enable: " . var_export($this->getProjectSetting('project-changes-enable'), true)
+        // );
+
+        // Check specific link against corresponding config setting
+        if(strpos($url, 'userRoleChanges') !== false) {
+            return $this->getProjectSetting('user-role-changes-enable') ? $link : null;
+        } elseif(strpos($url, 'projectChanges') !== false) {
+            return $this->getProjectSetting('project-changes-enable') ? $link: null;
+        }
+
+        return null;
     }
    
     function execFromFile($file): void
@@ -64,12 +82,11 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         self::execFromFile("0040_roles_create_DeleteTrigger.sql");
         self::execFromFile("0050_create_UserRoleChange_proc.sql");
 
-        //Project Change Log Table, Triggers and Stored Procedure
+        //Project Change Log Table, Update Trigger and Stored Procedure
+        // Project deletions are logged as an UPDATE, with date_deleted set to the current timestamp.
         self::execFromFile("0060_create_table_project_changelog.sql");
-        self::execFromFile("0070_projects_create_InsertTrigger.sql");
-        self::execFromFile("0080_projects_create_UpdateTrigger.sql");
-        self::execFromFile("0090_projects_create_DeleteTrigger.sql");
-        self::execFromFile("0100_create_ProjectChange_proc.sql");
+        self::execFromFile("0070_projects_create_UpdateTrigger.sql");
+        self::execFromFile("0080_create_ProjectChange_proc.sql");
     } 
 
     function redcap_module_system_disable($version): void
@@ -85,7 +102,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         db_query("DROP TRIGGER IF EXISTS user_role_delete_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
 
-        // Drop the Project Change Log table, triggers, and stored procedure
+        // Drop the Project Change Log table, update trigger, and stored procedure
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
         // db_query("DROP TABLE IF EXISTS project_changelog;");
@@ -280,16 +297,20 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
         $minDateDb = Utility::DateStringToDbFormat($minDate);
         $maxDateDb = NULL; //no max date
+        $showingCount1 = 0;
+        $showingCount2 = 0;
 
         //run the stored proc
-        $logDataSetsUserRoles = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
-        $logDataSetsProj = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "project_changes");
-
-        $dcs1 = $logDataSetsUserRoles['dataChanges'];
-        $showingCount1 = count($dcs1);
-
-        $dcs2 = $logDataSetsProj['dataChanges'];
-        $showingCount2 = count($dcs2);
+        if ($this->getProjectSetting('user-role-changes-enable')) {
+            $logDataSetsUserRoles = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
+            $dcs1 = $logDataSetsUserRoles['dataChanges'];
+            $showingCount1 = count($dcs1);
+        }
+        if ($this->getProjectSetting('project-changes-enable')) {
+            $logDataSetsProj = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "project_changes");
+            $dcs2 = $logDataSetsProj['dataChanges'];
+            $showingCount2 = count($dcs2);
+        }
 
         if ($showingCount1 != 0 or $showingCount2 != 0) { // Only send email if there are changes
 
