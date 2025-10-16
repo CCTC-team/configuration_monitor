@@ -83,6 +83,11 @@ if (isset($_GET['role_id'])) {
     $roleID = $_GET['role_id'];
 }
 
+$privilegeFilter = ''; //default to empty meaning all privileges
+if (isset($_GET['privilege_filter'])) {
+    $privilegeFilter = $_GET['privilege_filter'];
+}
+
 $skipCount = (int)$pageSize * (int)$pageNum;
 $minDateDb = Utility::DateStringToDbFormat($minDate);
 $maxDateDb = Utility::DateStringToDbFormat($maxDate);

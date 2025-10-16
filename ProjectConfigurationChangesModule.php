@@ -110,7 +110,51 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         db_query("DROP PROCEDURE IF EXISTS GetProjectChanges;");
     }
 
-    function tableDiff($dc, $tableName): array
+    function getUniquePrivileges($dcs, $tableName): array
+    {
+        $privileges = array();
+
+        foreach($dcs as $dc) {
+            $changes = self::recordDiff($dc, $tableName);
+            foreach ($changes as $change) {
+                if (!in_array($change['privilege'], $privileges)) {
+                    $privileges[] = $change['privilege'];
+                }
+            }
+        }
+
+        sort($privileges);
+        return $privileges;
+    }
+
+    function filterByPrivilege($dcs, $tableName, $privilegeFilter): array
+    {
+        if (empty($privilegeFilter)) {
+            return $dcs;
+        }
+
+        $filtered = array();
+
+        foreach($dcs as $dc) {
+            $changes = self::recordDiff($dc, $tableName);
+            $hasMatchingPrivilege = false;
+
+            foreach ($changes as $change) {
+                if ($change['privilege'] === $privilegeFilter) {
+                    $hasMatchingPrivilege = true;
+                    break;
+                }
+            }
+
+            if ($hasMatchingPrivilege) {
+                $filtered[] = $dc;
+            }
+        }
+
+        return $filtered;
+    }
+
+    function recordDiff($dc, $tableName): array
     {
         //Only UserRoleChanges has insert and delete actions
         if ($dc["action"] !== 'UPDATE') {
@@ -254,7 +298,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             $date = DateTime::createFromFormat('YmdHis', $dc["timestamp"]);
             $formattedDate = $date->format($userDateFormat);
             $dc["timestamp"] = $formattedDate;
-            $changes = self::tableDiff($dc, $tableName);
+            $changes = self::recordDiff($dc, $tableName);
             $table .= self::createRow($changes, $tableName);
         }
 

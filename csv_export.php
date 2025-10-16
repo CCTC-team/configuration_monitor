@@ -44,6 +44,7 @@ use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
 /** @var $userDateFormat */
 /** @var $exportType */
 /** @var $tableName */
+/** @var $privilegeFilter */
 
 include "getparams.php";
 
@@ -61,13 +62,19 @@ if($exportType == 'all_pages' || $exportType == 'everything') {
 }
 
 if($exportType == 'everything') {
-    $roleID = NULL; //all roles
+    $roleID = null; //all roles
+    $privilegeFilter = null; //all privileges
     $minDateDb = null;
     $maxDateDb = null;
 }
 
 //run the stored proc
 $result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID);
+
+// Apply privilege filter if set (for project_changes table)
+if ($tableName == 'project_changes' && !empty($privilegeFilter)) {
+    $result['dataChanges'] = $module->filterByPrivilege($result['dataChanges'], $tableName, $privilegeFilter);
+}
 // Set headers
 if($tableName == 'user_role_changes') {
     $headers = array("role id", "timestamp", "action", "changed privilege", "old value", "new value");
@@ -96,7 +103,7 @@ if ($fp && $result)
         if ($tableName == 'user_role_changes') {
             foreach ($result["dataChanges"] as $dc) {
 
-                $dcChanges = $module->tableDiff($dc, $tableName);
+                $dcChanges = $module->recordDiff($dc, $tableName);
                 if (is_array($dcChanges)) {
                     foreach ($dcChanges as $dc) {
                         $row["id"] = $dc["id"];
@@ -116,7 +123,7 @@ if ($fp && $result)
         } else {
             foreach ($result["dataChanges"] as $dc) {
 
-                $dcChanges = $module->tableDiff($dc, $tableName);
+                $dcChanges = $module->recordDiff($dc, $tableName);
                 if (is_array($dcChanges)) {
                     foreach ($dcChanges as $dc) {
                         //timestamp

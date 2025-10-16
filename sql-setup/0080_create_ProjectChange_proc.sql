@@ -14,7 +14,6 @@ CREATE PROCEDURE GetProjectChanges
 BEGIN
 
     DECLARE sqlQuery mediumtext;
-    DECLARE roleidfilter mediumtext;
 
    -- if skip not given then default to 0
     if skipCount is null then

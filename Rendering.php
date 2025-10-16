@@ -51,4 +51,19 @@ class Rendering
             </select>";
     }
 
+    public static function MakePrivilegeSelect($privileges, $selected) : string
+    {
+        $anySelected = $selected == null ? "selected": "";
+        $options = "<option value='' $anySelected>any privilege</option>";
+        foreach ($privileges as $privilege) {
+            $sel = $selected == $privilege ? "selected" : "";
+            $options .= "<option value='{$privilege}' {$sel}>{$privilege}</option>";
+        }
+
+        return
+            "<select id='privilege_filter' name='privilege_filter' class='x-form-text x-form-field' onchange='onFilterChanged(\"privilege_filter\")' style='max-width: 180px;'>
+            {$options}
+            </select>";
+    }
+
 }

@@ -213,13 +213,14 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                            
+                <td style='width: 100px;'><label for='role_id'>Userrole</label></td>
+                <td style='width: 200px;'>$roleSelect</td>
             </tr>
             <tr>
                 <td><label for='min_date'>Min edit date</label></td>
-                <td style='width: 200px;'><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
+                <td><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
                 <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                <td><label for='max_date'>Max edit date</label></td>
+                <td style='width: 100px;'><label for='max_date'>Max edit date</label></td>
                 <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
                 <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
                 
@@ -234,8 +235,6 @@ $exportIcons =
                 </td>                                    
             </tr>                       
             <tr>
-                <td><label for='role_id'>Userrole</label></td>
-                <td>$roleSelect</td>
                 <td><label for='retdirection'>Order by</label></td>                
                 <td>$retDirectionSelect</td>
                 <td></td>

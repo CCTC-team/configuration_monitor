@@ -96,6 +96,11 @@ if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
+$privilegeFilter = '';
+if (isset($_GET['privilege_filter'])) {
+    $privilegeFilter = $_GET['privilege_filter'];
+}
+
 $skipCount = (int)$pageSize * (int)$pageNum;
  
 $minDateDb = Utility::DateStringToDbFormat($minDate);
@@ -119,12 +124,34 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 
 $tableName = 'project_changes';
 
-//run the stored proc
-$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName);
+//run the stored proc - get ALL records without pagination first if privilege filter is set
+if (!empty($privilegeFilter)) {
+    // Get all records to filter by privilege in PHP
+    $logDataSetsAll = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 1000000, $dataDirection, $tableName);
+    $dcsAll = $logDataSetsAll['dataChanges'];
 
-$dcs = $logDataSets['dataChanges'];
-$totalCount = $logDataSets['totalCount']; // number of User Roles being changed
-$showingCount = count($dcs); // number of User Roles being shown on this page
+    // Filter by privilege
+    $dcsFiltered = $module->filterByPrivilege($dcsAll, $tableName, $privilegeFilter);
+
+    // Apply manual pagination
+    $totalCount = count($dcsFiltered);
+    $dcs = array_slice($dcsFiltered, $skipCount, $pageSize);
+    $showingCount = count($dcs);
+
+    // Get unique privileges for the dropdown (from unfiltered data for current date range)
+    $privilegesList = $module->getUniquePrivileges($dcsAll, $tableName);
+
+} else {
+    // Use normal database pagination when no privilege filter
+    $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName);
+    $dcs = $logDataSets['dataChanges'];
+    $totalCount = $logDataSets['totalCount'];
+    $showingCount = count($dcs);
+
+    // Get unique privileges for the dropdown
+    $privilegesList = $module->getUniquePrivileges($logDataSets['dataChanges'], $tableName);
+
+}
 
 // echo "<br>showingCount: $showingCount<br>";
 
@@ -132,6 +159,8 @@ if ($showingCount == 0) {
     echo "<br><i>No changes to project settings have been made in this project.</i><br>";
     return;
 }
+
+$privilegeSelect = Rendering::MakePrivilegeSelect($privilegesList, $privilegeFilter);
 
 $table = $module->MakeUserRoleTable($dcs, $userDateFormat, $tableName);
 // echo "<br> showingCount: $showingCount<br>";
@@ -202,13 +231,14 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                            
+                <td style='width: 120px;'><label for='privilege_filter'>Changed privilege</label></td>
+                <td style='width: 200px;'>$privilegeSelect</td>
             </tr>
             <tr>
                 <td><label for='min_date'>Min edit date</label></td>
-                <td style='width: 200px;'><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
+                <td><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
                 <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                <td><label for='max_date'>Max edit date</label></td>
+                <td style='width: 100px;'><label for='max_date'>Max edit date</label></td>
                 <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
                 <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
                 
@@ -220,15 +250,15 @@ $exportIcons =
                         <button type='button' class='btn btn-outline-primary btn-xs $monthActive' onclick='setTimeFrame(\"onemonthago\")'>Past month</button>
                         <button type='button' class='btn btn-outline-primary btn-xs $yearActive' onclick='setTimeFrame(\"oneyearago\")'>Past year</button>
                     </div>                                        
-                </td>                                    
-            </tr>                       
+                </td>
+            </tr>
             <tr>
-                <td><label for='retdirection'>Order by</label></td>                
+                <td><label for='retdirection'>Order by</label></td>
                 <td>$retDirectionSelect</td>
                 <td></td>
-                <td><label for='pagesize' class='mr-2'>Page size</label></td>                
-                <td>$pageSizeSelect</td>                
-            </tr>                             
+                <td><label for='pagesize' class='mr-2'>Page size</label></td>
+                <td>$pageSizeSelect</td>
+            </tr>
         </table>
         <div class='p-2 mt-1' style='display: flex; flex-direction: row;'>
             <button id='btnprevpage' type='button' class='btn btn-outline-primary btn-xs mr-2' onclick='prevPage()'>
@@ -284,7 +314,7 @@ echo $exportIcons. $table;
         margin-top: 1px;
     }
 
-    
+
 </style>
 
 <script>
