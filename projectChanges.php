@@ -22,7 +22,7 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 //     return '2';
 // }
 $projId = $module->getProjectId();
-$maxDay = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
+$maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
 
 //gets the users preferred data format which is used as data attribute on the datetimepicker field
 global $datetime_format;

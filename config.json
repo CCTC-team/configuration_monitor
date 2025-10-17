@@ -48,32 +48,40 @@
       "super-users-only": true
     },
     {
-      "key": "from-emailid",
-      "name": "Provide the email address from which notifications are send",
-      "type": "email",
-      "repeatable": false,
-      "required": true,
-      "super-users-only": true
-    },
-    {
-      "key": "to-emailids",
-      "name": "Provide the email address to receive notifications of configuration changes",
-      "type": "email",
-      "repeatable": true,
-      "required": true,
-      "super-users-only": true
-    },
-    {
-      "key": "max-days-index",
-      "name": "Provide the maximum number of days to look back for displaying configuration changes . Default is 7 days",
+      "key": "max-days-page",
+      "name": "Specify the maximum number of days to look back when displaying configuration changes on the page (default 7 days)",
       "type": "text",
       "repeatable": false,
       "required": false,
       "super-users-only": true
     },
     {
+      "key": "email-enable",
+      "name": "Enable Email",
+      "type": "checkbox",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "from-emailid",
+      "name": "Provide the email address used to send notifications",
+      "type": "email",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "to-emailids",
+      "name": "Provide the email address to receive configuration change notifications",
+      "type": "email",
+      "repeatable": true,
+      "required": false,
+      "super-users-only": true
+    },
+    {
       "key": "max-hours-email",
-      "name": "Provide the maximum time interval in hours to send email notifications. Default is 3 hours",
+      "name": "Specify the maximum number of hours to look back when sending email notifications (default 3 hours)",
       "type": "text",
       "repeatable": false,
       "required": false,
@@ -82,8 +90,8 @@
   ],
   "crons": [
     {
-      "cron_name": "project_config_cron",
-      "cron_description": "project_config_cron: Checks for any configuration changes in all projects and sends email notifications if any changes are detected.",
+      "cron_name": "project_configuration_change_notifications",
+      "cron_description": "Send email notifications for recent project configuration and user role changes",
       "method": "projectConfigCron", 
       "cron_frequency": "3600",
       "cron_max_run_time": "3000"

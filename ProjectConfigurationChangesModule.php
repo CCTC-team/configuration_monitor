@@ -14,25 +14,36 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     
     public function validateSettings($settings): ?string
     {
-        if (array_key_exists("to-emailids", $settings) && array_key_exists("from-emailid", $settings) && array_key_exists("user-role-changes-enable", $settings) && array_key_exists("project-changes-enable", $settings)) {
-            $lastIndex = array_key_last($settings['to-emailids']);
-            if(empty($settings['to-emailids'][$lastIndex]) or empty($settings['from-emailid']) or (empty($settings['user-role-changes-enable']) and empty($settings['project-changes-enable']))) {
-                return "Please ensure Project Configuration Changes External Module settings are configured.";
+        // Ensure at least one of the change logging options is enabled
+        if (array_key_exists("user-role-changes-enable", $settings) && array_key_exists("project-changes-enable", $settings)) {
+            if((empty($settings['user-role-changes-enable']) and empty($settings['project-changes-enable']))) {
+                return "Please ensure either Project Configuration Changes or User Role Changes is enabled.";
             }
         }
 
-        if (array_key_exists("max-days-index", $settings) and !empty($settings['max-days-index'])) {
-            if(intval($settings['max-days-index']) != $settings['max-days-index']) {
+        // Validate numeric settings for max-days-page
+        if (array_key_exists("max-days-page", $settings) and !empty($settings['max-days-page'])) {
+            if(intval($settings['max-days-page']) != $settings['max-days-page']) {
                 return "The maximum number of days should be a number";
             }
         }
 
-        if (array_key_exists("max-hours-email", $settings) and !empty($settings['max-hours-email'])) {
-            if(intval($settings['max-hours-email']) != $settings['max-hours-email']) {
-                return "The maximum number of hours for email should be a number";
+        // Validate email settings
+        if (array_key_exists("email-enable", $settings) && array_key_exists("to-emailids", $settings) && array_key_exists("from-emailid", $settings) && array_key_exists("max-hours-email", $settings)) {
+            $lastIndex = array_key_last($settings['to-emailids']);
+            if(!empty($settings['to-emailids'][$lastIndex]) or !empty($settings['from-emailid']) or !empty($settings['email-enable']) or !empty($settings['max-hours-email'])) {
+                if(empty($settings['to-emailids'][$lastIndex]) or empty($settings['from-emailid']) or empty($settings['email-enable']))
+                    return "Please ensure email options are configured correctly";
             }
         }
-    
+
+        // Validate numeric settings for max-hours-email
+        if (array_key_exists("max-hours-email", $settings) and !empty($settings['max-hours-email'])) {
+            if(intval($settings['max-hours-email']) != $settings['max-hours-email']) {
+                return "The maximum number of hours for email notifications should be a number";
+            }
+        }
+
         return null;
     }
 
@@ -419,11 +430,13 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     function projectConfigCron($cronInfo = array()) {
         try {
             $this->log("Starting the \"{$cronInfo['cron_description']}\" cron job...");
+
             foreach ($this->getProjectsWithModuleEnabled() as $localProjectId) {
                 $this->setProjectId($localProjectId);
-        
-                // Project specific method calls go here.
-                $this->sendEmail();
+
+                if( $this->getProjectSetting('email-enable') ) { // Check if email is enabled
+                    $this->sendEmail();
+                }
             }
         
             return "The \"{$cronInfo['cron_description']}\" cron job completed successfully.";

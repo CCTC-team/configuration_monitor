@@ -24,7 +24,7 @@ if(ends_with($datetime_format, "_24")){
 }
 
 $projId = $module->getProjectId();
-$maxDay = $module->getProjectSetting('max-days-index') ?? 7; // Default to 7 days if not set
+$maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
 
 //get form values
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
