@@ -434,7 +434,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             foreach ($this->getProjectsWithModuleEnabled() as $localProjectId) {
                 $this->setProjectId($localProjectId);
 
-                if( $this->getProjectSetting('email-enable') ) { // Check if email is enabled
+                if ($this->getProjectSetting('email-enable')) { // Check if email is enabled
                     $this->sendEmail();
                 }
             }
