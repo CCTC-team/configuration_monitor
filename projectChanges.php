@@ -231,7 +231,7 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 120px;'><label for='privilege_filter'>Changed privilege</label></td>
+                <td style='width: 120px;'><label for='privilege_filter'>Changed property</label></td>
                 <td style='width: 200px;'>$privilegeSelect</td>
             </tr>
             <tr>
