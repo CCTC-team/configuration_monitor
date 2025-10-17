@@ -352,22 +352,24 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
         $minDateDb = Utility::DateStringToDbFormat($minDate);
         $maxDateDb = NULL; //no max date
-        $showingCount1 = 0;
-        $showingCount2 = 0;
+        $dcCountRole = 0;
+        $dcCountProj = 0;
 
-        //run the stored proc
+        // run the stored proc if user role changes is enabled
         if ($this->getProjectSetting('user-role-changes-enable')) {
             $logDataSetsUserRoles = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
             $dcs1 = $logDataSetsUserRoles['dataChanges'];
-            $showingCount1 = count($dcs1);
+            $dcCountRole = count($dcs1);
         }
+
+        // run the stored proc if project changes is enabled
         if ($this->getProjectSetting('project-changes-enable')) {
             $logDataSetsProj = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "project_changes");
             $dcs2 = $logDataSetsProj['dataChanges'];
-            $showingCount2 = count($dcs2);
+            $dcCountProj = count($dcs2);
         }
 
-        if ($showingCount1 != 0 or $showingCount2 != 0) { // Only send email if there are changes
+        if ($dcCountRole != 0 or $dcCountProj != 0) { // Only send email if there are changes
 
             global $default_datetime_format;
 
@@ -393,7 +395,8 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
             $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $max_days_email hours.<br>";
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
 
-            if ($showingCount1 != 0) {
+            // make User Role Table only if there are changes to User Roles
+            if ($dcCountRole != 0) {
                 $table1 = self::MakeUserRoleTable($dcs1, $userDateFormat, "user_role_changes");
                 $body .= "<h4>Changes in User Role Privileges</h4>";
                 $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
@@ -401,7 +404,8 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 $body .= "<br><br>";
             }
 
-            if ($showingCount2 != 0) {
+            // make Project Table only if there are changes to Project settings
+            if ($dcCountProj != 0) {
                 $table2 = self::MakeUserRoleTable($dcs2, $userDateFormat, "project_changes");
                 $body .= "<h4>Changes in Project settings</h4>";
                 $body .= "<p><i>This log shows changes made to project settings.</i></p>";
