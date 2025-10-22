@@ -49,12 +49,20 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
     public function redcap_module_link_check_display($project_id, $link) {
 
-        $user = $this->getUser();
-        $rights = $user->getRights();
+        // From Control Center only superusers should see the link
+        if ($project_id === NULL) {
+            if (!$this->isSuperUser()) {
+                return null;
+            }
+        } else {
+            // In project context, check user rights
+            $user = $this->getUser();
+            $rights = $user->getRights();
 
-        // Hide from non-privileged users
-        if(!($rights['user_rights'] or $this->isSuperUser())) {
-            return null;
+            // Hide from non-privileged users
+            if(!($rights['user_rights'] or $this->isSuperUser())) {
+                return null;
+            }
         }
 
         // Get the URL from the link (whether it's an array or string)
@@ -68,15 +76,17 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         // );
 
         // Check specific link against corresponding config setting
-        if(strpos($url, 'userRoleChanges') !== false) {
+        if(strpos($url, 'userRoleChanges') == true) {
             return $this->getProjectSetting('user-role-changes-enable') ? $link : null;
-        } elseif(strpos($url, 'projectChanges') !== false) {
+        } elseif(strpos($url, 'projectChanges') == true) {
             return $this->getProjectSetting('project-changes-enable') ? $link: null;
+        } elseif(strpos($url, 'systemChanges') == true) {
+            return $this->getSystemSetting('system-changes-enable') ? $link: null;
         }
 
         return null;
     }
-   
+
     function execFromFile($file): void
     {
         $sql = file_get_contents(dirname(__FILE__) . "/sql-setup/$file");
@@ -84,21 +94,25 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
     }
 
     function redcap_module_system_enable($version): void
-    {
-        // Create the necessary table and triggers when the module is enabled
+    {// Create the necessary table and triggers when the module is enabled
+
         //User Role Change Log Table, Triggers and Stored Procedure
         self::execFromFile("0010_create_table_user_role_changelog.sql");
-        self::execFromFile("0020_roles_create_InsertTrigger.sql");
-        self::execFromFile("0030_roles_create_UpdateTrigger.sql");
-        self::execFromFile("0040_roles_create_DeleteTrigger.sql");
+        self::execFromFile("0020_user_roles_InsertTrigger.sql");
+        self::execFromFile("0030_user_roles_UpdateTrigger.sql");
+        self::execFromFile("0040_user_roles_DeleteTrigger.sql");
         self::execFromFile("0050_create_UserRoleChange_proc.sql");
 
         //Project Change Log Table, Update Trigger and Stored Procedure
         // Project deletions are logged as an UPDATE, with date_deleted set to the current timestamp.
         self::execFromFile("0060_create_table_project_changelog.sql");
-        self::execFromFile("0070_projects_create_UpdateTrigger.sql");
+        self::execFromFile("0070_projects_UpdateTrigger.sql");
         self::execFromFile("0080_create_ProjectChange_proc.sql");
-    } 
+
+        // System Change Log Table, Update Trigger and Stored Procedure
+        self::execFromFile("0090_create_table_system_changelog.sql");
+        self::execFromFile("0100_system_UpdateTrigger.sql");
+        self::execFromFile("0110_create_SystemChange_proc.sql");    } 
 
     function redcap_module_system_disable($version): void
     {
@@ -107,18 +121,25 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         // Drop the User Role Change Log table, triggers, and stored procedure
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
-        // db_query("DROP TABLE IF EXISTS user_role_changelog;");
-        db_query("DROP TRIGGER IF EXISTS user_role_insert_trigger;");
-        db_query("DROP TRIGGER IF EXISTS user_role_update_trigger;");
-        db_query("DROP TRIGGER IF EXISTS user_role_delete_trigger;");
+        db_query("DROP TABLE IF EXISTS user_role_changelog;");
+        db_query("DROP TRIGGER IF EXISTS user_roles_insert_trigger;");
+        db_query("DROP TRIGGER IF EXISTS user_roles_update_trigger;");
+        db_query("DROP TRIGGER IF EXISTS user_roles_delete_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
 
         // Drop the Project Change Log table, update trigger, and stored procedure
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
-        // db_query("DROP TABLE IF EXISTS project_changelog;");
+        db_query("DROP TABLE IF EXISTS project_changelog;");
         db_query("DROP TRIGGER IF EXISTS projects_update_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetProjectChanges;");
+
+        // Drop the System Change Log table, update trigger, and stored procedure
+        // Uncomment the line below if you want to drop the table when the module is disabled.
+        // Be cautious as this will delete all logged data.
+        db_query("DROP TABLE IF EXISTS system_changelog;");
+        db_query("DROP TRIGGER IF EXISTS system_update_trigger;");
+        db_query("DROP PROCEDURE IF EXISTS GetSystemChanges;");
     }
 
     function getUniquePrivileges($dcs, $tableName): array
@@ -267,12 +288,10 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                         // For other privileges, show full difference
 
                         $finalRow[] = [
-                            'id' => $dc["id"] ?? null, // Project changes do not have id
                             'privilege' => $columnNames[$i],
                             'oldValue' => $o,
                             'newValue' => $n,
                             'timestamp' => $dc["timestamp"],
-                            'action' => $dc["action"]
                         ];
                     }
                 }
@@ -282,11 +301,11 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         return $finalRow;
     }
 
-    function MakeUserRoleTable($dcs, $userDateFormat, $tableName) : string
+    function makeTable($dcs, $userDateFormat, $tableName) : string
     {
         $changes = array();
         if ($tableName == "user_role_changes") {
-            $table = "<table id='user_role_change_table' border='1'>
+            $table = "<table id='{$tableName}_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 5%;padding: 5px'>Role ID</th>
                 <th style='width: 15%;padding: 5px'>Timestamp</th>
@@ -296,7 +315,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 <th style='width: 15%;padding: 5px'>New Value</th>
             </tr></thead><tbody>";
         } else {
-            $table = "<table id='project_change_table' border='1'>
+            $table = "<table id='{$tableName}_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 15%;padding: 5px'>Timestamp</th>
                 <th style='width: 15%;padding: 5px'>Changed Property</th>
@@ -304,13 +323,22 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 <th style='width: 15%;padding: 5px'>New Value</th>
             </tr></thead><tbody>";
         }
+
         foreach($dcs as $dc) {
 
             $date = DateTime::createFromFormat('YmdHis', $dc["timestamp"]);
             $formattedDate = $date->format($userDateFormat);
             $dc["timestamp"] = $formattedDate;
-            $changes = self::recordDiff($dc, $tableName);
-            $table .= self::createRow($changes, $tableName);
+            if ($tableName != 'system_changes') {
+                $changes = self::recordDiff($dc, $tableName);
+                $table .= self::createRow($changes, $tableName);
+                // print_r($changes);
+
+            } else {
+                // print_r($dc);
+                $table .= self::createSystemRow($dc);
+            }
+                
         }
 
         return $table .= "</tbody></table>";
@@ -334,6 +362,16 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
                 <td>" . $r['newValue'] . "</td></tr>" ;
         }
 
+        return $row;
+    }
+
+    function createSystemRow($change): string
+    {
+        $row = "<tr><td>" . $change['timestamp'] . "</td>
+                <td>" . $change['privilege'] . "</td>
+                <td>" . $change['oldValue'] . "</td>
+                <td>" . $change['newValue'] . "</td></tr>" ;
+    
         return $row;
     }
 
@@ -397,7 +435,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
             // make User Role Table only if there are changes to User Roles
             if ($dcCountRole != 0) {
-                $table1 = self::MakeUserRoleTable($dcs1, $userDateFormat, "user_role_changes");
+                $table1 = self::makeTable($dcs1, $userDateFormat, "user_role_changes");
                 $body .= "<h4>Changes in User Role Privileges</h4>";
                 $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
                 $body .= $table1;
@@ -406,7 +444,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
 
             // make Project Table only if there are changes to Project settings
             if ($dcCountProj != 0) {
-                $table2 = self::MakeUserRoleTable($dcs2, $userDateFormat, "project_changes");
+                $table2 = self::makeTable($dcs2, $userDateFormat, "project_changes");
                 $body .= "<h4>Changes in Project settings</h4>";
                 $body .= "<p><i>This log shows changes made to project settings.</i></p>";
                 $body .= $table2;

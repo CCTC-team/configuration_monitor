@@ -39,7 +39,7 @@ class Rendering
     public static function MakeRoleSelect($roles, $selected) : string
     {
         $anySelected = $selected == null ? "selected": "";
-        $usrroles = "<option value='' $anySelected>any userrole</option>";
+        $usrroles = "<option value='' $anySelected>any user role</option>";
         foreach ($roles as $role) {
             $sel = $selected == $role ? "selected" : "";
             $usrroles .= "<option value='{$role}' {$sel}>{$role}</option>";
@@ -62,6 +62,21 @@ class Rendering
 
         return
             "<select id='privilege_filter' name='privilege_filter' class='x-form-text x-form-field' onchange='onFilterChanged(\"privilege_filter\")' style='max-width: 180px;'>
+            {$options}
+            </select>";
+    }
+
+    public static function MakeFieldNameSelect($fieldNames, $selected) : string
+    {
+        $anySelected = $selected == null ? "selected": "";
+        $options = "<option value='' $anySelected>any field name</option>";
+        foreach ($fieldNames as $fieldName) {
+            $sel = $selected == $fieldName ? "selected" : "";
+            $options .= "<option value='{$fieldName}' {$sel}>{$fieldName}</option>";
+        }
+
+        return
+            "<select id='field_name' name='field_name' class='x-form-text x-form-field' onchange='onFilterChanged(\"field_name\")' style='max-width: 180px;'>
             {$options}
             </select>";
     }

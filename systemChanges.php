@@ -14,15 +14,8 @@ use CCTC\ProjectConfigurationChangesModule\Utility;
 use CCTC\ProjectConfigurationChangesModule\Rendering;
 use CCTC\ProjectConfigurationChangesModule\GetDbData;
 
-// // Check user's expiration date (if exists)
-// if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
-// {
-//     $GLOBALS['no_access'] = 1;
-//     // Instead of returning 'false', return '2' specifically so we can note to user that the password has expired
-//     return '2';
-// }
-$projId = $module->getProjectId();
-$maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
+// $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
+$maxDay = 7; // Default to 7 days if not set
 
 //gets the users preferred data format which is used as data attribute on the datetimepicker field
 global $datetime_format;
@@ -38,12 +31,12 @@ if(ends_with($datetime_format, "_24")){
 echo "
 <div class='projhdr'>
     <div style='float:left;'>
-        <i class='fas fa-clipboard-list'></i> Changes in Project Settings
+        <i class='fas fa-clipboard-list'></i> Changes in System settings
     </div>   
 </div>
 <br/>
 <p>
-    This log shows changes made to project settings.
+    This log shows changes made to system settings.
 </p>
 ";
 
@@ -54,6 +47,8 @@ $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
+
+// echo "minDate: $minDate<br>";
 
 //get form values
 if (isset($_GET['startdt'])) {
@@ -81,6 +76,11 @@ if (isset($_GET['defaulttimefilter'])) {
     $yearActive = $defaultTimeFilter == "oneyearago" ? "active" : "";
 }
 
+$fieldName = NULL; //default to NULL meaning all roles
+if (isset($_GET['field_name'])) {
+    $fieldName = $_GET['field_name'];
+}
+
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
     $dataDirection = $_GET['retdirection'];
@@ -96,11 +96,6 @@ if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
-$privilegeFilter = '';
-if (isset($_GET['privilege_filter'])) {
-    $privilegeFilter = $_GET['privilege_filter'];
-}
-
 $skipCount = (int)$pageSize * (int)$pageNum;
  
 $minDateDb = Utility::DateStringToDbFormat($minDate);
@@ -114,61 +109,41 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 
 
 // echo "<br>Base Url: " . Utility::GetBaseUrl();
-// echo "<br>Project ID: $projId<br>";
 // echo"<br> Module directory name: $moduleName<br>";
-// echo "<br> projId: $projId<br>";
+
 // echo "<br> maxDay: $maxDay<br>";
-// echo "<br> skipCount: $skipCount<br>";
-// echo "<br> pageSize: $pageSize<br>";
+echo "<br> skipCount: $skipCount<br>";
+echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
+echo "<br> maxDateDb: $maxDateDb";
+echo "<br>minDateDb: $minDateDb<br>";
 
-$tableName = 'project_changes';
+$tableName = 'system_changes';
+$projId = NULL;
+$roleID = NULL;
 
-//run the stored proc - get ALL records without pagination first if privilege filter is set
-if (!empty($privilegeFilter)) {
-    // Get all records to filter by privilege in PHP
-    $logDataSetsAll = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 1000000, $dataDirection, $tableName);
-    $dcsAll = $logDataSetsAll['dataChanges'];
+//run the stored proc
+$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName);
 
-    // Filter by privilege
-    $dcsFiltered = $module->filterByPrivilege($dcsAll, $tableName, $privilegeFilter);
-
-    // Apply manual pagination
-    $totalCount = count($dcsFiltered);
-    $dcs = array_slice($dcsFiltered, $skipCount, $pageSize);
-    $showingCount = count($dcs);
-
-    // Get unique privileges for the dropdown (from unfiltered data for current date range)
-    $privilegesList = $module->getUniquePrivileges($dcsAll, $tableName);
-
-} else {
-    // Use normal database pagination when no privilege filter
-    $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName);
-    $dcs = $logDataSets['dataChanges'];
-    $totalCount = $logDataSets['totalCount'];
-    $showingCount = count($dcs);
-
-    // Get unique privileges for the dropdown
-    $privilegesList = $module->getUniquePrivileges($logDataSets['dataChanges'], $tableName);
-
-}
-
-// echo "<br>showingCount: $showingCount<br>";
+$fieldNames = $logDataSets['fieldNames'];
+$dcs = $logDataSets['dataChanges'];
+$totalCount = $logDataSets['totalCount']; // number of User Roles being changed
+$showingCount = count($dcs); // number of User Roles being shown on this page
+echo "<br> TotalCount: $totalCount<br>";
+echo "<br>showingCount: $showingCount<br>";
 
 if ($showingCount == 0) {
-    echo "<br><i>No changes to project settings have been made in this project.</i><br>";
+    echo "<br><i>No changes have been made to the system settings.</i><br>";
     return;
 }
-
-$privilegeSelect = Rendering::MakePrivilegeSelect($privilegesList, $privilegeFilter);
-
+// print_array($fieldNames);
 $table = $module->makeTable($dcs, $userDateFormat, $tableName);
-// echo "<br> showingCount: $showingCount<br>";
-// echo "<br> totalCount: $totalCount<br>";
+$FieldNameSelect = Rendering::MakeFieldNameSelect($fieldNames, $fieldName);
+echo "<br> showingCount: $showingCount<br>";
+echo "<br> totalCount: $totalCount<br>";
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
 // echo "<br> dataDirection: $dataDirection<br>";
-// $showingCount = $totalCount;
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
 // adjust skipTo in cases where last page isn't a full page
@@ -178,9 +153,11 @@ if($showingCount < $pageSize) {
     $skipTo = $skipCount + (int)$pageSize;
 }
 
+ // $csvExportPage = $module->getUrl('csv_export.php');
+
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
 $moduleName = "project_configuration_changes";
-$page = "projectChanges";
+$page = "userRoleChanges";
 
 //create the reset to return to default original state
 $resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
@@ -197,14 +174,14 @@ echo "<script type='text/javascript'>
             //ignore some params
             params.forEach((v, k) => {            
                 if(k !== 'prefix' && k !== 'page' && k !== 'pid' && k !== 'redcap_csrf_token' ) {                
-                    finalUrl += '&' + k + '=' + encodeURIComponent(v);
+                    finalUrl += '&' + k + '=' + encodeURIComponent(v);                                    
                 }
             });
             
             //add the param to determine what to export        
             finalUrl += '&export_type=' + exportType;
             finalUrl += '&tableName=' + tableName;
-            
+
             window.location.href=finalUrl;                
         }
         
@@ -231,8 +208,8 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 120px;'><label for='privilege_filter'>Changed property</label></td>
-                <td style='width: 200px;'>$privilegeSelect</td>
+                <td style='width: 100px;'><label for='field_name'>Field Name</label></td>
+                <td style='width: 200px;'>$fieldNameSelect</td>
             </tr>
             <tr>
                 <td><label for='min_date'>Min edit date</label></td>
@@ -250,15 +227,15 @@ $exportIcons =
                         <button type='button' class='btn btn-outline-primary btn-xs $monthActive' onclick='setTimeFrame(\"onemonthago\")'>Past month</button>
                         <button type='button' class='btn btn-outline-primary btn-xs $yearActive' onclick='setTimeFrame(\"oneyearago\")'>Past year</button>
                     </div>                                        
-                </td>
-            </tr>
+                </td>                                    
+            </tr>                       
             <tr>
-                <td><label for='retdirection'>Order by</label></td>
+                <td><label for='retdirection'>Order by</label></td>                
                 <td>$retDirectionSelect</td>
                 <td></td>
-                <td><label for='pagesize' class='mr-2'>Page size</label></td>
-                <td>$pageSizeSelect</td>
-            </tr>
+                <td><label for='pagesize' class='mr-2'>Page size</label></td>                
+                <td>$pageSizeSelect</td>                
+            </tr>                             
         </table>
         <div class='p-2 mt-1' style='display: flex; flex-direction: row;'>
             <button id='btnprevpage' type='button' class='btn btn-outline-primary btn-xs mr-2' onclick='prevPage()'>
@@ -291,7 +268,6 @@ $exportIcons =
 
 echo $exportIcons. $table;
 
-
 ?>
 
 <style>
@@ -314,7 +290,7 @@ echo $exportIcons. $table;
         margin-top: 1px;
     }
 
-
+    
 </style>
 
 <script>
@@ -397,17 +373,20 @@ echo $exportIcons. $table;
 
     // use this when a field changes so can run request on any change
     function submitForm(src) {
+        // alert("submitForm called with src: " + src);
         showProgress(1);
 
         let frm = document.getElementById('filterForm');
+
         //clear the csrfToken
         let csrfToken = document.querySelector('input[name="redcap_csrf_token"]');
         csrfToken.value = '';
+        // alert("Submitting form with " + src + " changed");
         frm.submit();
     }
 
     function resetDate(dateId) {
-        if(document.getElementById(dateId).value) {
+        if (document.getElementById(dateId).value) {
             document.getElementById(dateId).value = '';
             document.getElementById('defaulttimefilter').value = 'customrange';
             submitForm(dateId);
@@ -415,7 +394,7 @@ echo $exportIcons. $table;
     }
 
     function clearFilter(id) {
-        if(document.getElementById(id).value) {
+        if (document.getElementById(id).value) {
             document.getElementById(id).value = '';
             submitForm(id);
         }

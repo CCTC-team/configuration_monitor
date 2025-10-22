@@ -38,14 +38,13 @@ BEGIN
         project_id INT(10) DEFAULT NULL,
         old_value TEXT DEFAULT NULL,
         new_value TEXT DEFAULT NULL,
-        ts BIGINT(14) DEFAULT NULL,
-        operation_type VARCHAR(100) DEFAULT NULL
+        ts BIGINT(14) DEFAULT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
     SET sqlQuery =
          concat('INSERT INTO project_change_temp
-                    ( project_id, old_value, new_value, ts, operation_type)
-                SELECT project_id, old_value, new_value, ts, operation_type
+                    ( project_id, old_value, new_value, ts)
+                SELECT project_id, old_value, new_value, ts
                     FROM project_changelog
                     WHERE project_id = ',  projectId,
                     ' -- minDate

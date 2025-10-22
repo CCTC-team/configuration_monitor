@@ -142,7 +142,7 @@ if ($showingCount == 0) {
     return;
 }
 
-$table = $module->MakeUserRoleTable($dcs, $userDateFormat, $tableName);
+$table = $module->makeTable($dcs, $userDateFormat, $tableName);
 $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
 // echo "<br> showingCount: $showingCount<br>";
 // echo "<br> totalCount: $totalCount<br>";
@@ -213,7 +213,7 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 100px;'><label for='role_id'>Userrole</label></td>
+                <td style='width: 100px;'><label for='role_id'>User Role</label></td>
                 <td style='width: 200px;'>$roleSelect</td>
             </tr>
             <tr>

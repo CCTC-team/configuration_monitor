@@ -27,7 +27,7 @@ BEGIN
 
     -- Only proceed if module is enabled for the project
     IF module_enabled > 0 THEN
-	-- Compute old and OLD concatenated values
+	    -- Compute old and OLD concatenated values
         SET old_values = CONCAT_WS('|',
             COALESCE(OLD.project_name, ''), COALESCE(OLD.app_title, ''), COALESCE(OLD.status, ''), COALESCE(OLD.inactive_time, ''), COALESCE(OLD.completed_time, ''), COALESCE(OLD.completed_by, ''), 
             COALESCE(OLD.data_locked, ''), COALESCE(OLD.draft_mode, ''), COALESCE(OLD.surveys_enabled, ''), COALESCE(OLD.repeatforms, ''), COALESCE(OLD.scheduling, ''), COALESCE(OLD.purpose, ''), 
@@ -91,13 +91,12 @@ BEGIN
         -- Only insert if old and OLD values are different
         IF ((old_values <> new_values)) THEN
             INSERT INTO project_changelog (
-                project_id, old_value, new_value, ts, operation_type
+                project_id, old_value, new_value, ts
             ) VALUES (
                 NEW.project_id,
                 old_values,
                 new_values,
-                NOW(),
-                'UPDATE'
+                NOW()
             );
         END IF;
     END IF;

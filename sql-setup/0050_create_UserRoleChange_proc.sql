@@ -60,8 +60,8 @@ BEGIN
     prepare qry FROM sqlQuery;
     EXECUTE qry using 
         roleId, roleId,
-        minDate,minDate,
-        maxDate,maxDate;
+        minDate, minDate,
+        maxDate, maxDate;
     DEALLOCATE prepare qry;
 
     SET sqlQuery =

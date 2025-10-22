@@ -27,9 +27,28 @@
         "url": "projectChanges.php",
         "show-header-and-footer": true
       }
+    ],
+    "control-center": [
+       {
+        "name": "System Changes",
+        "key": "system-changes",
+        "icon": "fas fa-clipboard-list",
+        "url": "systemChanges.php",
+        "show-header-and-footer": true
+      }
     ]
   },
-
+  "system-settings": [
+     {
+      "key": "system-changes-enable",
+      "name": "Enable System Changes",
+      "type": "checkbox",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    }
+  ]
+  ,
   "project-settings": [
     {
       "key": "user-role-changes-enable",
@@ -93,7 +112,7 @@
       "cron_name": "project_configuration_change_notifications",
       "cron_description": "Send email notifications for recent project configuration and user role changes",
       "method": "projectConfigCron", 
-      "cron_frequency": "3600",
+      "cron_frequency": "60",
       "cron_max_run_time": "3000"
     }
   ]

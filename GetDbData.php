@@ -9,7 +9,7 @@ class GetDbData
     {
         $dataChanges = array();
 
-        if($tableName == "user_role_changes") {
+        if ($tableName == "user_role_changes") {
             while ($row = db_fetch_assoc($result))
             {  
                 $dc = [
@@ -22,14 +22,29 @@ class GetDbData
 
                 $dataChanges[] = $dc;
             }
-        } else {
+        } else if ($tableName == "project_changes") {
             while ($row = db_fetch_assoc($result))
             {  
                 $dc = [
                     "oldValue"  => $row["old_value"],
                     "newValue"  => $row["new_value"],
                     "timestamp" => $row["ts"],
-                    "action"    => $row["operation_type"]
+                    //delete column from table ???
+                    "action"    => "UPDATE"
+                ];
+
+                $dataChanges[] = $dc;
+            }
+        }
+        else {
+            while ($row = db_fetch_assoc($result))
+            {  
+                $dc = [
+                    "privilege"    => $row["field_name"],
+                    "oldValue"  => $row["old_value"],
+                    "newValue"  => $row["new_value"],
+                    "timestamp" => $row["ts"]
+                    //delete column from table ???
                 ];
 
                 $dataChanges[] = $dc;
@@ -42,7 +57,7 @@ class GetDbData
 
     // calls the GetUserRoleChanges or  GetProjectChanges stored procedures (based on tableName) with the given parameters and returns the relevant data
     public static function GetChangesFromSP(
-        $projId, $minDate, $maxDate, $skipCount, $pageSize, $dataDirection, $tableName, $roleId = NULL)
+        $projId, $minDate, $maxDate, $skipCount, $pageSize, $dataDirection, $tableName, $roleId = NULL, $fieldName = NULL)
     : array
     {
 
@@ -52,10 +67,14 @@ class GetDbData
         $minDate = $minDate == null ? "null" : $minDate;
         $maxDate = $maxDate == null ? "null" : $maxDate;
 
-        if($tableName == "user_role_changes") {
+        if ($tableName == "user_role_changes") {
             $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId);";
-        } else {
+
+        } else if ($tableName == "project_changes") {
             $query = "call GetProjectChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
+
+        } else {
+            $query = "call GetSystemChanges('$fieldName', $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
         }
         
         $currentIndex = 0;
@@ -83,6 +102,11 @@ class GetDbData
                         }
                     }
 
+                    if ($currentIndex == 2 && $tableName == "system_changes") {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $fieldNames[] = $row['field_name'];
+                        }
+                    }
                     mysqli_free_result($result);
                     $currentIndex++;
 
@@ -102,12 +126,20 @@ class GetDbData
                 "roleIds" => $roleIds,
                 "totalCount" => $totalCount
             ];
-        } else
+        } else if($tableName == "project_changes") {
             return
-                [
-                    "dataChanges" => $dataChanges,
-                    "totalCount" => $totalCount
-                ];
+            [
+                "dataChanges" => $dataChanges,
+                "totalCount" => $totalCount
+            ];
+        } else {
+            return
+            [
+                "dataChanges" => $dataChanges,
+                "fieldNames" => $fieldNames,
+                "totalCount" => $totalCount
+            ];
+        }
     }
 
 }

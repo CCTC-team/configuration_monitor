@@ -9,13 +9,13 @@ This module creates database tables, triggers, and stored procedures when enable
 Enabling the module at a system level will AUTOMATICALLY do the following via the system hook `redcap_module_system_enable`:
 
 1. Create the `user_role_changelog` table in the REDCap database to store a log of all user role privilege changes
-1. Create database triggers to automatically log changes to user roles when enabled in the project:
+1. Create database triggers on table redcap_user_roles to automatically log changes to user roles when enabled in the project:
    - `user_role_insert_trigger` - logs when new user roles are created
    - `user_role_update_trigger` - logs when existing user roles are modified
    - `user_role_delete_trigger` - logs when user roles are deleted
 1. Create the `GetUserRoleChanges` stored procedure to retrieve filtered user role change logs with pagination support
 1. Create the `project_changelog` table in the REDCap database to store a log of all project setting changes
-1. Create the `projects_update_trigger` database trigger to automatically log changes to project settings when enabled in the project (including when projects are deleted, as deletions are recorded as updates with the `date_deleted` timestamp set)
+1. Create the `projects_update_trigger` database trigger on table redcap_projects to automatically log changes to project settings when enabled in the project (including when projects are deleted, as deletions are recorded as updates with the `date_deleted` timestamp set)
 1. Create the `GetProjectChanges` stored procedure to retrieve filtered project change logs with pagination support
 1. Register the `projectConfigCron` cron job to run every 3 hours. When executed, it checks all projects with both the module and email notifications enabled, then sends summary emails of recent configuration changes.
    
