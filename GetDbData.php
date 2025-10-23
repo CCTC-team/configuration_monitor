@@ -75,7 +75,7 @@ class GetDbData
             $query = "call GetProjectChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
 
         } else {
-            $query = "call GetSystemChanges($fieldName, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
+            $query = "call GetSystemChanges('$fieldName', $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
         }
         
         $currentIndex = 0;

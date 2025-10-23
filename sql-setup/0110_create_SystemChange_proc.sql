@@ -30,7 +30,12 @@ BEGIN
     if retDirection is null or retDirection = '' then
         set retDirection = 'desc';
     end if;
- 
+
+    -- Replace string 'null' with actual null
+    if fieldName = 'null' then
+        set fieldName = null;
+    end if;
+
     -- create the temporary table for the final results
     drop table if exists system_changes_temp;
     create temporary table system_changes_temp
