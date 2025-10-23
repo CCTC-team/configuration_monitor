@@ -24,17 +24,6 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 $projId = $module->getProjectId();
 $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
 
-//gets the users preferred data format which is used as data attribute on the datetimepicker field
-global $datetime_format;
-
-$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-
-if(ends_with($datetime_format, "_24")){
-    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-} else {
-    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-}
-
 echo "
 <div class='projhdr'>
     <div style='float:left;'>
@@ -137,12 +126,6 @@ $showingCount = count($dcs); // number of User Roles being shown on this page
 
 // echo "<br>showingCount: $showingCount<br>";
 
-if ($showingCount == 0) {
-    echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";
-    return;
-}
-
-$table = $module->makeTable($dcs, $userDateFormat, $tableName);
 $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
 // echo "<br> showingCount: $showingCount<br>";
 // echo "<br> totalCount: $totalCount<br>";
@@ -252,15 +235,15 @@ $exportIcons =
             $pagingInfo
             <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
             <div class='ms-auto'>            
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-records' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export current page
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-records' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export all pages
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-all' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export everything ignoring filters
                 </button>                                    
@@ -271,8 +254,30 @@ $exportIcons =
     <br/>";
     
 
-echo $exportIcons. $table;
+echo $exportIcons;
 
+if ($showingCount == 0) {
+    echo "<br><i>No changes to user role privileges have been made in this project.</i><br>";
+    echo "<script type='text/javascript'>
+        //hide export buttons
+        document.querySelectorAll('.jqbuttonmed.export-records').forEach(button => {
+            button.disabled = true;
+        });
+    </script>";
+}else {
+    //gets the users preferred data format which is used as data attribute on the datetimepicker field
+    global $datetime_format;
+
+    $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+
+    if(ends_with($datetime_format, "_24")){
+        $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+    } else {
+        $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+    }
+    $table = $module->makeTable($dcs, $userDateFormat, $tableName);
+    echo $table;
+}
 
 ?>
 

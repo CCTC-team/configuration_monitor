@@ -81,6 +81,8 @@ class GetDbData
         $currentIndex = 0;
         $roleIds = array();
         $dataChanges = array();
+        $totalCount = array();
+        $fieldNames = array();
 
         if (mysqli_multi_query($conn, $query)) {
 

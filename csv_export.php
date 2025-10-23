@@ -89,8 +89,9 @@ $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName
 
 // Begin writing file from query result
 $fp = fopen($filename, 'w');
+$count = count($result["dataChanges"]);
 
-if ($fp && $result)
+if ($fp && ($count != 0))
 {
     try {
 
@@ -168,7 +169,9 @@ if ($fp && $result)
         $module->log("ex: ". $e->getMessage());
     }
 }
-else
+else if ($count == 0) {
+	print "There is no data available for export. Please return to the previous page.";
+} else
 {
     //error
 	print $lang['global_01'];

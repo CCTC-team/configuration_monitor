@@ -17,17 +17,6 @@ use CCTC\ProjectConfigurationChangesModule\GetDbData;
 // $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
 $maxDay = 7; // Default to 7 days if not set
 
-//gets the users preferred data format which is used as data attribute on the datetimepicker field
-global $datetime_format;
-
-$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-
-if(ends_with($datetime_format, "_24")){
-    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-} else {
-    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-}
-
 echo "
 <h4 style='margin-top: 0;'>
     <i class='fas fa-clipboard-list'></i> Changes in System settings
@@ -129,13 +118,7 @@ $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
 // echo "<br> TotalCount: $totalCount<br>";
 // echo "<br>showingCount: $showingCount<br>";
-
-if ($showingCount == 0) {
-    echo "<br><i>No changes have been made to the system settings.</i><br>";
-   return;
-}
 // print_array($fieldNames);
-$table = $module->makeTable($dcs, $userDateFormat, $tableName);
 $fieldNameSelect = Rendering::MakeFieldNameSelect($fieldNames, $fieldName);
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
@@ -260,9 +243,31 @@ $exportIcons =
     </div>
     <br/>";
     
+echo $exportIcons;
 
-echo $exportIcons. $table;
+if ($showingCount == 0) {
+    echo "<br><i>No changes have been made to the system settings.</i><br>";
+    echo "<script type='text/javascript'>
+        //hide export buttons
+        document.querySelectorAll('.jqbuttonmed.export-records').forEach(button => {
+            button.disabled = true;
+        });
+    </script>";
+   // return;
+} else {
+    //gets the users preferred data format which is used as data attribute on the datetimepicker field
+    global $datetime_format;
 
+    $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+
+    if(ends_with($datetime_format, "_24")){
+        $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+    } else {
+        $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+    }
+    $table = $module->makeTable($dcs, $userDateFormat, $tableName);
+    echo $table;
+}
 ?>
 
 <style>
