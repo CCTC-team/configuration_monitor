@@ -121,7 +121,7 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         // Drop the User Role Change Log table, triggers, and stored procedure
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
-        db_query("DROP TABLE IF EXISTS user_role_changelog;");
+        // db_query("DROP TABLE IF EXISTS user_role_changelog;");
         db_query("DROP TRIGGER IF EXISTS user_roles_insert_trigger;");
         db_query("DROP TRIGGER IF EXISTS user_roles_update_trigger;");
         db_query("DROP TRIGGER IF EXISTS user_roles_delete_trigger;");
@@ -130,14 +130,14 @@ class ProjectConfigurationChangesModule extends AbstractExternalModule {
         // Drop the Project Change Log table, update trigger, and stored procedure
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
-        db_query("DROP TABLE IF EXISTS project_changelog;");
+        // db_query("DROP TABLE IF EXISTS project_changelog;");
         db_query("DROP TRIGGER IF EXISTS projects_update_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetProjectChanges;");
 
         // Drop the System Change Log table, update trigger, and stored procedure
         // Uncomment the line below if you want to drop the table when the module is disabled.
         // Be cautious as this will delete all logged data.
-        db_query("DROP TABLE IF EXISTS system_changelog;");
+        // db_query("DROP TABLE IF EXISTS system_changelog;");
         db_query("DROP TRIGGER IF EXISTS system_update_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetSystemChanges;");
     }

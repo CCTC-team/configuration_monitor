@@ -46,19 +46,19 @@ BEGIN
          concat('INSERT INTO system_changes_temp
                     ( field_name, old_value, new_value, ts)
                 SELECT field_name, old_value, new_value, ts
-                    FROM system_changelog');
+                    FROM system_changelog
                     -- field_name filter
-				--	WHERE (? is null or field_name = ?) 
+					WHERE (? is null or field_name = ?)
                     -- minDate
-                  --  and (? is null or ts >= ?)
+                   and (? is null or ts >= ?)
                     -- maxDate
-                   -- and (? is null or ts <= ?)');
+                   and (? is null or ts <= ?)');
 
     prepare qry FROM sqlQuery;
-    EXECUTE qry;
-      --  fieldName, fieldName;
-      --  minDate, minDate,
-      --  maxDate, maxDate;
+    EXECUTE qry using
+       fieldName, fieldName,
+       minDate, minDate,
+       maxDate, maxDate;
     DEALLOCATE prepare qry;
 
     SET sqlQuery =

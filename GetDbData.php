@@ -66,6 +66,7 @@ class GetDbData
         $roleId = $roleId == null ? "null" : $roleId;
         $minDate = $minDate == null ? "null" : $minDate;
         $maxDate = $maxDate == null ? "null" : $maxDate;
+        $fieldName = $fieldName == null ? "null" : $fieldName;
 
         if ($tableName == "user_role_changes") {
             $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId);";
@@ -74,7 +75,7 @@ class GetDbData
             $query = "call GetProjectChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
 
         } else {
-            $query = "call GetSystemChanges('$fieldName', $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
+            $query = "call GetSystemChanges($fieldName, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
         }
         
         $currentIndex = 0;

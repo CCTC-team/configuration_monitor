@@ -29,11 +29,9 @@ if(ends_with($datetime_format, "_24")){
 }
 
 echo "
-<div class='projhdr'>
-    <div style='float:left;'>
-        <i class='fas fa-clipboard-list'></i> Changes in System settings
-    </div>   
-</div>
+<h4 style='margin-top: 0;'>
+    <i class='fas fa-clipboard-list'></i> Changes in System settings
+</h4>
 <br/>
 <p>
     This log shows changes made to system settings.
@@ -112,16 +110,16 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 // echo"<br> Module directory name: $moduleName<br>";
 
 // echo "<br> maxDay: $maxDay<br>";
-echo "<br> skipCount: $skipCount<br>";
-echo "<br> pageSize: $pageSize<br>";
+// echo "<br> skipCount: $skipCount<br>";
+// echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
-echo "<br> maxDateDb: $maxDateDb";
-echo "<br>minDateDb: $minDateDb<br>";
+// echo "<br> maxDateDb: $maxDateDb";
+// echo "<br>minDateDb: $minDateDb<br>";
 
 $tableName = 'system_changes';
 $projId = NULL;
 $roleID = NULL;
-
+// echo "fieldName: $fieldName";
 //run the stored proc
 $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName);
 
@@ -129,18 +127,16 @@ $fieldNames = $logDataSets['fieldNames'];
 $dcs = $logDataSets['dataChanges'];
 $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
-echo "<br> TotalCount: $totalCount<br>";
-echo "<br>showingCount: $showingCount<br>";
+// echo "<br> TotalCount: $totalCount<br>";
+// echo "<br>showingCount: $showingCount<br>";
 
 if ($showingCount == 0) {
     echo "<br><i>No changes have been made to the system settings.</i><br>";
-    return;
+   return;
 }
 // print_array($fieldNames);
 $table = $module->makeTable($dcs, $userDateFormat, $tableName);
-$FieldNameSelect = Rendering::MakeFieldNameSelect($fieldNames, $fieldName);
-echo "<br> showingCount: $showingCount<br>";
-echo "<br> totalCount: $totalCount<br>";
+$fieldNameSelect = Rendering::MakeFieldNameSelect($fieldNames, $fieldName);
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
 // echo "<br> dataDirection: $dataDirection<br>";
@@ -157,23 +153,23 @@ if($showingCount < $pageSize) {
 
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
 $moduleName = "project_configuration_changes";
-$page = "userRoleChanges";
+$page = "systemChanges";
 
 //create the reset to return to default original state
-$resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
+$resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page";
 $doReset = "window.location.href='$resetUrl';";
 $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
 $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
 
 echo "<script type='text/javascript'>
-        function cleanUpParamsAndRun(moduleName, projId, exportType, tableName) {
+        function cleanUpParamsAndRun(moduleName, exportType, tableName) {
             //construct the params from the current page params
-            let finalUrl = app_path_webroot+'ExternalModules/?prefix=' + moduleName + '&page=csv_export&pid=' + projId;
+            let finalUrl = app_path_webroot+'ExternalModules/?prefix=' + moduleName + '&page=csv_export';
 
             let params = new URLSearchParams(window.location.search);
             //ignore some params
             params.forEach((v, k) => {            
-                if(k !== 'prefix' && k !== 'page' && k !== 'pid' && k !== 'redcap_csrf_token' ) {                
+                if(k !== 'prefix' && k !== 'page' && k !== 'redcap_csrf_token' ) {
                     finalUrl += '&' + k + '=' + encodeURIComponent(v);                                    
                 }
             });
@@ -196,7 +192,6 @@ $exportIcons =
     <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
         <input type='hidden' id='prefix' name='prefix' value='$moduleName'>
         <input type='hidden' id='page' name='page' value='$page'>
-        <input type='hidden' id='pid' name='pid' value='$projId'>
         <input type='hidden' id='totpages' name='totpages' value='$totPages'>
         <input type='hidden' id='pagenum' name='pagenum' value='$pageNum'>
         
@@ -208,14 +203,14 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 100px;'><label for='field_name'>Field Name</label></td>
+                <td style='width: 200px;'><label for='field_name'>Field Name</label></td>
                 <td style='width: 200px;'>$fieldNameSelect</td>
             </tr>
             <tr>
                 <td><label for='min_date'>Min edit date</label></td>
                 <td><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
                 <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                <td style='width: 100px;'><label for='max_date'>Max edit date</label></td>
+                <td style='width: 200px;'><label for='max_date'>Max edit date</label></td>
                 <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
                 <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
                 
@@ -247,15 +242,15 @@ $exportIcons =
             $pagingInfo
             <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
             <div class='ms-auto'>            
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"current_page\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"current_page\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export current page
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"all_pages\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"all_pages\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export all pages
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"$projId\", \"everything\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"everything\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export everything ignoring filters
                 </button>                                    
