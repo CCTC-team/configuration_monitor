@@ -12,7 +12,15 @@ $oneWeekAgo = Utility::NowAdjusted('-7 days');
 $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
-$maxDay = 7;
+if ($tableName != 'system_changes') {
+    $projId = $module->getProjectId();
+    $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
+
+} else {
+    $maxDay = $module->getSystemSetting('max-days-sys') ?? 7; // Default to 7 days if not set
+
+}
+
 //get form values
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
 // $minDate = $oneWeekAgo;
@@ -56,12 +64,6 @@ if (isset($_GET['pagenum'])) {
 
 if (isset($_GET['tableName'])) {
     $tableName = $_GET['tableName'];
-}
-
-if ($tableName != 'system_changes') {
-    $projId = $module->getProjectId();
-    $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
-
 }
 
 //use the export_type param to determine what to export and adjust params accordingly

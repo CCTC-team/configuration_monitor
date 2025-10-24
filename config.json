@@ -46,6 +46,46 @@
       "repeatable": false,
       "required": false,
       "super-users-only": true
+    },
+    {
+      "key": "max-days-sys",
+      "name": "Specify the maximum number of days to look back when displaying system configuration changes on the page (default 7 days)",
+      "type": "text",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+     {
+      "key": "sys-email-enable",
+      "name": "Enable Email",
+      "type": "checkbox",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "sys-from-emailid",
+      "name": "Provide the email address used to send notifications",
+      "type": "email",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "sys-to-emailids",
+      "name": "Provide the email address to receive configuration change notifications",
+      "type": "email",
+      "repeatable": true,
+      "required": false,
+      "super-users-only": true
+    },
+    {
+      "key": "sys-max-hours-email",
+      "name": "Specify the maximum number of hours to look back when sending email notifications (default 3 hours)",
+      "type": "text",
+      "repeatable": false,
+      "required": false,
+      "super-users-only": true
     }
   ]
   ,
