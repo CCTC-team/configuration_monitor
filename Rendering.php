@@ -54,7 +54,7 @@ class Rendering
     public static function MakePrivilegeSelect($privileges, $selected) : string
     {
         $anySelected = $selected == null ? "selected": "";
-        $options = "<option value='' $anySelected>any privilege</option>";
+        $options = "<option value='' $anySelected>any property</option>";
         foreach ($privileges as $privilege) {
             $sel = $selected == $privilege ? "selected" : "";
             $options .= "<option value='{$privilege}' {$sel}>{$privilege}</option>";
@@ -69,7 +69,7 @@ class Rendering
     public static function MakeFieldNameSelect($fieldNames, $selected) : string
     {
         $anySelected = $selected == null ? "selected": "";
-        $options = "<option value='' $anySelected>any field name</option>";
+        $options = "<option value='' $anySelected>any property</option>";
         foreach ($fieldNames as $fieldName) {
             $sel = $selected == $fieldName ? "selected" : "";
             $options .= "<option value='{$fieldName}' {$sel}>{$fieldName}</option>";

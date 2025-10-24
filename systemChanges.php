@@ -14,7 +14,6 @@ use CCTC\ProjectConfigurationChangesModule\Utility;
 use CCTC\ProjectConfigurationChangesModule\Rendering;
 use CCTC\ProjectConfigurationChangesModule\GetDbData;
 
-// $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
 $maxDay = 7; // Default to 7 days if not set
 
 echo "
@@ -186,34 +185,35 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 200px;'><label for='field_name'>Field Name</label></td>
-                <td style='width: 200px;'>$fieldNameSelect</td>
+                <td style='width: 100px;'><label for='field_name'>Property</label></td>
+                <td style='width: 250px;'>$fieldNameSelect</td>
             </tr>
             <tr>
-                <td><label for='min_date'>Min edit date</label></td>
+                <td><label for='retdirection'>Order by</label></td>
+                <td>$retDirectionSelect</td>
+                <td></td>
+                <td style='width: 100px;'><label for='pagesize' class='mr-2'>Page size</label></td>
+                <td>$pageSizeSelect</td>
+            </tr>
+            <tr>
+                <td><label for='startdt'>Min edit date</label></td>
                 <td><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
                 <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                <td style='width: 200px;'><label for='max_date'>Max edit date</label></td>
+                <td><label for='enddt'>Max edit date</label></td>
                 <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
                 <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                
-                <td>
-                    <div class='btn-group bg-white' role='group';  style='margin-left: 30px;'>                
+            </tr>
+            <tr>
+                <td colspan='5'>
+                    <div class='btn-group bg-white' role='group'>
                         <button type='button' class='btn btn-outline-primary btn-xs $customActive' onclick='setCustomRange()'>Custom range</button>
                         <button type='button' class='btn btn-outline-primary btn-xs $dayActive' onclick='setTimeFrame(\"onedayago\")'>Past day</button>
                         <button type='button' class='btn btn-outline-primary btn-xs $weekActive' onclick='setTimeFrame(\"oneweekago\")'>Past week</button>
                         <button type='button' class='btn btn-outline-primary btn-xs $monthActive' onclick='setTimeFrame(\"onemonthago\")'>Past month</button>
                         <button type='button' class='btn btn-outline-primary btn-xs $yearActive' onclick='setTimeFrame(\"oneyearago\")'>Past year</button>
-                    </div>                                        
-                </td>                                    
-            </tr>                       
-            <tr>
-                <td><label for='retdirection'>Order by</label></td>                
-                <td>$retDirectionSelect</td>
-                <td></td>
-                <td><label for='pagesize' class='mr-2'>Page size</label></td>                
-                <td>$pageSizeSelect</td>                
-            </tr>                             
+                    </div>
+                </td>
+            </tr>
         </table>
         <div class='p-2 mt-1' style='display: flex; flex-direction: row;'>
             <button id='btnprevpage' type='button' class='btn btn-outline-primary btn-xs mr-2' onclick='prevPage()'>
@@ -224,6 +224,8 @@ $exportIcons =
             </button>     
             $pagingInfo
             <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
+        </div>
+        <div>
             <div class='ms-auto'>            
                 <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-records' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"current_page\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
@@ -289,7 +291,7 @@ if ($showingCount == 0) {
         margin-top: 1px;
     }
 
-    
+
 </style>
 
 <script>

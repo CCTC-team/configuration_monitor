@@ -231,14 +231,14 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 120px;'><label for='privilege_filter'>Changed property</label></td>
+                <td style='width: 100px;'><label for='privilege_filter'>Property</label></td>
                 <td style='width: 200px;'>$privilegeSelect</td>
             </tr>
             <tr>
-                <td><label for='min_date'>Min edit date</label></td>
+                <td><label for='startdt'>Min edit date</label></td>
                 <td><input id='startdt' name='startdt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$minDate'></td>
                 <td><button class='clear-button' type='button' onclick='resetDate(\"startdt\")'><small><i class='fas fa-eraser'></i></small></button></td>
-                <td style='width: 100px;'><label for='max_date'>Max edit date</label></td>
+                <td style='width: 100px;'><label for='enddt'>Max edit date</label></td>
                 <td><input id='enddt' name='enddt' class='x-form-text x-form-field' type='text' data-df='$userDateFormat' value='$maxDate'></td>
                 <td><button style='margin-left: 0' class='clear-button' type='button' onclick='resetDate(\"enddt\")'><small><i class='fas fa-eraser'></i></small></button></td>
                 
