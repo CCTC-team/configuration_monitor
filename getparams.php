@@ -4,7 +4,7 @@ global $module;
 $modName = $module->getModuleDirectoryName();
 
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
-use CCTC\ProjectConfigurationChangesModule\Utility;
+use CCTC\ConfigurationMonitorModule\Utility;
 
 //set the helper dates for use in the quick links
 $oneDayAgo = Utility::NowAdjusted('-1 days');

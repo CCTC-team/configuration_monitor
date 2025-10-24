@@ -1,6 +1,6 @@
 <?php
 
-namespace CCTC\ProjectConfigurationChangesModule;
+namespace CCTC\ConfigurationMonitorModule;
 
 use DateTime;
 

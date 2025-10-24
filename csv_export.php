@@ -11,7 +11,7 @@ if ($tableName == 'system_changes') {
 $lang = Language::getLanguage('English');
 $modName = $module->getModuleDirectoryName();
 
-require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/ProjectConfigurationChangesModule.php";
+require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/ConfigurationMonitorModule.php";
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
 
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
@@ -21,8 +21,8 @@ require_once APP_PATH_DOCROOT . "/Classes/Records.php";
 require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
-use CCTC\ProjectConfigurationChangesModule\GetDbData;
-use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
+use CCTC\ConfigurationMonitorModule\GetDbData;
+use CCTC\ConfigurationMonitorModule\DataEntryLogModule;
 
 // Increase memory limit in case needed for intensive processing
 //System::increaseMemory(2048);

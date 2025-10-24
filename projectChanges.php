@@ -10,9 +10,9 @@ require_once APP_PATH_DOCROOT . "/Classes/Records.php";
 require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
-use CCTC\ProjectConfigurationChangesModule\Utility;
-use CCTC\ProjectConfigurationChangesModule\Rendering;
-use CCTC\ProjectConfigurationChangesModule\GetDbData;
+use CCTC\ConfigurationMonitorModule\Utility;
+use CCTC\ConfigurationMonitorModule\Rendering;
+use CCTC\ConfigurationMonitorModule\GetDbData;
 
 // // Check user's expiration date (if exists)
 // if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
@@ -179,7 +179,7 @@ if($showingCount < $pageSize) {
 }
 
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
-$moduleName = "project_configuration_changes";
+$moduleName = "configuration_monitor";
 $page = "projectChanges";
 
 //create the reset to return to default original state

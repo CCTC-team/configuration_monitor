@@ -1,7 +1,7 @@
 {
-  "name": "Project Configuration Changes",
+  "name": "Configuration Monitor",
   "description": "Module that displays the configuration changes in a project",
-  "namespace": "CCTC\\ProjectConfigurationChangesModule",
+  "namespace": "CCTC\\ConfigurationMonitorModule",
   "framework-version": 14,
   "authors": [
     {

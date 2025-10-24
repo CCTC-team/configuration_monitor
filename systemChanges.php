@@ -10,9 +10,9 @@ require_once APP_PATH_DOCROOT . "/Classes/Records.php";
 require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
-use CCTC\ProjectConfigurationChangesModule\Utility;
-use CCTC\ProjectConfigurationChangesModule\Rendering;
-use CCTC\ProjectConfigurationChangesModule\GetDbData;
+use CCTC\ConfigurationMonitorModule\Utility;
+use CCTC\ConfigurationMonitorModule\Rendering;
+use CCTC\ConfigurationMonitorModule\GetDbData;
 
 $maxDay = 7; // Default to 7 days if not set
 
@@ -132,7 +132,7 @@ if($showingCount < $pageSize) {
 }
 
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
-$moduleName = "project_configuration_changes";
+$moduleName = "configuration_monitor";
 $page = "systemChanges";
 
 //create the reset to return to default original state

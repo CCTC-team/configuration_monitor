@@ -1,15 +1,15 @@
 <?php
 
-namespace CCTC\ProjectConfigurationChangesModule;
+namespace CCTC\ConfigurationMonitorModule;
 
-use CCTC\ProjectConfigurationChangesModule\GetDbData;
-use CCTC\ProjectConfigurationChangesModule\Rendering;
+use CCTC\ConfigurationMonitorModule\GetDbData;
+use CCTC\ConfigurationMonitorModule\Rendering;
 
 use REDCap;
 use DateTime;
 use ExternalModules\AbstractExternalModule;
 
-class ProjectConfigurationChangesModule extends AbstractExternalModule {
+class ConfigurationMonitorModule extends AbstractExternalModule {
 
     
     public function validateSettings($settings): ?string

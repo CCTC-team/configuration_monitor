@@ -12,7 +12,7 @@ BEGIN
         INNER JOIN redcap_external_module_settings emSettings
             ON em.external_module_id = emSettings.external_module_id
             AND emSettings.project_id = NEW.project_id
-        WHERE em.directory_prefix = 'project_configuration_changes'
+        WHERE em.directory_prefix = 'configuration_monitor'
             AND emSettings.key = 'enabled'
             AND emSettings.value = 'true'
         ) as a
