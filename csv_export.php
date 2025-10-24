@@ -1,8 +1,14 @@
 <?php
+include "getparams.php";
 
-require_once APP_PATH_DOCROOT . "/Config/init_project.php";
+// Check if this is a system-level export (no project context needed)
+if ($tableName == 'system_changes') {
+    require_once APP_PATH_DOCROOT . "/Config/init_global.php";
+} else {
+    require_once APP_PATH_DOCROOT . "/Config/init_project.php";
+}
+
 $lang = Language::getLanguage('English');
-
 $modName = $module->getModuleDirectoryName();
 
 require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/ProjectConfigurationChangesModule.php";
@@ -41,12 +47,10 @@ use CCTC\ProjectConfigurationChangesModule\DataEntryLogModule;
 /** @var $yearActive */
 /** @var $maxDate */
 /** @var $minDate */
-/** @var $userDateFormat */
 /** @var $exportType */
 /** @var $tableName */
 /** @var $privilegeFilter */
 
-include "getparams.php";
 
 //run the query using the same params as on the page when the query called
 //runForExport means it only returns the actual data requested (and not data for filters)
@@ -66,10 +70,11 @@ if($exportType == 'everything') {
     $privilegeFilter = null; //all privileges
     $minDateDb = null;
     $maxDateDb = null;
+    $fieldName = null;
 }
 
 //run the stored proc
-$result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID);
+$result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName);
 
 // Apply privilege filter if set (for project_changes table)
 if ($tableName == 'project_changes' && !empty($privilegeFilter)) {
@@ -78,14 +83,24 @@ if ($tableName == 'project_changes' && !empty($privilegeFilter)) {
 // Set headers
 if($tableName == 'user_role_changes') {
     $headers = array("role id", "timestamp", "action", "changed privilege", "old value", "new value");
-    $download_filename = "_UserRoleChanges_";
+    // Set file name and path
+    $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName . '.csv';
+    $app_title = strip_tags(label_decode($Proj->project['app_title']));
+    $download_filename = camelCase(html_entity_decode($app_title, ENT_QUOTES)) . "_UserRoleChanges_" . date("Y-m-d_Hi") . ".csv";
+
+} else if ($tableName == 'project_changes') {
+    $headers = array("timestamp", "changed property", "old value", "new value");
+    // Set file name and path
+    $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName . '.csv';
+    $app_title = strip_tags(label_decode($Proj->project['app_title']));
+    $download_filename = camelCase(html_entity_decode($app_title, ENT_QUOTES)) . "_ProjectChanges_" . date("Y-m-d_Hi") . ".csv";
+
 } else {
     $headers = array("timestamp", "changed property", "old value", "new value");
-    $download_filename = "_ProjectChanges_";
+    // Set file name and path
+    $filename = APP_PATH_TEMP . date("YmdHis") . '_' . $tableName . '.csv';
+    $download_filename = "SystemChanges_" . date("Y-m-d_Hi") . ".csv";
 }
-
-// Set file name and path
-$filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName . '.csv';
 
 // Begin writing file from query result
 $fp = fopen($filename, 'w');
@@ -108,12 +123,22 @@ if ($fp && ($count != 0))
                 if (is_array($dcChanges)) {
                     foreach ($dcChanges as $dc) {
                         $row["id"] = $dc["id"];
-                        //timestamp
-                        $row["timestamp"] =
-                            $dc["timestamp"] == null || $dc["timestamp"] == ""
-                                ? ""
-                                : DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format($userDateFormat);
+                        $row["timestamp"] = DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format('Y-m-d H:i:s');
                         $row["action"] = $dc["action"];
+                        $row["privilege"] = $dc["privilege"];
+                        $row["oldValue"] = $dc["oldValue"];
+                        $row["newValue"] = $dc["newValue"];
+                        fputcsv($fp, $row, $delim);
+                    }
+                }
+            }
+        } else if ($tableName == 'project_changes') {
+            foreach ($result["dataChanges"] as $dc) {
+
+                $dcChanges = $module->recordDiff($dc, $tableName);
+                if (is_array($dcChanges)) {
+                    foreach ($dcChanges as $dc) {
+                        $row["timestamp"] = DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format('Y-m-d H:i:s');
                         $row["privilege"] = $dc["privilege"];
                         $row["oldValue"] = $dc["oldValue"];
                         $row["newValue"] = $dc["newValue"];
@@ -123,21 +148,11 @@ if ($fp && ($count != 0))
             }
         } else {
             foreach ($result["dataChanges"] as $dc) {
-
-                $dcChanges = $module->recordDiff($dc, $tableName);
-                if (is_array($dcChanges)) {
-                    foreach ($dcChanges as $dc) {
-                        //timestamp
-                        $row["timestamp"] =
-                            $dc["timestamp"] == null || $dc["timestamp"] == ""
-                                ? ""
-                                : DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format($userDateFormat);
-                        $row["privilege"] = $dc["privilege"];
-                        $row["oldValue"] = $dc["oldValue"];
-                        $row["newValue"] = $dc["newValue"];
-                        fputcsv($fp, $row, $delim);
-                    }
-                }
+                $row["timestamp"] = DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format('Y-m-d H:i:s');
+                $row["privilege"] = $dc["privilege"];
+                $row["oldValue"] = $dc["oldValue"];
+                $row["newValue"] = $dc["newValue"];
+                fputcsv($fp, $row, $delim);
             }
         }
 
@@ -146,10 +161,6 @@ if ($fp && ($count != 0))
         db_free_result($result);
 
         // Open file for downloading
-        $app_title = strip_tags(label_decode($Proj->project['app_title']));
-        // $app_title = $module->getTitle();
-        $download_filename = camelCase(html_entity_decode($app_title, ENT_QUOTES)) . $download_filename . date("Y-m-d_Hi") . ".csv";
-
         header('Pragma: anytextexeptno-cache', true);
         header("Content-type: application/csv");
         header("Content-Disposition: attachment; filename=$download_filename");
@@ -162,14 +173,14 @@ if ($fp && ($count != 0))
         fclose($fp);
         unlink($filename);
 
-        // Logging
-        Logging::logEvent("", Logging::getLogEventTable($projId),"MANAGE",$projId,"project_id = $projId", "Export user role changes (custom)");
+        // Logging for exports done from projects for User Role Changes and Project Changes
+        if ($tableName != 'system_changes')
+            Logging::logEvent("", Logging::getLogEventTable($projId),"MANAGE",$projId,"project_id = $projId", "Export user role changes (custom)");
 
     } catch (Exception $e) {
         $module->log("ex: ". $e->getMessage());
     }
-}
-else if ($count == 0) {
+} else if ($count == 0) {
 	print "There is no data available for export. Please return to the previous page.";
 } else
 {

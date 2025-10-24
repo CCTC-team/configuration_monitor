@@ -12,20 +12,7 @@ $oneWeekAgo = Utility::NowAdjusted('-7 days');
 $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
-// $userDateFormat = DateTimeRC::get_user_format_jquery();
-
-global $datetime_format;
-
-$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-if(ends_with($datetime_format, "_24")){
-    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-} else {
-    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-}
-
-$projId = $module->getProjectId();
-$maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
-
+$maxDay = 7;
 //get form values
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
 // $minDate = $oneWeekAgo;
@@ -71,6 +58,12 @@ if (isset($_GET['tableName'])) {
     $tableName = $_GET['tableName'];
 }
 
+if ($tableName != 'system_changes') {
+    $projId = $module->getProjectId();
+    $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
+
+}
+
 //use the export_type param to determine what to export and adjust params accordingly
 $exportType = 'everything'; //default
 if (isset($_GET['export_type'])) {
@@ -83,6 +76,11 @@ if (isset($_GET['role_id'])) {
     $roleID = $_GET['role_id'];
 }
 
+$fieldName = NULL; //default to NULL meaning all fields
+if (isset($_GET['field_name'])) {
+    $fieldName = $_GET['field_name'];
+}
+
 $privilegeFilter = ''; //default to empty meaning all privileges
 if (isset($_GET['privilege_filter'])) {
     $privilegeFilter = $_GET['privilege_filter'];
@@ -91,6 +89,3 @@ if (isset($_GET['privilege_filter'])) {
 $skipCount = (int)$pageSize * (int)$pageNum;
 $minDateDb = Utility::DateStringToDbFormat($minDate);
 $maxDateDb = Utility::DateStringToDbFormat($maxDate);
-
-
-// echo "Result(getparams): $projId, $maxTime, $skipCount, $pageSize, $dataDirection, $roleID";

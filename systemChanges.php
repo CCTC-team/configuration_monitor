@@ -132,14 +132,13 @@ if($showingCount < $pageSize) {
     $skipTo = $skipCount + (int)$pageSize;
 }
 
- // $csvExportPage = $module->getUrl('csv_export.php');
-
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
 $moduleName = "project_configuration_changes";
 $page = "systemChanges";
 
 //create the reset to return to default original state
 $resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page";
+// echo "resetUrl: $resetUrl";
 $doReset = "window.location.href='$resetUrl';";
 $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
 $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);
@@ -161,7 +160,8 @@ echo "<script type='text/javascript'>
             finalUrl += '&export_type=' + exportType;
             finalUrl += '&tableName=' + tableName;
 
-            window.location.href=finalUrl;                
+            window.location.href=finalUrl;
+            // console.log(finalUrl);
         }
         
         function resetForm() { 
@@ -169,7 +169,7 @@ echo "<script type='text/javascript'>
             $doReset 
         }
     </script>";
-// echo "<br>totalpages: $totPages<br>";
+
 $exportIcons = 
     "<div class='blue' style='padding-left:8px; padding-right:8px; border-width:1px; '>    
     <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
@@ -225,15 +225,15 @@ $exportIcons =
             $pagingInfo
             <button class='clear-button' style='margin-left: 10px' type='button' onclick='resetForm()'><i class='fas fa-broom'></i> reset</button>
             <div class='ms-auto'>            
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"current_page\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-records' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"current_page\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export current page
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"all_pages\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-records' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"all_pages\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export all pages
                 </button>
-                <button class='jqbuttonmed ui-button ui-corner-all ui-widget' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"everything\", \"$tableName\")'>
+                <button class='jqbuttonmed ui-button ui-corner-all ui-widget export-all' type='button' onclick='cleanUpParamsAndRun(\"$moduleName\", \"everything\", \"$tableName\")'>
                     <img src='" . APP_PATH_WEBROOT . "/Resources/images/xls.gif' style='position: relative;top: -1px;' alt=''>
                     Export everything ignoring filters
                 </button>                                    
@@ -253,7 +253,6 @@ if ($showingCount == 0) {
             button.disabled = true;
         });
     </script>";
-   // return;
 } else {
     //gets the users preferred data format which is used as data attribute on the datetimepicker field
     global $datetime_format;
