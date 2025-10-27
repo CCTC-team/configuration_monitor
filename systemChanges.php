@@ -14,7 +14,7 @@ use CCTC\ConfigurationMonitorModule\Utility;
 use CCTC\ConfigurationMonitorModule\Rendering;
 use CCTC\ConfigurationMonitorModule\GetDbData;
 
-$maxDay = $module->getSystemSetting('max-days-sys') ?? 7; // Default to 7 days if not set
+$maxDay = $module->getSystemSetting('sys-max-days-page') ?? 7; // Default to 7 days if not set
 // echo "maxDay: $maxDay";
 
 echo "

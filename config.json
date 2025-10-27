@@ -48,7 +48,7 @@
       "super-users-only": true
     },
     {
-      "key": "max-days-sys",
+      "key": "sys-max-days-page",
       "name": "Specify the maximum number of days to look back when displaying system configuration changes on the page (default 7 days)",
       "type": "text",
       "repeatable": false,

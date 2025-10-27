@@ -44,6 +44,29 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             }
         }
 
+        // Validate numeric settings for sys-max-days-page
+        if (array_key_exists("sys-max-days-page", $settings) and !empty($settings['sys-max-days-page'])) {
+            if(intval($settings['sys-max-days-page']) != $settings['sys-max-days-page']) {
+                return "The maximum number of days should be a number";
+            }
+        }
+
+        // Validate system email settings
+        if (array_key_exists("sys-email-enable", $settings) && array_key_exists("sys-to-emailids", $settings) && array_key_exists("sys-from-emailid", $settings) && array_key_exists("sys-max-hours-email", $settings)) {
+            $lastIndex = array_key_last($settings['sys-to-emailids']);
+            if(!empty($settings['sys-to-emailids'][$lastIndex]) or !empty($settings['sys-from-emailid']) or !empty($settings['sys-email-enable']) or !empty($settings['sys-max-hours-email'])) {
+                if(empty($settings['sys-to-emailids'][$lastIndex]) or empty($settings['sys-from-emailid']) or empty($settings['sys-email-enable']))
+                    return "Please ensure email options are configured correctly";
+            }
+        }
+
+        // Validate numeric settings for max-hours-email
+        if (array_key_exists("sys-max-hours-email", $settings) and !empty($settings['sys-max-hours-email'])) {
+            if(intval($settings['sys-max-hours-email']) != $settings['sys-max-hours-email']) {
+                return "The maximum number of hours for email notifications should be a number";
+            }
+        }
+
         return null;
     }
 
