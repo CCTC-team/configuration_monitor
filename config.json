@@ -149,9 +149,9 @@
   ],
   "crons": [
     {
-      "cron_name": "project_configuration_change_notifications",
-      "cron_description": "Send email notifications for recent project configuration and user role changes",
-      "method": "projectConfigCron", 
+      "cron_name": "configuration_monitor_cron",
+      "cron_description": "Send email notifications for recent configuration changes",
+      "method": "configMonitorCron",
       "cron_frequency": "60",
       "cron_max_run_time": "3000"
     }

@@ -430,7 +430,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             $projectTitle = $this->getTitle();
 
             $subject = "Project Configuration Changes Log";
-            $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $max_days_email hours.<br>";
+            $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $maxHour hours.<br>";
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
 
             // make User Role Table only if there are changes to User Roles
@@ -469,10 +469,82 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         }
     }
 
-    function projectConfigCron($cronInfo = array()) {
+    function sendSysEmail(): void
+    {
+        $modName = $this->getModuleDirectoryName();
+
+        require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/GetDbData.php";
+        require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
+        require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
+
+        $tableName = 'system_changes';
+
+        // run the stored proc if user role changes is enabled
+        if ($this->getSystemSetting('sys-email-enable')) {
+            $maxHour = $this->getSystemSetting('sys-max-hours-email') ?? 3; // Default to 3 hours if not set
+            $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
+            $minDateDb = Utility::DateStringToDbFormat($minDate);
+            $maxDateDb = NULL; //no max date
+            $projId = NULL; //system level
+            $roleID = NULL; //all roles
+            $fieldName = NULL;
+            $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", $tableName, $roleID, $fieldName);
+            $dcs = $logDataSets['dataChanges'];
+        }
+
+        if (count($dcs) != 0) { // Only send email if there are changes
+
+            global $default_datetime_format;
+
+            $userDateFormat = str_replace('y', 'Y', strtolower($default_datetime_format));
+            if(ends_with($default_datetime_format, "_24")){
+                $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+            } else {
+                $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+            }
+
+            // Prepare to-email parameters
+            $to_emails = $this->getSystemSetting('sys-to-emailids');
+            $to = null;
+            // Handle multiple email addresses separated by commas
+            foreach ($to_emails as $to_email) {
+                $to .= $to_email . ",";
+            }
+
+            $from = $this->getSystemSetting('sys-from-emailid');
+
+            $subject = "System Configuration Changes Log";
+            $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the system configuration within the last $maxHour hours.<br>";
+            $body .= "<h4>System Configuration Changes</h4>";
+            $body .= "<p><i>This log shows changes made to system settings.</i></p>";
+
+            $table = self::makeTable($dcs, $userDateFormat, $tableName);
+            $body .= $table;
+            $body .= "<br><br>";
+
+            $body .= "<b style='color: #f00a0aff;'>Note: This is an automated email. Please do not reply to this message.</b>";
+            $body .= "<br><br>Best regards,<br>Your REDCap Team";
+
+            $email_sent = REDCap::email(
+                $to,           // Recipient email address
+                $from,         // Sender email address
+                $subject,      // Email subject
+                $body      // Email body
+            );
+
+            if ($email_sent) {
+                $this->log("System Email sent successfully!");
+            } else {
+                $this->log("Failed to send system email.");
+            }
+        }
+    }
+
+    function configMonitorCron($cronInfo = array()) {
         try {
             $this->log("Starting the \"{$cronInfo['cron_description']}\" cron job...");
 
+            // Loop through all projects with the module enabled
             foreach ($this->getProjectsWithModuleEnabled() as $localProjectId) {
                 $this->setProjectId($localProjectId);
 
@@ -480,10 +552,18 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                     $this->sendEmail();
                 }
             }
-        
+
+            // Check if Module is enabled on the system
+            if ($this->isModuleEnabled('configuration_monitor')) {
+                if ($this->getSystemSetting('sys-email-enable')) { // Check if email is enabled
+                    $this->sendSysEmail();
+                }
+            }
+
             return "The \"{$cronInfo['cron_description']}\" cron job completed successfully.";
+
         } catch ( \Throwable $e ) {
-            $this->log("Error updating projects", [ "error" => $e->getMessage() ]);
+            $this->log("The \"{$cronInfo['cron_name']}\" cron job failed: ", [ "error" => $e->getMessage() ]);
             return "The \"{$cronInfo['cron_name']}\" cron job failed: " . $e->getMessage();
         }
     }
