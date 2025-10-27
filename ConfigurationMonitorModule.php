@@ -331,7 +331,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             $table = "<table id='{$tableName}_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 5%;padding: 5px'>Role ID</th>
-                <th style='width: 15%;padding: 5px'>Timestamp</th>
+                <th style='width: 15%;padding: 5px'>Date / Time</th>
                 <th style='width: 15%;padding: 5px'>Action</th>
                 <th style='width: 15%;padding: 5px'>Changed Privilege</th>
                 <th style='width: 15%;padding: 5px'>Old Value</th>
@@ -340,7 +340,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         } else {
             $table = "<table id='{$tableName}_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
-                <th style='width: 15%;padding: 5px'>Timestamp</th>
+                <th style='width: 15%;padding: 5px'>Date / Time</th>
                 <th style='width: 15%;padding: 5px'>Changed Property</th>
                 <th style='width: 15%;padding: 5px'>Old Value</th>
                 <th style='width: 15%;padding: 5px'>New Value</th>
