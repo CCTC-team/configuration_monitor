@@ -470,7 +470,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             $from = $this->getProjectSetting('from-emailid');
             $projectTitle = $this->getTitle();
 
-            $subject = "Project Configuration Changes Log";
+            $subject = "Project Configuration Changes Notification";
             $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the project configuration within the last $maxHour hours.<br>";
             $body .= "<h3>Project Configuration Changes for Project ID: $projId - $projectTitle</h3>";
 
@@ -554,7 +554,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
             $from = $this->getSystemSetting('sys-from-emailid');
 
-            $subject = "System Configuration Changes Log";
+            $subject = "System Configuration Changes Notification";
             $body = "Dear User,<br><br>Please find attached the log detailing the recent changes to the system configuration within the last $maxHour hours.<br>";
             $body .= "<h4>System Configuration Changes</h4>";
             $body .= "<p><i>This log shows changes made to system settings.</i></p>";
