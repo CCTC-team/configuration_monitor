@@ -28,19 +28,28 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             }
         }
 
-        // Validate email settings
+        // Validate email settings if enabled
         if (array_key_exists("email-enable", $settings) && array_key_exists("to-emailids", $settings) && array_key_exists("from-emailid", $settings) && array_key_exists("max-hours-email", $settings)) {
-            $lastIndex = array_key_last($settings['to-emailids']);
-            if(!empty($settings['to-emailids'][$lastIndex]) or !empty($settings['from-emailid']) or !empty($settings['email-enable']) or !empty($settings['max-hours-email'])) {
-                if(empty($settings['to-emailids'][$lastIndex]) or empty($settings['from-emailid']) or empty($settings['email-enable']))
-                    return "Please ensure email options are configured correctly";
-            }
-        }
+            if(!empty($settings['email-enable'])) {
 
-        // Validate numeric settings for max-hours-email
-        if (array_key_exists("max-hours-email", $settings) and !empty($settings['max-hours-email'])) {
-            if(intval($settings['max-hours-email']) != $settings['max-hours-email']) {
-                return "The maximum number of hours for email notifications should be a number";
+                // Validate email for from-emailid
+                if(filter_var($settings['from-emailid'], FILTER_VALIDATE_EMAIL) === false) {
+                    return "Invalid From Email ID format";
+                }
+
+                // Validate email for to-emailids
+                foreach ($settings['to-emailids'] as $to_email) {
+                    if(filter_var($to_email, FILTER_VALIDATE_EMAIL) === false) {
+                        return "Invalid To Email ID format";
+                    }
+                }
+
+                // Validate numeric settings for max-hours-email
+                if (array_key_exists("max-hours-email", $settings) and !empty($settings['max-hours-email'])) {
+                    if(intval($settings['max-hours-email']) != $settings['max-hours-email']) {
+                        return "The maximum number of hours for email notifications should be a number";
+                    }
+                }
             }
         }
 
@@ -51,19 +60,28 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             }
         }
 
-        // Validate system email settings
+        // Validate system email settings if enabled
         if (array_key_exists("sys-email-enable", $settings) && array_key_exists("sys-to-emailids", $settings) && array_key_exists("sys-from-emailid", $settings) && array_key_exists("sys-max-hours-email", $settings)) {
-            $lastIndex = array_key_last($settings['sys-to-emailids']);
-            if(!empty($settings['sys-to-emailids'][$lastIndex]) or !empty($settings['sys-from-emailid']) or !empty($settings['sys-email-enable']) or !empty($settings['sys-max-hours-email'])) {
-                if(empty($settings['sys-to-emailids'][$lastIndex]) or empty($settings['sys-from-emailid']) or empty($settings['sys-email-enable']))
-                    return "Please ensure email options are configured correctly";
-            }
-        }
+            if(!empty($settings['sys-email-enable'])) {
 
-        // Validate numeric settings for max-hours-email
-        if (array_key_exists("sys-max-hours-email", $settings) and !empty($settings['sys-max-hours-email'])) {
-            if(intval($settings['sys-max-hours-email']) != $settings['sys-max-hours-email']) {
-                return "The maximum number of hours for email notifications should be a number";
+                // Validate email for sys-from-emailid
+                if(filter_var($settings['sys-from-emailid'], FILTER_VALIDATE_EMAIL) === false) {
+                    return "Invalid From Email ID format";
+                }
+
+                // Validate email for sys-to-emailids
+                foreach ($settings['sys-to-emailids'] as $to_email) {
+                    if(filter_var($to_email, FILTER_VALIDATE_EMAIL) === false) {
+                        return "Invalid To Email ID format";
+                    }
+                }
+
+                // Validate numeric settings for max-hours-email
+                if (array_key_exists("sys-max-hours-email", $settings) and !empty($settings['sys-max-hours-email'])) {
+                    if(intval($settings['sys-max-hours-email']) != $settings['sys-max-hours-email']) {
+                        return "The maximum number of hours for email notifications should be a number";
+                    }
+                }
             }
         }
 
