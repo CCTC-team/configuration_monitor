@@ -66,7 +66,7 @@
     {
       "key": "sys-from-emailid",
       "name": "Provide the email address used to send notifications",
-      "type": "email",
+      "type": "text",
       "repeatable": false,
       "required": false,
       "super-users-only": true
@@ -74,7 +74,7 @@
     {
       "key": "sys-to-emailids",
       "name": "Provide the email address to receive configuration change notifications",
-      "type": "email",
+      "type": "text",
       "repeatable": true,
       "required": false,
       "super-users-only": true
@@ -125,7 +125,7 @@
     {
       "key": "from-emailid",
       "name": "Provide the email address used to send notifications",
-      "type": "email",
+      "type": "text",
       "repeatable": false,
       "required": false,
       "super-users-only": true
@@ -133,7 +133,7 @@
     {
       "key": "to-emailids",
       "name": "Provide the email address to receive configuration change notifications",
-      "type": "email",
+      "type": "text",
       "repeatable": true,
       "required": false,
       "super-users-only": true
