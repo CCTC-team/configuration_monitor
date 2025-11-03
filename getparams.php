@@ -12,6 +12,10 @@ $oneWeekAgo = Utility::NowAdjusted('-7 days');
 $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
+if (isset($_GET['tableName'])) {
+    $tableName = $_GET['tableName'];
+}
+
 if ($tableName != 'system_changes') {
     $projId = $module->getProjectId();
     $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
@@ -62,16 +66,12 @@ if (isset($_GET['pagenum'])) {
     $pageNum = $_GET['pagenum'];
 }
 
-if (isset($_GET['tableName'])) {
-    $tableName = $_GET['tableName'];
-}
 
 //use the export_type param to determine what to export and adjust params accordingly
 $exportType = 'everything'; //default
 if (isset($_GET['export_type'])) {
     $exportType = $_GET['export_type'];
 }
-
 
 $roleID = NULL; //default to NULL meaning all roles
 if (isset($_GET['role_id'])) {
