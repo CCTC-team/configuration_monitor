@@ -7,22 +7,35 @@ FOR EACH ROW
 BEGIN
 	DECLARE old_value TEXT;
 	DECLARE new_value TEXT;
-    
-	-- Compute old and OLD concatenated values
-    SET old_value = COALESCE(OLD.value, '');
+    DECLARE module_enabled INT DEFAULT 0;
 
-    SET new_value = COALESCE(NEW.value, '');
+    -- Check if the module is enabled for the project
+    SELECT count(*) INTO module_enabled 
+    FROM redcap_external_modules em
+    INNER JOIN redcap_external_module_settings emSettings
+        ON em.external_module_id = emSettings.external_module_id
+    WHERE em.directory_prefix = 'configuration_monitor'
+        AND emSettings.key = 'system-changes-enable'
+    AND emSettings.value = 'true' ;
 
-    -- Only insert if old and OLD values are different
-    IF ((NEW.field_name != 'temp_files_last_delete' and NEW.field_name != 'report_stats_url') AND (old_value <> new_value)) THEN
-        INSERT INTO system_changelog (
-            field_name, old_value, new_value, ts
-        ) VALUES (
-            NEW.field_name,
-            old_value,
-            new_value,
-            NOW()
-        );
+    -- Only proceed if module is enabled for the project
+    IF module_enabled > 0 THEN
+        -- Compute old and OLD concatenated values
+        SET old_value = COALESCE(OLD.value, '');
+
+        SET new_value = COALESCE(NEW.value, '');
+
+        -- Only insert if old and OLD values are different
+        IF ((NEW.field_name != 'temp_files_last_delete' and NEW.field_name != 'report_stats_url') AND (old_value <> new_value)) THEN
+            INSERT INTO system_changelog (
+                field_name, old_value, new_value, ts
+            ) VALUES (
+                NEW.field_name,
+                old_value,
+                new_value,
+                NOW()
+            );
+        END IF;
     END IF;
 END;
 

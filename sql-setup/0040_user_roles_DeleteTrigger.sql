@@ -7,8 +7,8 @@ BEGIN
 	DECLARE module_enabled INT DEFAULT 0;
     
     -- Check if the module is enabled for the project
-    SELECT count(*) INTO module_enabled FROM
-	    (SELECT em.external_module_id, emSettings.project_id FROM redcap_external_modules em
+    SELECT count(*) INTO module_enabled 
+	FROM (SELECT em.external_module_id, emSettings.project_id FROM redcap_external_modules em
         INNER JOIN redcap_external_module_settings emSettings
             ON em.external_module_id = emSettings.external_module_id
             AND emSettings.project_id = OLD.project_id
