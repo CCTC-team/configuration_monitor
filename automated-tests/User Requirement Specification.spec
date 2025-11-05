@@ -4,22 +4,21 @@ E.129.300 - The system shall support the ability to make Configuration Monitor e
 E.129.400 - The system shall support the ability to allow non-admins to enable Configuration Monitor external module on projects.
 E.129.500 - The system shall support the ability to hide Configuration Monitor external module from non-admins in the list of enabled modules on each project.
 E.129.600 - The system shall support the ability to view the usage of Configuration Monitor external module.
-E.129.700 - The system shall preserve changelog tables (user_role_changelog, project_changelog, system_changelog) when the module is disabled to maintain historical audit data.
-E.129.800 - The system shall register a cron job (configuration_monitor_cron) when the module is enabled at the system level.
-E.129.900 - The system shall de-register the configuration_monitor_cron job when the module is disabled at the system level.
-E.129.1000 - The system shall support the ability to enable/disable User Role Changes tracking at the project level via the user-role-changes-enable setting.
-E.129.1100 - The system shall support the ability to enable/disable Project Changes tracking at the project level via the project-changes-enable setting.
-E.129.1200 - The system shall support the ability to enable/disable System Changes tracking at the system level via the system-changes-enable setting.
-E.129.1300 - The system shall require at least one tracking option (user-role-changes-enable or project-changes-enable) to be enabled at the project level.
-E.129.1400 - The system shall support the ability to configure the maximum number of days to display on change log pages at the project level (max-days-page setting).
-E.129.1500 - The system shall support the ability to configure the maximum number of days to display on system change log page at the system level (sys-max-days-page setting).
-E.129.1600 - The system shall support the ability to enable/disable email notifications at the project level via the email-enable setting.
-E.129.1700 - The system shall support the ability to enable/disable system-level email notifications via the sys-email-enable setting.
-E.129.1800 - The system shall support the ability to configure email settings for project-level notifications.
-E.129.1900 - The system shall support the ability to configure email settings for system-level notifications.
-E.129.2000 - The system shall validate that email settings are complete when email notifications are enabled at the project level.
-E.129.2100 - The system shall validate that email settings are complete when email notifications are enabled at the system level.
-E.129.2200 - The system shall validate that numeric settings (max-days-page, max-hours-email, sys-max-days-page, sys-max-hours-email) contain valid numeric values.
+E.129.700 - The system shall support the ability to enable/disable System Changes tracking at the system level.
+E.129.800 - The system shall support the ability to enable/disable Project Changes tracking at the project level via the project-changes-enable setting.
+E.129.900 - The system shall support the ability to enable/disable User Role Changes tracking at the project level via the user-role-changes-enable setting.
+E.129.1000 - The system shall register a cron job (configuration_monitor_cron) when the module is enabled at the system level.
+E.129.1100 - The system shall preserve changelog tables (user_role_changelog, project_changelog, system_changelog) when the module is disabled to maintain historical audit data.
+E.129.1200 - The system shall require at least one tracking option (user-role-changes-enable or project-changes-enable) to be enabled at the project level.
+E.129.1300 - The system shall support the ability to configure the maximum number of days to display on change log pages at the project level (max-days-page setting).
+E.129.1400 - The system shall support the ability to configure the maximum number of days to display on system changes page and maximum hours for email notifications at the system level.
+E.129.1500 - The system shall support the ability to enable/disable email notifications at the project level via the email-enable setting.
+E.129.1600 - The system shall support the ability to enable/disable system-level email notifications via the sys-email-enable setting.
+E.129.1700 - The system shall support the ability to configure email settings for project-level notifications.
+E.129.1800 - The system shall support the ability to configure email settings for system-level notifications.
+E.129.1900 - The system shall validate that email settings are complete when email notifications are enabled at the project level.
+E.129.2000 - The system shall validate that email settings are complete when email notifications are enabled at the system level.
+E.129.2100 - The system shall validate that numeric settings (max-days-page, max-hours-email, sys-max-days-page, sys-max-hours-email) contain valid numeric values.
 E.129.2300 - The system shall restrict project-level Configuration Monitor settings to super users only.
 E.129.2400 - The system shall restrict system-level Configuration Monitor settings to super users only.
 E.129.2500 - The system shall support the ability to display User Role Changes (Insert, Update, Delete operations) in a tabular format showing Role ID, Timestamp, Action, Changed Privilege, Old Value, and New Value.

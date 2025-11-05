@@ -19,7 +19,7 @@ $maxDay = $module->getSystemSetting('sys-max-days-page') ?? 7; // Default to 7 d
 
 echo "
 <h4 style='margin-top: 0;'>
-    <i class='fas fa-clipboard-list'></i> Changes in System settings
+    <i class='fas fa-clipboard-list'></i> Changes in System Settings
 </h4>
 <br/>
 <p>
