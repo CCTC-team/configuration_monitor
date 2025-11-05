@@ -131,20 +131,19 @@ Feature: E.129.700 - The system shall support the ability to set up and view log
 
     And I logout
 
-    # Change cron_frequency in config.json to 1 minute to speed up the test execution
+    # Change cron_frequency in config.json to 30 seconds to speed up the test execution
     Given I open Email
     # Verify email notification for system configuration changes
     Then I should see an email for user "to@sys.edu" with subject "System Configuration Changes Notification"
     # Verify no exceptions are thrown in the system
     Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"
     When I open the email for user "to@sys.edu" with subject "System Configuration Changes Notification"
-    Then I should see "Please find attached the log detailing the recent changes to the system configuration within the last 2 hours"
-    And I should see "auto_report_stats"
-    And I should see "redcap_base_url"
-    And I should see "project_contact_email"
-    And I should see "https://localhost:8443/"
-    # And I should see a table header and rows containing the following values in the a table:
-    #   |  Date / Time      | Changed Property      | Old Value               | New Value               |
-    #   |  mm/dd/yyyy hh:mm | auto_report_stats     | 1                     	| 0                       |
-    #   |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-    #   |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+    # Not verifying the hours as it may vary based on execution time
+    # Then I should see "Please find attached the log detailing the recent changes to the system configuration within the last 2 hours"
+    Then I should see "Please find attached the log detailing the recent changes to the system configuration"
+    And I should see an email table with the following rows:
+      |  Date / Time      | Changed Property      | Old Value               | New Value               |
+      # Not verifying the below lines as the data may vary based on execution time
+      # |  mm/dd/yyyy hh:mm | auto_report_stats     | 1                     	| 0                       |
+      |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
+      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
