@@ -16,14 +16,6 @@ emTableName = {
 }
 
 
-emTableName = {
-    'data entry log' : '#log-data-entry-event',
-    'system changes' : '#system_changes_table',
-    'project changes' : '#project_changes_table',
-    'user role changes' : '#user_role_changes_table',
-}
-
-
 /**
  * @module ExternalModule
  * @author Mintoo Xavier <min2xavier@gmail.com>
