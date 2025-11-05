@@ -24,7 +24,7 @@ Feature: E.129.700 - The system shall support the ability to set up and view log
 
     When I click on the link labeled "System Changes"
     Then I should see "Changes in System settings"
-    And I should see "This log shows changes made to system settings in the last 7 days."
+    And I should see "This log shows changes made to system settings"
     And I should see "No changes have been made to the system settings."
 
     # EMAIL ADDRESS SET FOR REDCAP ADMIN - without it, emails are not send out from system
@@ -35,7 +35,7 @@ Feature: E.129.700 - The system shall support the ability to set up and view log
     Then I should see "Your system configuration values have now been changed"
 
     When I click on the link labeled "System Changes"
-    Then I should see "This log shows changes made to system settings in the last 7 days"
+    Then I should see "This log shows changes made to system settings"
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
@@ -83,7 +83,7 @@ Feature: E.129.700 - The system shall support the ability to set up and view log
     Then I should see "Your system configuration values have now been changed"
 
     When I click on the link labeled "System Changes" 
-    Then I should see "This log shows changes made to system settings in the last 4 days"
+    Then I should see "This log shows changes made to system settings"
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | auto_report_stats     | 1                     	| 0                       |

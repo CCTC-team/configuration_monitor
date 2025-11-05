@@ -23,7 +23,7 @@ echo "
 </h4>
 <br/>
 <p>
-    This log shows changes made to system settings in the last $maxDay days.
+    This log shows changes made to system settings.
 </p>
 ";
 
