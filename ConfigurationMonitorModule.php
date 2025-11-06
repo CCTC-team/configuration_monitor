@@ -90,13 +90,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
     public function redcap_module_link_check_display($project_id, $link) {
 
-        // From Control Center only superusers should see the link
-        if ($project_id === NULL) {
-            if (!$this->isSuperUser()) {
-                return null;
-            }
-        } else {
-            // In project context, check user rights
+        // In project context, check user rights
+        if ($project_id != NULL) {
             $user = $this->getUser();
             $rights = $user->getRights();
 
