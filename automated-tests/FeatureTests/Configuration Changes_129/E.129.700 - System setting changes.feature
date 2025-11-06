@@ -28,7 +28,6 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     And I should see "This log shows changes made to system settings"
     And I should see "No changes have been made to the system settings."
 
-    # EMAIL ADDRESS SET FOR REDCAP ADMIN - without it, emails are not send out from system
     When I click on the link labeled "General Configuration"
     Then I should see "General Configuration"
     When I enter "redcap@test.instance" into the input field labeled "Email Address of REDCap Administrator"
@@ -69,12 +68,12 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     And I should NOT see "auto_report_stats"
     And I should NOT see "redcap_base_url"
 
+    # E.129.2900 - validate exporting system changes to CSV
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "SystemChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property      | old value               | new value               |
       | project_contact_email |                        	| redcap@test.instance    |
 
-    # E.129.2900 - validate exporting all system changes to CSV
     When I click on the button labeled "Export everything ignoring filters"
     Then the downloaded CSV with filename "SystemChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property      | old value               | new value               |
