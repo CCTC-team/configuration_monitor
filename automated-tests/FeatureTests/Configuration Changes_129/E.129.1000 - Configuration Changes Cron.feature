@@ -1,4 +1,4 @@
-Feature: E.129.700 - The system shall allow enabling or disabling System Changes tracking at the system level.
+Feature: E.129.1000 - The system shall register a cron job (configuration_monitor_cron) when the module is enabled at the system level.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
@@ -15,7 +15,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     Then I should see "Configuration Monitor - v1.0.0"
 
     # Change cron_frequency in config.json to 30 seconds for email notification test
-    And I wait for 32 seconds
+    And I wait for 35 seconds
     # E.129.1000
     When I click on the link labeled "Cron Jobs"
     Then I should see a table header and row containing the following values in a table:
