@@ -1,0 +1,31 @@
+Feature: E.129.700 - The system shall allow enabling or disabling System Changes tracking at the system level.
+
+  As a REDCap end user
+  I want to see that Configuration Monitor External Module work as expected
+
+  Scenario: Enable external Module from Control Center
+    Given I login to REDCap with the user "Test_Admin"
+    # Enable external module from Control Center
+    When I click on the link labeled "Control Center"
+    Given I click on the link labeled exactly "Manage"
+    Then I should see "External Modules - Module Manager"
+    When I click on the button labeled "Enable a module"
+    And I click on the button labeled Enable for the external module named "Configuration Monitor"
+    And I click on the button labeled "Enable" in the dialog box
+    Then I should see "Configuration Monitor - v1.0.0"
+
+    # Change cron_frequency in config.json to 30 seconds for email notification test
+    And I wait for 32 seconds
+    # E.129.1000
+    When I click on the link labeled "Cron Jobs"
+    Then I should see a table header and row containing the following values in a table:
+      | Job Name                                           | Description                                                |
+      | configuration_monitor_cron (configuration_monitor) |  Send email notifications for recent configuration changes |
+
+    # Disable external module in Control Center
+    Given I click on the link labeled exactly "Manage"
+    When I click on the button labeled exactly "Disable"
+    Then I should see "Disable module?" in the dialog box
+    When I click on the button labeled "Disable module" in the dialog box
+    Then I should NOT see "Configuration Monitor - v0.0.0"
+    And I logout
