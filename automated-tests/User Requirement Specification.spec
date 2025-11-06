@@ -24,5 +24,6 @@ E.129.2300 - The system shall restrict access to Project Changes and User Role C
 E.129.2400 - The system shall display the System Changes link in the Control Center's External Modules section when System Changes is enabled.
 E.129.2500 - The system shall display the Project Changes link when Project Changes is enabled.
 E.129.2600 - The system shall display the Project Changes link when User Role Changes is enabled.
-E.129.2700 - The system shall send automated email summaries when changes occur and email notifications are enabled at the system or project level.
-E.129.2800 - The system shall support the ability to export configuration changes to CSV format for System Changes, Project Changes, and User Role Changes.
+E.129.2700 - The system shall send automated email summaries containing System Changes when changes occur and email notifications are enabled.
+E.129.2800 - The system shall send automated email summaries containing Project Changes and/or User Role Changes when changes occur and email notifications are enabled at the project level.
+E.129.2900 - The system shall support the ability to export configuration changes to CSV format for System Changes, Project Changes, and User Role Changes.
