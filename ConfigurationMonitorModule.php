@@ -320,9 +320,18 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                                 }
                             }
                         }
-                    } else {
+                    } else if ($tableName == 'user_role_changes') {
                         // For other privileges, show full difference
-
+                        $finalRow[] = [
+                            'id' => $dc["id"],
+                            'privilege' => $columnNames[$i],
+                            'oldValue' => $o,
+                            'newValue' => $n,
+                            'timestamp' => $dc["timestamp"],
+                            'action' => $dc["action"]
+                        ];
+                    } else {
+                        // For project changes, show full difference
                         $finalRow[] = [
                             'privilege' => $columnNames[$i],
                             'oldValue' => $o,
