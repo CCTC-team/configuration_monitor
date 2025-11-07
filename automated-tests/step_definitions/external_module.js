@@ -268,14 +268,15 @@ Given('I should see a table header and rows with rowspan containing the followin
 /**
  * @module MailHog
  * @author Mintoo Xavier <min2xavier@gmail.com>
- * @example I should see an email table with the following rows:
+ * @example I should see a {emTableName} table in the email with the following rows:
+ * @param {string} emTableName - available options: 'monitoring logging', 'data entry log', 'system changes', 'project changes', 'user role changes'
  * @param {DataTable} dataTable - Gherkin DataTable with headers and rows
  * @description Verifies a plain HTML table in emails (e.g., MailHog) contains the specified headers and rows.
  * Supports date/time patterns like mm/dd/yyyy hh:mm.
  */
-Given('I should see an email table with the following rows:', (dataTable) => {
+Given('I should see a {emTableName} table in the email with the following rows:', (tableName, dataTable) => {
     const rows = dataTable.rawTable
-
+    
     // First row contains headers
     const expectedHeaders = rows[0]
     const expectedRows = rows.slice(1)
@@ -285,7 +286,7 @@ Given('I should see an email table with the following rows:', (dataTable) => {
         const iframeBody = $iframe.contents().find('body')
 
         // Find table in the iframe body
-        cy.wrap(iframeBody).find('table').then(($table) => {
+        cy.wrap(iframeBody).find(emTableName[tableName]).then(($table) => {
 
             cy.wrap($table).find('tr').then(($allRows) => {
                 // Find header row - could be in thead or first row with th/td elements

@@ -75,7 +75,7 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
     Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"
     When I open the email for user "to@sys.edu" with subject "System Configuration Changes Notification"
     Then I should see "Please find attached the log detailing the recent changes to the system configuration within the last 3 hours"
-    And I should see an email table with the following rows:
+    And I should see a system changes table in the email with the following rows:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
       |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
