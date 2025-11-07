@@ -23,7 +23,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Then I should see "Available Modules"
     And I click on the button labeled Enable for the external module named "Configuration Monitor - v1.0.0"
     Then I should see "Configuration Monitor - v1.0.0"
-    And I should NOT see a link labeled "Project Changes"
+    And I should NOT see a link labeled "User Role Changes"
 
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
@@ -38,81 +38,87 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     And I should see "This log shows changes made to user role privileges"
     And I should see "No changes to user role privileges have been made in this project"
 
-    When I click on the link labeled "User Rights"
+    ##ACTION: Insert New User role
+    Given I click on the link labeled "User Rights"
+    And I enter "TestRole" into the field with the placeholder text of "Enter new role name"
+    And I click on the button labeled "Create role"
+    Then I should see a dialog containing the following text: "Creating new role"
+    When I click on the button labeled "Create role" in the dialog box
+    Then I should see a table header and rows containing the following values in a table:
+      | Role name   |
+      | DataEntry   |
+      | DataManager |
+      | Monitor     |
+      | TestRole    |
+
+    When I click on the link labeled "User Role Changes"
+    And I should see "This log shows changes made to user role privileges"
+    And I should see a table header and rows containing the following values in the a table:
+      | Role ID |  Action | Date / Time      | Changed Privilege | Old Value | New Value                                                                                                                                          |
+      | 4       |  INSERT | mm/dd/yyyy hh:mm | All Privileges    | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+
+    And I should see 1 row in the user role changes table
+
+    ##ACTION: Update User role
+    Given I click on the link labeled "User Rights"
     And I click on the link labeled "DataManager"
     Then I should see "Editing existing user role" in the dialog box
     And I check the radio labeled "Read Only" in the dialog box
+    # SD incorrect - both Data Viewing and Export rights are set to View & Edit
+    And I set Data Viewing Rights to View & Edit for the instrument "Text Validation"
     And I click on the button labeled "Save Changes"
     Then I should see "successfully edited"
 
+    ##ACTION: Delete User role
+    Given I click on the link labeled "Monitor"
+    And I click on the button labeled "Delete role" in the dialog box
+    When I see a dialog containing the following text: "Delete role?"
+    And I click on the button labeled "Delete role" in the dialog box
+    Then I should NOT see "Monitor"
+
     When I click on the link labeled "User Role Changes"
-    Then I should see "This log shows changes made to project settings"
-    And I should see a table header and rows containing the following values in the a table:
-      |  Date / Time      | Changed Property | Old Value | New Value |
-      |  mm/dd/yyyy hh:mm | Auto Inc Set	   | 1	       | 0         |
-
-    Given I click on the link labeled "Project Setup"
-    When I click on the button labeled "Enable" in the "Scheduling module" row in the "Enable optional modules and customizations" section
-    Then I should see a button labeled "Disable" in the "Scheduling module" row in the "Enable optional modules and customizations" section
-
-    Given I click on the button labeled "Additional customizations"
-    When I check the checkbox labeled Require a 'reason' when making changes to existing records in additional customizations
-    And I select "Data Resolution Workflow" in the dropdown field labeled "Enable:"
-    And I check the checkbox labeled Enable the Data History popup for all data collection instruments in additional customizations
-    When I click on the button labeled "Save"
-    Then I should see "The Data Resolution Workflow has now been enabled!"
-    And I click on the button labeled "Close" in the dialog box
-
-    When I click on the link labeled "Project Changes"
-    Then I should see "This log shows changes made to project settings"
+    And I should see "This log shows changes made to user role privileges"
     And I should see a table header and rows with rowspan containing the following values in a table:
-      |  Date / Time      | Changed Property                        | Old Value | New Value               |
-      |  mm/dd/yyyy hh:mm | Require Change Reason	                  | 0	        | 1                       |
-      |  mm/dd/yyyy hh:mm | Secondary Pk Display Value	            | 1	        | 0                       |
-      |  mm/dd/yyyy hh:mm | Secondary Pk Display Label	            | 1	        | 0                       |
-      |  mm/dd/yyyy hh:mm | Data Resolution Enabled	                | 1	        | 2                       |
-      |  mm/dd/yyyy hh:mm | Field Comment Edit Delete	              | 1	        | 0                       |
-      |  mm/dd/yyyy hh:mm | Drw Hide Closed Queries From Dq Results | 1	        | 0                       |
-      |  mm/dd/yyyy hh:mm | Protected Email Mode Custom Text	      | 	        | REDCap Secure Messaging |
-      |  mm/dd/yyyy hh:mm | Scheduling                              | 0	        | 1                       |
-      |  mm/dd/yyyy hh:mm | Auto Inc Set	                          | 1	        | 0                       |
+      | Role ID |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value                                                                                                                                          |
+      | 3       |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | 2       |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                                                                                                                                                  |
+      | 2       |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1]                                                                                                                                |
+      | 2       |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1]                                                                                                                                |
+      | 4       |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	               | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
 
-    And I should see 9 rows in the project changes table
+    And I should see 5 rows in the user role changes table
 
-    # E.129.2100 - validate filtering project changes
-    When I select "Scheduling" on the dropdown field labeled "Property"
-    Then I should see a table header and rows containing the following values in the a table:
-      |  Date / Time      | Changed Property | Old Value | New Value |
-      |  mm/dd/yyyy hh:mm | Scheduling       | 0         | 1         |
+    # E.129.2100 - validate filtering user role changes
+    When I select "2" on the dropdown field labeled "User Role"
+    And I should see a table header and rows with rowspan containing the following values in a table:
+      | Role ID |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
+      | 2       |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1] |
+      | 2       |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
+      | 2       |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
 
-    And I should see 1 row in the project changes table
-    And I should NOT see "Require Change Reason"
-    And I should NOT see "Secondary Pk Display Value"
-    And I should NOT see "Secondary Pk Display Label"
-    And I should NOT see "Data Resolution Enabled"
-    And I should NOT see "Field Comment Edit Delete"
-    And I should NOT see "Drw Hide Closed Queries From Dq Results"
-    And I should NOT see "Protected Email Mode Custom Text"
-    And I should NOT see "Auto Inc Set"
+    And I should see 3 rows in the user role changes table
+    And I should NOT see "All Privileges"
+    And I should NOT see "TestRole"
+    And I should NOT see "Monitor"
+    And I should NOT see "3"
+    And I should NOT see "4"
 
-    # E.129.3000 - validate exporting project changes to CSV
+    # E.129.3000 - validate exporting user role changes to CSV
     When I click on the button labeled "Export current page"
-    Then the downloaded CSV with filename "E129800_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
-      | changed property | old value | new value |
-      | Scheduling       | 0         | 1         |
+    Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
+      | role id |  action | changed privilege       | old value           | new value           |
+      | 2       |  UPDATE | Data Export Instruments | [text_validation,0] | [text_validation,1] |
+      | 2       |  UPDATE | User Rights	            | 0	                  | 2                   |
+      | 2       |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
 
     When I click on the button labeled "Export everything ignoring filters"
-    Then the downloaded CSV with filename "E129800_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
-      | changed property                        | old value | new value               |
-      | Require Change Reason	                  | 0	        | 1                       |
-      | Secondary Pk Display Value	            | 1	        | 0                       |
-      | Secondary Pk Display Label	            | 1	        | 0                       |
-      | Data Resolution Enabled	                | 1	        | 2                       |
-      | Field Comment Edit Delete	              | 1	        | 0                       |
-      | Drw Hide Closed Queries From Dq Results | 1	        | 0                       |
-      | Protected Email Mode Custom Text	      | 	        | REDCap Secure Messaging |
-      | Scheduling                              | 0	        | 1                       |
-      | Auto Inc Set	                          | 1	        | 0                       |
+    Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
+      | role id |  action | changed privilege       | old value           | new value           |
+      | 3       |  DELETE | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | 2       |  UPDATE | Data Export Instruments | [text_validation,0] | [text_validation,1] |
+      | 2       |  UPDATE | User Rights	            | 0	                  | 2                   |
+      | 2       |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
+      | 4       |  INSERT | All Privileges          | N/A	                | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
 
     # Disable external module in project
     Given I click on the link labeled exactly "Manage"
@@ -122,7 +128,8 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Then I should NOT see "Configuration Monitor - v0.0.0"
 
     # Disable external module in Control Center
-    Given I click on the link labeled "Control Center"
+    Given I click on the link labeled "My Projects"
+    And I click on the link labeled "Control Center"
     When I click on the link labeled exactly "Manage"
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
