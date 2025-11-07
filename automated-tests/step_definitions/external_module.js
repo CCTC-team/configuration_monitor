@@ -122,6 +122,150 @@ Given('I should see {int} row(s) in the {emTableName} table', (num, tableName) =
 
 
 /**
+ * @module Visibility
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example I should see a table header and rows with rowspan containing the following values in a table:
+ * @param {dataTable} options the Data Table of values specified
+ * @description Verifies a table contains the specified headers and rows, handling columns with rowspan that spans across multiple rows.
+ * This step definition is designed for tables where columns have variable positions due to rowspan attributes.
+ * It expands cells with rowspan to cover all affected rows during verification.
+ */
+Given('I should see a table header and rows with rowspan containing the following values in a table:', (dataTable) => {
+    const rows = dataTable.rawTable
+    const expectedHeaders = rows[0]
+    const expectedRows = rows.slice(1)
+
+    cy.get('table').should('be.visible').then(($table) => {
+        // Find all rows in the table
+        const $allRows = $table.find('tr')
+
+        // Find header row
+        let $headerCells
+        const $theadHeaders = $table.find('thead tr:first th, thead tr:first td')
+
+        if ($theadHeaders.length > 0) {
+            $headerCells = $theadHeaders
+        } else {
+            // Headers might be in first tbody row
+            const $firstRow = Cypress.$($allRows[0])
+            $headerCells = $firstRow.find('th, td')
+        }
+
+        // Verify headers
+        expectedHeaders.forEach((expectedHeader, index) => {
+            const headerText = Cypress.$($headerCells[index]).text().trim()
+            expect(headerText, `Header at position ${index}`).to.include(expectedHeader.trim())
+        })
+
+        // Get data rows (skip header row)
+        let $dataRows = $allRows.slice(1)
+        if ($theadHeaders.length > 0) {
+            $dataRows = $table.find('tbody tr')
+        }
+
+        // Build a normalized grid that expands rowspan cells
+        const normalizedGrid = []
+        const rowspanTracker = [] // Tracks which columns are occupied by rowspan from previous rows
+
+        $dataRows.each((rowIndex, htmlRow) => {
+            const $row = Cypress.$(htmlRow)
+            const $cells = $row.find('td, th')
+
+            // Initialize tracker for this row if needed
+            if (!rowspanTracker[rowIndex]) {
+                rowspanTracker[rowIndex] = []
+            }
+
+            const normalizedRow = []
+            let cellIndex = 0
+
+            // Fill in cells, accounting for rowspan from previous rows
+            for (let colIndex = 0; colIndex < expectedHeaders.length; colIndex++) {
+                // Check if this column is occupied by a rowspan from a previous row
+                if (rowspanTracker[rowIndex][colIndex]) {
+                    normalizedRow[colIndex] = rowspanTracker[rowIndex][colIndex]
+                } else {
+                    // Use the current cell
+                    const $cell = Cypress.$($cells[cellIndex])
+                    if ($cell.length > 0) {
+                        const cellText = $cell.text().trim()
+                        const rowspan = parseInt($cell.attr('rowspan') || '1')
+
+                        normalizedRow[colIndex] = cellText
+
+                        // If this cell has rowspan > 1, mark it for subsequent rows
+                        if (rowspan > 1) {
+                            for (let r = 1; r < rowspan; r++) {
+                                const targetRowIndex = rowIndex + r
+                                if (!rowspanTracker[targetRowIndex]) {
+                                    rowspanTracker[targetRowIndex] = []
+                                }
+                                rowspanTracker[targetRowIndex][colIndex] = cellText
+                            }
+                        }
+
+                        cellIndex++
+                    } else {
+                        normalizedRow[colIndex] = ''
+                    }
+                }
+            }
+
+            normalizedGrid.push(normalizedRow)
+        })
+
+        // Verify each expected row exists in the normalized grid
+        expectedRows.forEach((expectedRow) => {
+            let rowFound = false
+
+            normalizedGrid.forEach((normalizedRow) => {
+                // Only check rows that have the same number of cells
+                if (normalizedRow.length !== expectedRow.length) {
+                    return
+                }
+
+                let cellsMatch = true
+
+                expectedRow.forEach((expectedCell, cellIndex) => {
+                    if (cellIndex >= normalizedRow.length) {
+                        cellsMatch = false
+                        return
+                    }
+
+                    const cellText = normalizedRow[cellIndex]
+                    const expectedText = expectedCell.trim()
+
+                    // Handle date/time pattern matching
+                    if (expectedText === 'mm/dd/yyyy hh:mm' || expectedText.match(/^mm\/dd\/yyyy/)) {
+                        const dateTimePattern = /\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s*(am|pm)?/i
+                        if (!dateTimePattern.test(cellText)) {
+                            cellsMatch = false
+                        }
+                    } else if (expectedText === '') {
+                        // Empty cell - allow any whitespace or truly empty
+                        if (cellText !== '' && cellText !== ' ') {
+                            cellsMatch = false
+                        }
+                    } else {
+                        // Exact match or contains match
+                        if (!cellText.includes(expectedText) && cellText !== expectedText) {
+                            cellsMatch = false
+                        }
+                    }
+                })
+
+                if (cellsMatch) {
+                    rowFound = true
+                }
+            })
+
+            expect(rowFound, `Expected row not found: ${expectedRow.join(' | ')}`).to.be.true
+        })
+    })
+})
+
+
+/**
  * @module MailHog
  * @author Mintoo Xavier <min2xavier@gmail.com>
  * @example I should see an email table with the following rows:
