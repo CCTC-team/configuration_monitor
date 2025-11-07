@@ -41,6 +41,8 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
       |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
 
+    And I should see 2 rows in the system changes table
+
     Given I click on the link labeled "General Configuration"
     Then I should see "General Configuration"
     And I should see the dropdown field labeled "Automatically send basic statistics to REDCap Consortium?" with the option "Yes, send stats automatically" selected
@@ -89,3 +91,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     When I click on the button labeled "Disable module" in the dialog box
     Then I should NOT see "Configuration Monitor - v0.0.0"
     And I logout
+  
+    # Verify no exceptions are thrown in the system
+    Given I open Email
+    Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"

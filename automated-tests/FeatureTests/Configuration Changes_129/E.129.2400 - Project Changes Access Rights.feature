@@ -92,3 +92,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     When I click on the button labeled "Disable module" in the dialog box
     Then I should NOT see "Configuration Monitor - v0.0.0"
     And I logout
+
+    # Verify no exceptions are thrown in the system
+    Given I open Email
+    Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"

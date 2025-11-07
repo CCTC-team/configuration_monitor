@@ -98,3 +98,7 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
       | mm/dd/yyyy hh:mm | test_admin | Enable external module "configuration_monitor_v1.0.0" for system                    |
 
     And I logout
+
+    # Verify no exceptions are thrown in the system
+    Given I open Email
+    Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"

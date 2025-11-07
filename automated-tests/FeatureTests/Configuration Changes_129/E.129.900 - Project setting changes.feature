@@ -48,6 +48,8 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
       |  Date / Time      | Changed Property | Old Value | New Value |
       |  mm/dd/yyyy hh:mm | Auto Inc Set	   | 1	       | 0         |
 
+    And I should see 1 row in the project changes table
+
     Given I click on the link labeled "Project Setup"
     When I click on the button labeled "Enable" in the "Scheduling module" row in the "Enable optional modules and customizations" section
     Then I should see a button labeled "Disable" in the "Scheduling module" row in the "Enable optional modules and customizations" section
@@ -127,3 +129,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     When I click on the button labeled "Disable module" in the dialog box
     Then I should NOT see "Configuration Monitor - v0.0.0"
     And I logout
+
+    # Verify no exceptions are thrown in the system
+    Given I open Email
+    Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"
