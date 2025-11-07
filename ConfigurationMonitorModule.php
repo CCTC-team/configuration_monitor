@@ -273,8 +273,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                                     );
             
             $columnNames = ($tableName == 'user_role_changes') ? $userroleColumnNames : $projectColumnNames;
-            $old_parts = explode("|", $dc["oldValue"]);
-            $new_parts = explode("|", $dc["newValue"]);
+            $old_parts = explode("/", $dc["oldValue"]);
+            $new_parts = explode("/", $dc["newValue"]);
 
             $max = max(count($old_parts), count($new_parts));
 
@@ -353,8 +353,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             $table = "<table id='{$tableName}_table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 5%;padding: 5px'>Role ID</th>
-                <th style='width: 15%;padding: 5px'>Date / Time</th>
                 <th style='width: 15%;padding: 5px'>Action</th>
+                <th style='width: 15%;padding: 5px'>Date / Time</th>
                 <th style='width: 15%;padding: 5px'>Changed Privilege</th>
                 <th style='width: 15%;padding: 5px'>Old Value</th>
                 <th style='width: 15%;padding: 5px'>New Value</th>

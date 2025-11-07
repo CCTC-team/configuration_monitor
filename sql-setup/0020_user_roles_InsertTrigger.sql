@@ -26,7 +26,7 @@ BEGIN
     IF module_enabled > 0 THEN
 		-- Compute new concatenated values
 		-- During insert, values are inserted and then unique_role_name is updated, so not include here as it will be empty string
-		SET new_values = CONCAT_WS('|',
+		SET new_values = CONCAT_WS('/',
 			NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
 			NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
 			NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,

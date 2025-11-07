@@ -28,7 +28,7 @@ BEGIN
     -- Only proceed if module is enabled for the project
     IF module_enabled > 0 THEN
 	    -- Compute old and OLD concatenated values
-        SET old_values = CONCAT_WS('|',
+        SET old_values = CONCAT_WS('/',
             COALESCE(OLD.project_name, ''), COALESCE(OLD.app_title, ''), COALESCE(OLD.status, ''), COALESCE(OLD.inactive_time, ''), COALESCE(OLD.completed_time, ''), COALESCE(OLD.completed_by, ''), 
             COALESCE(OLD.data_locked, ''), COALESCE(OLD.draft_mode, ''), COALESCE(OLD.surveys_enabled, ''), COALESCE(OLD.repeatforms, ''), COALESCE(OLD.scheduling, ''), COALESCE(OLD.purpose, ''), 
             COALESCE(OLD.purpose_other, ''), COALESCE(OLD.show_which_records, ''), COALESCE(OLD.count_project, ''), COALESCE(OLD.investigators, ''), COALESCE(OLD.project_note, ''), COALESCE(OLD.online_offline, ''), COALESCE(OLD.auth_meth, ''), COALESCE(OLD.double_data_entry, ''), 
@@ -58,7 +58,7 @@ BEGIN
             COALESCE(OLD.file_repository_total_size, ''), COALESCE(OLD.ehr_id, ''), COALESCE(OLD.allow_econsent_allow_edit, ''), COALESCE(OLD.store_in_vault_snapshots_containing_completed_econsent, '')
         );
 
-        SET new_values = CONCAT_WS('|',
+        SET new_values = CONCAT_WS('/',
             COALESCE(NEW.project_name, ''), COALESCE(NEW.app_title, ''), COALESCE(NEW.status, ''), COALESCE(NEW.inactive_time, ''), COALESCE(NEW.completed_time, ''), COALESCE(NEW.completed_by, ''), 
             COALESCE(NEW.data_locked, ''), COALESCE(NEW.draft_mode, ''), COALESCE(NEW.surveys_enabled, ''), COALESCE(NEW.repeatforms, ''), COALESCE(NEW.scheduling, ''), COALESCE(NEW.purpose, ''), 
             COALESCE(NEW.purpose_other, ''), COALESCE(NEW.show_which_records, ''), COALESCE(NEW.count_project, ''), COALESCE(NEW.investigators, ''), COALESCE(NEW.project_note, ''), COALESCE(NEW.online_offline, ''), COALESCE(NEW.auth_meth, ''), COALESCE(NEW.double_data_entry, ''), 

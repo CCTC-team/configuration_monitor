@@ -28,7 +28,7 @@ BEGIN
 		-- Compute old and new concatenated values
 		-- During insert, values are inserted and then unique_role_name is updated.
 		-- So not including unique_role_name here else an update record will be created during insert.
-		SET old_values = CONCAT_WS('|',
+		SET old_values = CONCAT_WS('/',
 			OLD.role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
 			OLD.data_export_tool, OLD.data_export_instruments, OLD.data_import_tool, OLD.data_comparison_tool, OLD.data_logging,
 			OLD.email_logging, OLD.file_repository, OLD.double_data, OLD.user_rights, OLD.data_access_groups, OLD.graphical,
@@ -39,7 +39,7 @@ BEGIN
 			OLD.realtime_webservice_adjudicate, OLD.external_module_config, OLD.mycap_participants
 		);
 
-		SET new_values = CONCAT_WS('|',
+		SET new_values = CONCAT_WS('/',
 			NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
 			NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
 			NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
