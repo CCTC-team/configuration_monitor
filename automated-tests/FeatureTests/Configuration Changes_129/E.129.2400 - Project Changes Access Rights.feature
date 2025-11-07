@@ -24,6 +24,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     And I click on the button labeled Enable for the external module named "Configuration Monitor - v1.0.0"
     Then I should see "Configuration Monitor - v1.0.0"
     And I should NOT see a link labeled "Project Changes"
+    And I should NOT see a link labeled "User Role Changes"
 
     # Configure module with Project Changes and Email notifications
     When I click on the button labeled exactly "Configure"
@@ -32,6 +33,9 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     When I check the checkbox labeled "Enable User Role Changes"
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Configuration Monitor - v1.0.0"
+    # E.129.2400 - validate project changes access rights - superuser
+    And I should see a link labeled "Project Changes"
+    And I should see a link labeled "User Role Changes"
 
     # Add User Test_User1 with 'User Rights - No Access'
     Given I click on the link labeled "User Rights"
@@ -61,24 +65,18 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
 
     # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User1"
-    When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.2400"
     Then I should NOT see a link labeled "Project Changes"
-    Then I should NOT see a link labeled "User Role Changes"
+    And I should NOT see a link labeled "User Role Changes"
     And I logout
 
     # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User2"
-    When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.2400"
     Then I should see a link labeled "Project Changes"
-    Then I should see a link labeled "User Role Changes"
+    And I should see a link labeled "User Role Changes"
     And I logout
 
     # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User3"
-    When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.2400"
     Then I should see a link labeled "Project Changes"
     Then I should see a link labeled "User Role Changes"
     And I logout
