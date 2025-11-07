@@ -1,4 +1,4 @@
-Feature: E.129.1000 - The system shall register a cron job (configuration_monitor_cron) when the module is enabled at the system level.
+Feature: E.129.1100 - The system shall register a cron job (configuration_monitor_cron) when the module is enabled at the system level.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
@@ -16,7 +16,7 @@ Feature: E.129.1000 - The system shall register a cron job (configuration_monito
 
     # Change cron_frequency in config.json to 30 seconds for email notification test
     And I wait for 35 seconds
-    # E.129.1000
+    # E.129.1100
     When I click on the link labeled "Cron Jobs"
     Then I should see a table header and row containing the following values in a table:
       | Job Name                                           | Description                                                |

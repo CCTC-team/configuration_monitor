@@ -1,4 +1,4 @@
-Feature: E.129.700 - The system shall allow enabling or disabling System Changes tracking at the system level.
+Feature: E.129.2300 - The system shall restrict access to the System Changes page to super users only.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
@@ -19,11 +19,11 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable System Changes"
-    # E.129.1500
+    # E.129.1600
     And I check the checkbox labeled "Enable Email"
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Provide the email address used to send notifications" in the dialog box
-    # E.129.1600, E.129.1700
+    # E.129.1700, E.129.1800
     When I enter "from@sys.edu" into the input field labeled "Provide the email address used to send notifications:" in the dialog box
     And I click on the button labeled "Save" in the dialog box
     Then I should see "1. Provide the email address to receive configuration change notifications" in the dialog box
@@ -33,7 +33,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
 
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
-    # E.129.1300
+    # E.129.1400
     When I enter "4.8" into the input field labeled "Specify the maximum number of days to look back when displaying system configuration changes on the page (default 7 days)" in the dialog box
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Specify the maximum number of days to look back when displaying system configuration changes on the page (default 7 days)" in the dialog box
@@ -43,7 +43,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
 
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
-    # E.129.1400
+    # E.129.1500
     When I enter "2.7" into the input field labeled "Specify the maximum number of hours to look back when sending email notifications (default 3 hours)" in the dialog box
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Specify the maximum number of hours to look back when sending email notifications (default 3 hours)" in the dialog box
@@ -52,7 +52,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     Then I should see "Configuration Monitor - v1.0.0"
     And I logout
 
-    # E.129.2200 - validate superuser-only access to system settings
+    # E.129.2300 - validate superuser-only access to system settings
     Given I login to REDCap with the user "Test_User1"
     Then I should NOT see a link labeled "Control Center"
     And I logout

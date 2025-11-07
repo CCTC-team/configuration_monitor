@@ -1,4 +1,4 @@
-Feature: E.129.700 - The system shall allow enabling or disabling System Changes tracking at the system level.
+Feature: E.129.2400 - The system shall restrict access to Project Changes and User Role Changes pages to users with user_rights privilege or super user status.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
@@ -14,7 +14,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     And I click on the button labeled "Enable" in the dialog box
     Then I should see "Configuration Monitor - v1.0.0"
 
-    Given I create a new project named "E.129.2300" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    Given I create a new project named "E.129.2400" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     # Enable external module in project
     When I click on the link labeled exactly "Manage"
     Then I should see "External Modules - Project Module Manager"
@@ -59,26 +59,26 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     Then I should see "successfully added"
     And I logout
 
-    # E.129.2300 - validate project changes access rights
+    # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User1"
     When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.2300"
+    And I click on the link labeled "E.129.2400"
     Then I should NOT see a link labeled "Project Changes"
     Then I should NOT see a link labeled "User Role Changes"
     And I logout
 
-    # E.129.2300 - validate project changes access rights
+    # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User2"
     When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.2300"
+    And I click on the link labeled "E.129.2400"
     Then I should see a link labeled "Project Changes"
     Then I should see a link labeled "User Role Changes"
     And I logout
 
-    # E.129.2300 - validate project changes access rights
+    # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User3"
     When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.2300"
+    And I click on the link labeled "E.129.2400"
     Then I should see a link labeled "Project Changes"
     Then I should see a link labeled "User Role Changes"
     And I logout

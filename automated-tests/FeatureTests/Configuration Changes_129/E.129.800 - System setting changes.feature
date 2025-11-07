@@ -1,4 +1,4 @@
-Feature: E.129.700 - The system shall allow enabling or disabling System Changes tracking at the system level.
+Feature: E.129.800 - The system shall allow enabling or disabling System Changes tracking at the system level.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
@@ -20,7 +20,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     When I check the checkbox labeled "Enable System Changes"
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Configuration Monitor - v1.0.0"
-    # E.129.2400 - verify System Changes link appears
+    # E.129.2500 - verify System Changes link appears
     And I should see a link labeled "System Changes"
 
     When I click on the link labeled "System Changes"
@@ -58,7 +58,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
 
     And I should see 3 rows in the system changes table
 
-    # E.129.2000 - validate filtering system changes
+    # E.129.2100 - validate filtering system changes
     When I select "project_contact_email" on the dropdown field labeled "Property"
     Then I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
@@ -68,7 +68,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     And I should NOT see "auto_report_stats"
     And I should NOT see "redcap_base_url"
 
-    # E.129.2900 - validate exporting system changes to CSV
+    # E.129.3000 - validate exporting system changes to CSV
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "SystemChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property      | old value               | new value               |

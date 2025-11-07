@@ -1,4 +1,4 @@
-Feature: E.129.700 - The system shall allow enabling or disabling System Changes tracking at the system level.
+Feature: E.129.2800 - The system shall send automated email summaries containing System Changes when changes occur and email notifications are enabled.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
@@ -49,7 +49,7 @@ Feature: E.129.700 - The system shall allow enabling or disabling System Changes
     And I click on the button labeled Enable for the external module named "Configuration Monitor"
     And I click on the button labeled "Enable" in the dialog box
     Then I should see "Configuration Monitor - v1.0.0"
-    # E.129.1100 - verify system changes are retained
+    # E.129.1200 - verify system changes are retained
     When I click on the link labeled "System Changes" 
     Then I should see "This log shows changes made to system settings"
     And I should see a table header and rows containing the following values in the a table:

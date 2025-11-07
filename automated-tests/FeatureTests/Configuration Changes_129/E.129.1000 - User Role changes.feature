@@ -1,4 +1,4 @@
-Feature: E.129.800 - The system shall allow enabling or disabling Project Changes tracking at the project level.
+Feature: E.129.1000 - The system shall allow enabling or disabling User Role Changes tracking at the project level.
 
   As a REDCap end user
   I want to see that Data Entry Log External Module work as expected
@@ -15,7 +15,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling Project Change
     Then I should see "Configuration Monitor - v1.0.0"
  
   Scenario: Enable external module in project
-    Given I create a new project named "E.129.800" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    Given I create a new project named "E.129.1000" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     When I click on the link labeled exactly "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
@@ -27,22 +27,25 @@ Feature: E.129.800 - The system shall allow enabling or disabling Project Change
 
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
-    When I check the checkbox labeled "Enable Project Changes"
+    When I check the checkbox labeled "Enable User Role Changes"
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Configuration Monitor - v1.0.0"
-    # E.129.2500 - verify Project Changes link appears
-    And I should see a link labeled "Project Changes"
+    # E.129.2700 - verify User Role Changes link appears
+    And I should see a link labeled "User Role Changes"
 
-    When I click on the link labeled "Project Changes"
-    Then I should see "Changes in Project Settings"
-    And I should see "This log shows changes made to project settings"
-    And I should see "No changes to project settings have been made in this project"
+    When I click on the link labeled "User Role Changes"
+    Then I should see "Changes in User Role Privileges"
+    And I should see "This log shows changes made to user role privileges"
+    And I should see "No changes to user role privileges have been made in this project"
 
-    When I click on the link labeled "Project Setup"
-    And I click on the button labeled "Disable" in the "Auto-numbering for records" row in the "Enable optional modules and customizations" section
-    Then I should see a button labeled "Enable" in the "Auto-numbering for records" row in the "Enable optional modules and customizations" section
+    When I click on the link labeled "User Rights"
+    And I click on the link labeled "DataManager"
+    Then I should see "Editing existing user role" in the dialog box
+    And I check the radio labeled "Read Only" in the dialog box
+    And I click on the button labeled "Save Changes"
+    Then I should see "successfully edited"
 
-    When I click on the link labeled "Project Changes"
+    When I click on the link labeled "User Role Changes"
     Then I should see "This log shows changes made to project settings"
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property | Old Value | New Value |
@@ -76,7 +79,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling Project Change
 
     And I should see 9 rows in the project changes table
 
-    # E.129.2000 - validate filtering project changes
+    # E.129.2100 - validate filtering project changes
     When I select "Scheduling" on the dropdown field labeled "Property"
     Then I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property | Old Value | New Value |
@@ -92,7 +95,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling Project Change
     And I should NOT see "Protected Email Mode Custom Text"
     And I should NOT see "Auto Inc Set"
 
-    # E.129.2900 - validate exporting project changes to CSV
+    # E.129.3000 - validate exporting project changes to CSV
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "E129800_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property | old value | new value |

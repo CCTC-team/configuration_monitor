@@ -1,9 +1,9 @@
-Feature: E.129.1700 - The system shall validate that email settings are complete when email notifications are enabled at either the system or project level.
+Feature: E.129.1800 - The system shall validate that email settings are complete when email notifications are enabled at either the system or project level.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
 
-  System settings are validated in E.129.2200 - System Changes Access Rights.feature
+  System settings are validated in E.129.2300 - System Changes Access Rights.feature
   
   Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
@@ -16,7 +16,7 @@ Feature: E.129.1700 - The system shall validate that email settings are complete
     And I click on the button labeled "Enable" in the dialog box
     Then I should see "Configuration Monitor - v1.0.0"
 
-    Given I create a new project named "E.129.2300" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    Given I create a new project named "E.129.1800" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     # Enable external module in project
     When I click on the link labeled exactly "Manage"
     Then I should see "External Modules - Project Module Manager"
@@ -32,11 +32,11 @@ Feature: E.129.1700 - The system shall validate that email settings are complete
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable Project Changes"
     When I check the checkbox labeled "Enable User Role Changes"
-    # E.129.1500
+    # E.129.1600
     And I check the checkbox labeled "Enable Email"
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Provide the email address used to send notifications" in the dialog box
-    # E.129.1600, E.129.1700
+    # E.129.1700, E.129.1800
     When I enter "from@sys.edu" into the input field labeled "Provide the email address used to send notifications:" in the dialog box
     And I click on the button labeled "Save" in the dialog box
     Then I should see "1. Provide the email address to receive configuration change notifications" in the dialog box
@@ -46,7 +46,7 @@ Feature: E.129.1700 - The system shall validate that email settings are complete
 
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
-    # E.129.1300
+    # E.129.1400
     When I enter "4.8" into the input field labeled "Specify the maximum number of days to look back when displaying configuration changes on the page (default 7 days)" in the dialog box
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Specify the maximum number of days to look back when displaying configuration changes on the page (default 7 days)" in the dialog box
@@ -56,7 +56,7 @@ Feature: E.129.1700 - The system shall validate that email settings are complete
 
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
-    # E.129.1400
+    # E.129.1500
     When I enter "2.7" into the input field labeled "Specify the maximum number of hours to look back when sending email notifications (default 3 hours)" in the dialog box
     And I click on the button labeled "Save" in the dialog box
     Then I should see "Specify the maximum number of hours to look back when sending email notifications (default 3 hours)" in the dialog box
