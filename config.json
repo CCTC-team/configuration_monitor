@@ -1,6 +1,6 @@
 {
   "name": "Configuration Monitor",
-  "description": "Module that displays the configuration changes in a project",
+  "description": "Module that displays the configuration changes",
   "namespace": "CCTC\\ConfigurationMonitorModule",
   "framework-version": 14,
   "authors": [
@@ -14,17 +14,17 @@
   "links": {
     "project": [
       {
-        "name": "User Role Changes",
-        "key": "user-role-changes",
-        "icon": "fas fa-clipboard-list",
-        "url": "userRoleChanges.php",
-        "show-header-and-footer": true
-      },
-      {
         "name": "Project Changes",
         "key": "project-changes",
         "icon": "fas fa-clipboard-list",
         "url": "projectChanges.php",
+        "show-header-and-footer": true
+      },
+      {
+        "name": "User Role Changes",
+        "key": "user-role-changes",
+        "icon": "fas fa-clipboard-list",
+        "url": "userRoleChanges.php",
         "show-header-and-footer": true
       }
     ],
