@@ -16,6 +16,7 @@ Scenario: E.129.400 - Allow non-admins to enable this module on projects
     
     When I click on the button labeled exactly "Configure"
     And I check the checkbox labeled "Allow non-admins to enable this module on projects"
+    And I check the checkbox labeled "Make module discoverable by users"
     And I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.0.0"
     And I logout  
