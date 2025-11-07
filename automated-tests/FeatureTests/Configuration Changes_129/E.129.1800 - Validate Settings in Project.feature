@@ -31,6 +31,16 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
     When I click on the button labeled exactly "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable Project Changes"
+    When I uncheck the checkbox labeled "Enable Project Changes"
+    # E.129.1300 - at least one tracking option must be enabled
+    When I click on the button labeled "Save" in the dialog box
+    Then I should see "Enable Project Changes"
+    When I check the checkbox labeled "Enable Project Changes"
+    And I click on the button labeled "Save" in the dialog box
+    Then I should see "Configuration Monitor - v1.0.0"
+
+    When I click on the button labeled exactly "Configure"
+    Then I should see "Configure Module"
     When I check the checkbox labeled "Enable User Role Changes"
     # E.129.1600
     And I check the checkbox labeled "Enable Email"
@@ -73,12 +83,13 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
 
     Given I click on the link labeled "Logging"
     Then I should see a table header and row containing the following values in the logging table:
-      | Date / Time      | Username   | Action                                                                              | List of Data Changes OR Fields Exported                                                                                                  |
-      | mm/dd/yyyy hh:mm | test_admin | Disable external module "configuration_monitor_v1.0.0" for project                  |                                                                                                                                          |
-      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | max-hours-email                                                                                                                          |
-      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | max-days-page                                                                                                                            |
-      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | reserved-hide-from-non-admins-in-project-list, user-role-changes-enable, project-changes-enable, email-enable, from-emailid, to-emailids |
-      | mm/dd/yyyy hh:mm | test_admin | Enable external module "configuration_monitor_v1.0.0" for project                   |                                                                                                                                          |
+      | Date / Time      | Username   | Action                                                                              | List of Data Changes OR Fields Exported                                                                                    |
+      | mm/dd/yyyy hh:mm | test_admin | Disable external module "configuration_monitor_v1.0.0" for project                  |                                                                                                                            |
+      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | max-hours-email                                                                                                            |
+      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | max-days-page                                                                                                              |
+      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | user-role-changes-enable, email-enable, from-emailid, to-emailids                                                          |
+      | mm/dd/yyyy hh:mm | test_admin | Modify configuration for external module "configuration_monitor_v1.0.0" for project | reserved-hide-from-non-admins-in-project-list, user-role-changes-enable, project-changes-enable, email-enable, to-emailids |
+      | mm/dd/yyyy hh:mm | test_admin | Enable external module "configuration_monitor_v1.0.0" for project                   |                                                                                                                            |
 
     # Disable external module in Control Center
     And I click on the link labeled "Control Center"
