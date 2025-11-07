@@ -94,12 +94,12 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
 
     # E.129.3000 - validate exporting project changes to CSV
     When I click on the button labeled "Export current page"
-    Then the downloaded CSV with filename "E129800_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
+    Then the downloaded CSV with filename "E129900_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property | old value | new value |
       | Scheduling       | 0         | 1         |
 
     When I click on the button labeled "Export everything ignoring filters"
-    Then the downloaded CSV with filename "E129800_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
+    Then the downloaded CSV with filename "E129900_ProjectChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property                        | old value | new value               |
       | Require Change Reason	                  | 0	        | 1                       |
       | Secondary Pk Display Value	            | 1	        | 0                       |
@@ -119,7 +119,8 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     Then I should NOT see "Configuration Monitor - v0.0.0"
 
     # Disable external module in Control Center
-    Given I click on the link labeled "Control Center"
+    Given I click on the link labeled "My Projects"
+    And I click on the link labeled "Control Center"
     When I click on the link labeled exactly "Manage"
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
