@@ -71,7 +71,7 @@ Feature: E.129.1900 - The system shall restrict Configuration Monitor settings t
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system

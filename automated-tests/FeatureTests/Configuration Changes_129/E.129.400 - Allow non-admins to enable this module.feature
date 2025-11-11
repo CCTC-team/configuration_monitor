@@ -22,7 +22,7 @@ Scenario: E.129.400 - Allow non-admins to enable this module on projects
     And I logout  
 
     Given I login to REDCap with the user "Test_User1"
-    When I create a new project named "E.129.100.400" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    When I create a new project named "E.129.400" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     And I click on the link labeled exactly "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
@@ -40,7 +40,7 @@ Scenario: E.129.400 - Allow non-admins to enable this module on projects
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system

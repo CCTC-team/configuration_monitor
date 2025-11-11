@@ -16,7 +16,7 @@ Feature: E.129.100 - The system shall support the ability to enable/disable Conf
     And I logout
     
     Given I login to REDCap with the user "Test_User1"
-    When I create a new project named "E.129.100.100" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    When I create a new project named "E.129.100" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     And I should NOT see a link labeled exactly "Manage"
     And I logout
 
@@ -27,7 +27,7 @@ Feature: E.129.100 - The system shall support the ability to enable/disable Conf
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system

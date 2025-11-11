@@ -19,7 +19,7 @@ Scenario: E.129.600 - Module configuration permissions in projects
     And I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.0.0"
 
-    When I create a new project named "E.129.100.600" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    When I create a new project named "E.129.600" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
 
     # Enable external module
     And I click on the link labeled exactly "Manage"
@@ -48,7 +48,7 @@ Scenario: E.129.600 - Module configuration permissions in projects
     Then I should see "Configuration Monitor - v1.0.0"
 
     When I click on the link labeled "My Projects"
-    And I click on the link labeled "E.129.100.600"
+    And I click on the link labeled "E.129.600"
 
     #VERIFY
     When I click on the link labeled "User Rights"
@@ -65,10 +65,10 @@ Scenario: E.129.700 - View Usage of the external module
     And I click on the link labeled exactly "Manage"
     Then I should see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "View Usage"
-    And I should see a link labeled "E.129.100.600" in the dialog box
-    When I click on the link labeled "E.129.100.600" in the dialog box
+    And I should see a link labeled "E.129.600" in the dialog box
+    When I click on the link labeled "E.129.600" in the dialog box
     Then I should see "Project Home"
-    And I should see "E.129.100.600"
+    And I should see "E.129.600"
 
     # Disable external module in Control Center
     When I click on the link labeled "Control Center"
@@ -76,7 +76,7 @@ Scenario: E.129.700 - View Usage of the external module
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system

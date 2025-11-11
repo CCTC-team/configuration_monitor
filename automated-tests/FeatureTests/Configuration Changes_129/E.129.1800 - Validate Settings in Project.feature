@@ -79,7 +79,7 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
 
     Given I click on the link labeled "Logging"
     Then I should see a table header and row containing the following values in the logging table:
@@ -97,7 +97,7 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
 
     Given I click on the link labeled "User Activity Log"
     Then I should see a table header and row containing the following values in a table:

@@ -64,7 +64,7 @@ Feature: E.129.2300 - The system shall restrict access to the System Changes pag
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system

@@ -15,37 +15,37 @@ Scenario: E.129.300 - Make module discoverable by users
 
     When I click on the link labeled exactly "Manage"
     Then I should see "External Modules - Module Manager"
-    And I should NOT see "Configuration Monitor - v1.0.0"
+    And I should NOT see "Data Entry Log - v1.0.0"
     When I click on the button labeled "Enable a module"
     And I click on the button labeled Enable for the external module named "Configuration Monitor"
     And I click on the button labeled "Enable" in the dialog box
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Data Entry Log - v1.0.0"
     And I should NOT see "Discoverable"
     
     When I click on the button labeled exactly "Configure"
     And I check the checkbox labeled "Make module discoverable by users"
     And I click on the button labeled "Save"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Data Entry Log - v1.0.0"
     And I should see "Discoverable"
     And I logout
     
     Given I login to REDCap with the user "Test_User1"
-    When I create a new project named "E.129.100.300" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    When I create a new project named "E.129.300" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     And I click on the link labeled exactly "Manage"
     Then I should see "External Modules - Project Module Manager"
-    And I should NOT see "Configuration Monitor - v1.0.0"
+    And I should NOT see "Data Entry Log - v1.0.0"
 
     When I click on the button labeled "View available modules"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Data Entry Log - v1.0.0"
     And I should see "Discoverable"
     And I should NOT see "Activation request is pending"
     When I click on the button labeled Request Activation for the external module named "Configuration Monitor"
     Then I should see "SUCCESS" in the dialog box
     And I click on the button labeled "Close" in the dialog box
-    And I should NOT see "Configuration Monitor - v1.0.0"
+    And I should NOT see "Data Entry Log - v1.0.0"
 
     When I click on the button labeled "View available modules"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Data Entry Log - v1.0.0"
     And I should see "Discoverable"
     And I should see "Activation request is pending"
     And I logout
@@ -58,21 +58,21 @@ Scenario: E.129.300 - Make module discoverable by users
 
     # Given I click on the link labeled "To-Do List"
     # Then I should see "Pending Requests"
-    # And I should see the "Activate external module" request created for the project named "E.129.100.300" within the Pending Requests table
-    # When I click on the process request icon for the "Activate external module" request created for the project named "E.129.100.300" within the Pending Requests table
+    # And I should see the "Activate external module" request created for the project named "E.129.300" within the Pending Requests table
+    # When I click on the process request icon for the "Activate external module" request created for the project named "E.129.300" within the Pending Requests table
     # # HTML is not loading into iFrame
     # Then I should see "Enable module 'Configuration Monitor - '?" in the dialog box in the iframe
     # And I click on the button labeled "Enable" in the dialog box in the iframe
     # And I close the iframe window
-    # Then I should see the "Activate external module" request created for the project named "E.129.100.300" within the Completed & Archived Requests table
+    # Then I should see the "Activate external module" request created for the project named "E.129.300" within the Completed & Archived Requests table
     # And I logout
 
     # Given I login to REDCap with the user "Test_User1"
     # When I click on the link labeled "My Projects"
-    # And I click on the link labeled "E.129.100.300"
+    # And I click on the link labeled "E.129.300"
     # And I click on the link labeled exactly "Manage"
     # Then I should see "External Modules - Project Module Manager"
-    # And I should see "Configuration Monitor - v1.0.0"
+    # And I should see "Data Entry Log - v1.0.0"
     # And I should see "Discoverable"
     # And I logout
 
@@ -83,7 +83,7 @@ Scenario: E.129.300 - Make module discoverable by users
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Data Entry Log - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system

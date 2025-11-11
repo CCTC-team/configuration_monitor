@@ -67,7 +67,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Change cron_frequency in config.json to 30 seconds for email notification test

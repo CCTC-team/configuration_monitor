@@ -118,7 +118,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
 
     # Disable external module in Control Center
     Given I click on the link labeled "My Projects"
@@ -127,7 +127,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     And I click on the button labeled exactly "Disable"
     Then I should see "Disable module?" in the dialog box
     When I click on the button labeled "Disable module" in the dialog box
-    Then I should NOT see "Configuration Monitor - v0.0.0"
+    Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
     # Verify no exceptions are thrown in the system
