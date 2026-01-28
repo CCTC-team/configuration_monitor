@@ -95,7 +95,6 @@ $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
 $diff = $actMaxAsDate->diff($actMinAsDate);
 
 
-// echo "<br>Base Url: " . Utility::GetBaseUrl();
 // echo"<br> Module directory name: $moduleName<br>";
 
 // echo "<br> maxDay: $maxDay<br>";
@@ -137,7 +136,7 @@ $moduleName = "configuration_monitor";
 $page = "systemChanges";
 
 //create the reset to return to default original state
-$resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page";
+$resetUrl = APP_PATH_WEBROOT . "/ExternalModules/?prefix=$moduleName&page=$page";
 // echo "resetUrl: $resetUrl";
 $doReset = "window.location.href='$resetUrl';";
 $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);

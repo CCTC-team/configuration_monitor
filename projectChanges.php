@@ -113,7 +113,6 @@ $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
 $diff = $actMaxAsDate->diff($actMinAsDate);
 
 
-// echo "<br>Base Url: " . Utility::GetBaseUrl();
 // echo "<br>Project ID: $projId<br>";
 // echo"<br> Module directory name: $moduleName<br>";
 // echo "<br> projId: $projId<br>";
@@ -183,7 +182,7 @@ $moduleName = "configuration_monitor";
 $page = "projectChanges";
 
 //create the reset to return to default original state
-$resetUrl = Utility::GetBaseUrl() . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
+$resetUrl = APP_PATH_WEBROOT . "/ExternalModules/?prefix=$moduleName&page=$page&pid=$projId";
 $doReset = "window.location.href='$resetUrl';";
 $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
 $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);

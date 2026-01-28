@@ -152,8 +152,14 @@
       "cron_name": "configuration_monitor_cron",
       "cron_description": "Send email notifications for recent configuration changes",
       "method": "configMonitorCron",
-      "cron_frequency": "7200",
+      "cron_frequency": "30",
       "cron_max_run_time": "3000"
     }
-  ]
+  ],
+  "compatibility": {
+    "php-version-min": "8.0.27",
+    "php-version-max": "8.2.29",
+    "redcap-version-min": "14.7.0",
+    "redcap-version-max": "15.9.1"
+  }
 }
