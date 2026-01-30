@@ -176,8 +176,8 @@
       "cron_name": "configuration_monitor_cron",
       "cron_description": "Send email notifications for recent configuration changes",
       "method": "configMonitorCron",
-      "cron_frequency": "30",
-      "cron_max_run_time": "3000"
+      "cron_frequency": "1800",
+      "cron_max_run_time": "900"
     }
   ],
   "compatibility": {
