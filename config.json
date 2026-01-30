@@ -7,7 +7,7 @@
     {
       "name": "Mintoo Xavier",
       "email": "mintoo.xavier1@nhs.net",
-      "institution": "Cambridge University Hospitals NHS Foundation Trust"
+      "institution": "Cambridge University Hospital - Cambridge Cancer Trials Centre"
     }
   ],
 
@@ -66,18 +66,26 @@
     {
       "key": "sys-from-emailid",
       "name": "Provide the email address used to send notifications",
-      "type": "text",
+      "type": "email",
       "repeatable": false,
-      "required": false,
-      "super-users-only": true
+      "required": true,
+      "super-users-only": true,
+      "branchingLogic": {
+        "field": "sys-email-enable",
+        "value": true
+      }
     },
     {
       "key": "sys-to-emailids",
       "name": "Provide the email address to receive configuration change notifications",
-      "type": "text",
+      "type": "email",
       "repeatable": true,
-      "required": false,
-      "super-users-only": true
+      "required": true,
+      "super-users-only": true,
+      "branchingLogic": {
+        "field": "sys-email-enable",
+        "value": true
+      }
     },
     {
       "key": "sys-max-hours-email",
@@ -85,7 +93,11 @@
       "type": "text",
       "repeatable": false,
       "required": false,
-      "super-users-only": true
+      "super-users-only": true,
+      "branchingLogic": {
+        "field": "sys-email-enable",
+        "value": true
+      }
     }
   ]
   ,
@@ -125,18 +137,26 @@
     {
       "key": "from-emailid",
       "name": "Provide the email address used to send notifications",
-      "type": "text",
+      "type": "email",
       "repeatable": false,
-      "required": false,
-      "super-users-only": true
+      "required": true,
+      "super-users-only": true,
+      "branchingLogic": {
+        "field": "email-enable",
+        "value": true
+      }
     },
     {
       "key": "to-emailids",
       "name": "Provide the email address to receive configuration change notifications",
-      "type": "text",
+      "type": "email",
       "repeatable": true,
-      "required": false,
-      "super-users-only": true
+      "required": true,
+      "super-users-only": true,
+      "branchingLogic": {
+        "field": "email-enable",
+        "value": true
+      }
     },
     {
       "key": "max-hours-email",
@@ -144,7 +164,11 @@
       "type": "text",
       "repeatable": false,
       "required": false,
-      "super-users-only": true
+      "super-users-only": true,
+      "branchingLogic": {
+        "field": "email-enable",
+        "value": true
+      }
     }
   ],
   "crons": [

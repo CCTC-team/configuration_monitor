@@ -55,13 +55,14 @@ $oneYearAgo = Utility::NowAdjusted('-1 years');
 
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
 
-//get form values
+//get form values with input sanitization
 if (isset($_GET['startdt'])) {
-    $minDate = $_GET['startdt'];
+    // Sanitize date input - strip tags and limit length
+    $minDate = htmlspecialchars(substr($_GET['startdt'], 0, 20), ENT_QUOTES, 'UTF-8');
 }
 $maxDate = null;
 if (isset($_GET['enddt'])) {
-    $maxDate = $_GET['enddt'];
+    $maxDate = htmlspecialchars(substr($_GET['enddt'], 0, 20), ENT_QUOTES, 'UTF-8');
 }
 
 //set the default to one week
@@ -73,7 +74,9 @@ $monthActive = "";
 $yearActive = "";
 
 if (isset($_GET['defaulttimefilter'])) {
-    $defaultTimeFilter = $_GET['defaulttimefilter'];
+    // Whitelist allowed time filter values
+    $allowedFilters = ['customrange', 'onedayago', 'oneweekago', 'onemonthago', 'oneyearago'];
+    $defaultTimeFilter = in_array($_GET['defaulttimefilter'], $allowedFilters) ? $_GET['defaulttimefilter'] : 'customrange';
     $customActive = $defaultTimeFilter == "customrange" ? "active" : "";
     $dayActive = $defaultTimeFilter == "onedayago" ? "active" : "";
     $weekActive = $defaultTimeFilter == "oneweekago" ? "active" : "";
@@ -83,22 +86,26 @@ if (isset($_GET['defaulttimefilter'])) {
 
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
-    $dataDirection = $_GET['retdirection'];
+    // Whitelist allowed direction values
+    $dataDirection = in_array($_GET['retdirection'], ['asc', 'desc']) ? $_GET['retdirection'] : 'desc';
 }
 
 $pageSize = 10;
 if (isset($_GET['pagesize'])) {
-    $pageSize = $_GET['pagesize'];
+    // Cast to integer and limit to reasonable values
+    $pageSize = max(10, min(250, (int)$_GET['pagesize']));
 }
 
 $pageNum = 0;
 if (isset($_GET['pagenum'])) {
-    $pageNum = $_GET['pagenum'];
+    // Cast to integer, ensure non-negative
+    $pageNum = max(0, (int)$_GET['pagenum']);
 }
 
 $privilegeFilter = '';
 if (isset($_GET['privilege_filter'])) {
-    $privilegeFilter = $_GET['privilege_filter'];
+    // Sanitize privilege filter - allow alphanumeric, spaces, and underscores only
+    $privilegeFilter = preg_replace('/[^a-zA-Z0-9_ ]/', '', $_GET['privilege_filter']);
 }
 
 $skipCount = (int)$pageSize * (int)$pageNum;
@@ -121,7 +128,7 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
 
-$tableName = 'project_changes';
+$tableName = 'project-changes';
 
 //run the stored proc - get ALL records without pagination first if privilege filter is set
 if (!empty($privilegeFilter)) {
@@ -230,7 +237,7 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 100px;'><label for='privilege_filter'>Property</label></td>
+                <td style='width: 100px;'><label>Property</label></td>
                 <td style='width: 200px;'>$privilegeSelect</td>
             </tr>
             <tr>

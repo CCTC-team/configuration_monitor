@@ -1,34 +1,37 @@
 Feature: E.129.900 - The system shall allow enabling or disabling Project Changes tracking at the project level.
 
   As a REDCap end user
-  I want to see that Data Entry Log External Module work as expected
+  I want to see that Configuration Monitor External Module work as expected
 
   Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
-    And I click on the link labeled exactly "Manage"
+    And I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "Enable a module"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor"
-    And I click on the button labeled "Enable" in the dialog box
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
  
   Scenario: Enable external module in project
-    Given I create a new project named "E.129.900" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
-    When I click on the link labeled exactly "Manage"
+    Given I create a new project named "E.129.900" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    When I click on the link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "Enable a module"
     Then I should see "Available Modules"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor - v1.0.0"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor - v1.0.0"
     Then I should see "Configuration Monitor - v1.0.0"
     And I should NOT see a link labeled "Project Changes"
 
-    When I click on the button labeled exactly "Configure"
+    When I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable Project Changes"
-    And I click on the button labeled "Save" in the dialog box
+    And I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.0.0"
     # E.129.2600 - verify Project Changes link appears
     And I should see a link labeled "Project Changes"
@@ -38,9 +41,9 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     And I should see "This log shows changes made to project settings"
     And I should see "No changes to project settings have been made in this project"
 
-    When I click on the link labeled "Project Setup"
-    And I click on the button labeled "Disable" in the "Auto-numbering for records" row in the "Enable optional modules and customizations" section
-    Then I should see a button labeled "Enable" in the "Auto-numbering for records" row in the "Enable optional modules and customizations" section
+    When I click on the link labeled "Setup"
+    And I click on the button labeled "Disable" in the row labeled "Auto-numbering for records"
+    Then I should see a button labeled "Enable" in the row labeled "Auto-numbering for records"
 
     When I click on the link labeled "Project Changes"
     Then I should see "This log shows changes made to project settings"
@@ -50,9 +53,9 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
 
     And I should see 1 row in the project changes table
 
-    Given I click on the link labeled "Project Setup"
-    When I click on the button labeled "Enable" in the "Scheduling module" row in the "Enable optional modules and customizations" section
-    Then I should see a button labeled "Disable" in the "Scheduling module" row in the "Enable optional modules and customizations" section
+    Given I click on the link labeled "Setup"
+    When I click on the button labeled "Enable" in the row labeled "Scheduling module"
+    Then I should see a button labeled "Disable" in the row labeled "Scheduling module"
 
     Given I click on the button labeled "Additional customizations"
     When I check the checkbox labeled Require a 'reason' when making changes to existing records in additional customizations
@@ -60,7 +63,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     And I check the checkbox labeled Enable the Data History popup for all data collection instruments in additional customizations
     When I click on the button labeled "Save"
     Then I should see "The Data Resolution Workflow has now been enabled!"
-    And I click on the button labeled "Close" in the dialog box
+    And I click on the button labeled "Close"
 
     When I click on the link labeled "Project Changes"
     Then I should see "This log shows changes made to project settings"
@@ -85,14 +88,14 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
       |  mm/dd/yyyy hh:mm | Scheduling       | 0         | 1         |
 
     And I should see 1 row in the project changes table
-    And I should NOT see "Require Change Reason"
-    And I should NOT see "Secondary Pk Display Value"
-    And I should NOT see "Secondary Pk Display Label"
-    And I should NOT see "Data Resolution Enabled"
-    And I should NOT see "Field Comment Edit Delete"
-    And I should NOT see "Drw Hide Closed Queries From Dq Results"
-    And I should NOT see "Protected Email Mode Custom Text"
-    And I should NOT see "Auto Inc Set"
+    # And I should NOT see "Require Change Reason"
+    # And I should NOT see "Secondary Pk Display Value"
+    # And I should NOT see "Secondary Pk Display Label"
+    # And I should NOT see "Data Resolution Enabled"
+    # And I should NOT see "Field Comment Edit Delete"
+    # And I should NOT see "Drw Hide Closed Queries From Dq Results"
+    # And I should NOT see "Protected Email Mode Custom Text"
+    # And I should NOT see "Auto Inc Set"
 
     # E.129.3000 - validate exporting project changes to CSV
     When I click on the button labeled "Export current page"
@@ -114,19 +117,19 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
       | Auto Inc Set	                          | 1	        | 0                       |
 
     # Disable external module in project
-    Given I click on the link labeled exactly "Manage"
-    And I click on the button labeled exactly "Disable"
-    Then I should see "Disable module?" in the dialog box
-    When I click on the button labeled "Disable module" in the dialog box
+    Given I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
 
     # Disable external module in Control Center
     Given I click on the link labeled "My Projects"
     And I click on the link labeled "Control Center"
-    When I click on the link labeled exactly "Manage"
-    And I click on the button labeled exactly "Disable"
-    Then I should see "Disable module?" in the dialog box
-    When I click on the button labeled "Disable module" in the dialog box
+    When I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 

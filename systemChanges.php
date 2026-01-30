@@ -37,13 +37,14 @@ $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days
 
 // echo "minDate: $minDate<br>";
 
-//get form values
+//get form values with input sanitization
 if (isset($_GET['startdt'])) {
-    $minDate = $_GET['startdt'];
+    // Sanitize date input - strip tags and limit length
+    $minDate = htmlspecialchars(substr($_GET['startdt'], 0, 20), ENT_QUOTES, 'UTF-8');
 }
 $maxDate = null;
 if (isset($_GET['enddt'])) {
-    $maxDate = $_GET['enddt'];
+    $maxDate = htmlspecialchars(substr($_GET['enddt'], 0, 20), ENT_QUOTES, 'UTF-8');
 }
 
 //set the default to one week
@@ -55,7 +56,9 @@ $monthActive = "";
 $yearActive = "";
 
 if (isset($_GET['defaulttimefilter'])) {
-    $defaultTimeFilter = $_GET['defaulttimefilter'];
+    // Whitelist allowed time filter values
+    $allowedFilters = ['customrange', 'onedayago', 'oneweekago', 'onemonthago', 'oneyearago'];
+    $defaultTimeFilter = in_array($_GET['defaulttimefilter'], $allowedFilters) ? $_GET['defaulttimefilter'] : 'customrange';
     $customActive = $defaultTimeFilter == "customrange" ? "active" : "";
     $dayActive = $defaultTimeFilter == "onedayago" ? "active" : "";
     $weekActive = $defaultTimeFilter == "oneweekago" ? "active" : "";
@@ -63,24 +66,28 @@ if (isset($_GET['defaulttimefilter'])) {
     $yearActive = $defaultTimeFilter == "oneyearago" ? "active" : "";
 }
 
-$fieldName = NULL; //default to NULL meaning all roles
-if (isset($_GET['field_name'])) {
-    $fieldName = $_GET['field_name'];
+$fieldName = NULL; //default to NULL meaning all fields
+if (isset($_GET['field_name']) && $_GET['field_name'] !== '') {
+    // Sanitize field name - allow alphanumeric and underscores only
+    $fieldName = preg_replace('/[^a-zA-Z0-9_]/', '', $_GET['field_name']);
 }
 
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
-    $dataDirection = $_GET['retdirection'];
+    // Whitelist allowed direction values
+    $dataDirection = in_array($_GET['retdirection'], ['asc', 'desc']) ? $_GET['retdirection'] : 'desc';
 }
 
 $pageSize = 10;
 if (isset($_GET['pagesize'])) {
-    $pageSize = $_GET['pagesize'];
+    // Cast to integer and limit to reasonable values
+    $pageSize = max(10, min(250, (int)$_GET['pagesize']));
 }
 
 $pageNum = 0;
 if (isset($_GET['pagenum'])) {
-    $pageNum = $_GET['pagenum'];
+    // Cast to integer, ensure non-negative
+    $pageNum = max(0, (int)$_GET['pagenum']);
 }
 
 $skipCount = (int)$pageSize * (int)$pageNum;
@@ -104,7 +111,7 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 // echo "<br> maxDateDb: $maxDateDb";
 // echo "<br>minDateDb: $minDateDb<br>";
 
-$tableName = 'system_changes';
+$tableName = 'system-changes';
 $projId = NULL;
 $roleID = NULL;
 // echo "fieldName: $fieldName";
@@ -185,7 +192,7 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 100px;'><label for='field_name'>Property</label></td>
+                <td style='width: 100px;'><label>Property</label></td>
                 <td style='width: 250px;'>$fieldNameSelect</td>
             </tr>
             <tr>

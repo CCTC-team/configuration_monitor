@@ -76,7 +76,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                     }
                 }
 
-                // Validate numeric settings for max-hours-email
+                // Validate numeric settings for sys-max-hours-email
                 if (array_key_exists("sys-max-hours-email", $settings) and !empty($settings['sys-max-hours-email'])) {
                     if(intval($settings['sys-max-hours-email']) != $settings['sys-max-hours-email']) {
                         return "The maximum number of hours for email notifications should be a number";
@@ -272,7 +272,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                                     "File Repository Total Size", "Ehr Id", "Allow Econsent Allow Edit", "Store In Vault Snapshots Containing Completed Econsent"
                                     );
             
-            $columnNames = ($tableName == 'user_role_changes') ? $userroleColumnNames : $projectColumnNames;
+            $columnNames = ($tableName == 'user-role-changes') ? $userroleColumnNames : $projectColumnNames;
             $old_parts = explode("/", $dc["oldValue"]);
             $new_parts = explode("/", $dc["newValue"]);
 
@@ -285,7 +285,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                 if ($o !== $n) {
                     // "Data Export Instruments" and "Data Entry" privileges need special handling.
                     // They contain multiple values in the format [text,number]
-                    if (in_array($columnNames[$i], ["Data Export Instruments", "Data Entry"]) && $tableName == 'user_role_changes') {
+                    if (in_array($columnNames[$i], ["Data Export Instruments", "Data Entry"]) && $tableName == 'user-role-changes') {
                         preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $n, $nmatches, PREG_SET_ORDER);
                         preg_match_all('/\[([a-zA-Z0-9_]+),([0-9]+)\]/', $o, $omatches, PREG_SET_ORDER);
 
@@ -320,7 +320,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                                 }
                             }
                         }
-                    } else if ($tableName == 'user_role_changes') {
+                    } else if ($tableName == 'user-role-changes') {
                         // For other privileges, show full difference
                         $finalRow[] = [
                             'id' => $dc["id"],
@@ -349,8 +349,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
     function makeTable($dcs, $userDateFormat, $tableName) : string
     {
         $changes = array();
-        if ($tableName == "user_role_changes") {
-            $table = "<table id='{$tableName}_table' border='1'>
+        if ($tableName == "user-role-changes") {
+            $table = "<table id='{$tableName}-table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 5%;padding: 5px'>Role ID</th>
                 <th style='width: 15%;padding: 5px'>Action</th>
@@ -360,7 +360,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                 <th style='width: 15%;padding: 5px'>New Value</th>
             </tr></thead><tbody>";
         } else {
-            $table = "<table id='{$tableName}_table' border='1'>
+            $table = "<table id='{$tableName}-table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
                 <th style='width: 15%;padding: 5px'>Date / Time</th>
                 <th style='width: 15%;padding: 5px'>Changed Property</th>
@@ -374,7 +374,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             $date = DateTime::createFromFormat('YmdHis', $dc["timestamp"]);
             $formattedDate = $date->format($userDateFormat);
             $dc["timestamp"] = $formattedDate;
-            if ($tableName != 'system_changes') {
+            if ($tableName != 'system-changes') {
                 $changes = self::recordDiff($dc, $tableName);
                 $table .= self::createRow($changes, $tableName);
                 // print_r($changes);
@@ -394,17 +394,17 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         $span = count($changes);
         $row = "<tr>";
 
-        if ($tableName == "user_role_changes") {
-            $row .= "<td rowspan='$span'>" . $changes[0]['id'] . "</td>
-                    <td rowspan='$span'>" . $changes[0]['action'] . "</td>";
+        if ($tableName == "user-role-changes") {
+            $row .= "<td rowspan='$span'>" . $this->escape($changes[0]['id']) . "</td>
+                    <td rowspan='$span'>" . $this->escape($changes[0]['action']) . "</td>";
         }
 
-        $row .= "<td rowspan='$span'>" . $changes[0]['timestamp'] . "</td>";
+        $row .= "<td rowspan='$span'>" . $this->escape($changes[0]['timestamp']) . "</td>";
 
         foreach ($changes as $r) {
-            $row .= "<td>" . $r['privilege'] . "</td>
-                <td>" . $r['oldValue'] . "</td>
-                <td>" . $r['newValue'] . "</td></tr>" ;
+            $row .= "<td>" . $this->escape($r['privilege']) . "</td>
+                <td>" . $this->escape($r['oldValue']) . "</td>
+                <td>" . $this->escape($r['newValue']) . "</td></tr>" ;
         }
 
         return $row;
@@ -412,11 +412,11 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
     function createSystemRow($change): string
     {
-        $row = "<tr><td>" . $change['timestamp'] . "</td>
-                <td>" . $change['privilege'] . "</td>
-                <td>" . $change['oldValue'] . "</td>
-                <td>" . $change['newValue'] . "</td></tr>" ;
-    
+        $row = "<tr><td>" . $this->escape($change['timestamp']) . "</td>
+                <td>" . $this->escape($change['privilege']) . "</td>
+                <td>" . $this->escape($change['oldValue']) . "</td>
+                <td>" . $this->escape($change['newValue']) . "</td></tr>" ;
+
         return $row;
     }
 
@@ -440,14 +440,14 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
         // run the stored proc if user role changes is enabled
         if ($this->getProjectSetting('user-role-changes-enable')) {
-            $logDataSetsUserRoles = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user_role_changes", $roleID);
+            $logDataSetsUserRoles = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "user-role-changes", $roleID);
             $dcs1 = $logDataSetsUserRoles['dataChanges'];
             $dcCountRole = count($dcs1);
         }
 
         // run the stored proc if project changes is enabled
         if ($this->getProjectSetting('project-changes-enable')) {
-            $logDataSetsProj = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "project_changes");
+            $logDataSetsProj = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, 0, 25, "desc", "project-changes");
             $dcs2 = $logDataSetsProj['dataChanges'];
             $dcCountProj = count($dcs2);
         }
@@ -480,7 +480,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
             // make User Role Table only if there are changes to User Roles
             if ($dcCountRole != 0) {
-                $table1 = self::makeTable($dcs1, $userDateFormat, "user_role_changes");
+                $table1 = self::makeTable($dcs1, $userDateFormat, "user-role-changes");
                 $body .= "<h4>Changes in User Role Privileges</h4>";
                 $body .= "<p><i>This log shows changes made to user role privileges.</i></p>";
                 $body .= $table1;
@@ -489,7 +489,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
             // make Project Table only if there are changes to Project settings
             if ($dcCountProj != 0) {
-                $table2 = self::makeTable($dcs2, $userDateFormat, "project_changes");
+                $table2 = self::makeTable($dcs2, $userDateFormat, "project-changes");
                 $body .= "<h4>Changes in Project settings</h4>";
                 $body .= "<p><i>This log shows changes made to project settings.</i></p>";
                 $body .= $table2;
@@ -522,7 +522,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Rendering.php";
         require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
 
-        $tableName = 'system_changes';
+        $tableName = 'system-changes';
 
         // run the stored proc if user role changes is enabled
         if ($this->getSystemSetting('sys-email-enable')) {

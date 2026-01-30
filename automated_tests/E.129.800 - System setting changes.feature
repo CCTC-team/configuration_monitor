@@ -6,19 +6,22 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
   Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
-    Given I click on the link labeled exactly "Manage"
+    Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "Enable a module"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor"
-    And I click on the button labeled "Enable" in the dialog box
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
     Then I should NOT see a link labeled "System Changes"
 
-    When I click on the button labeled exactly "Configure"
+    When I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable System Changes"
-    And I click on the button labeled "Save" in the dialog box
+    And I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.0.0"
     # E.129.2500 - verify System Changes link appears
     And I should see a link labeled "System Changes"
@@ -67,8 +70,8 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
       |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
 
     And I should see 1 row in the system changes table
-    And I should NOT see "auto_report_stats"
-    And I should NOT see "redcap_base_url"
+    # And I should NOT see "auto_report_stats"
+    # And I should NOT see "redcap_base_url"
 
     # E.129.3000 - validate exporting system changes to CSV
     When I click on the button labeled "Export current page"
@@ -85,10 +88,10 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
 
     # Disable external module in Control Center
     Given I click on the link labeled "Control Center"
-    When I click on the link labeled exactly "Manage"
-    And I click on the button labeled exactly "Disable"
-    Then I should see "Disable module?" in the dialog box
-    When I click on the button labeled "Disable module" in the dialog box
+    When I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
   

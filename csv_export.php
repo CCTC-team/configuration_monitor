@@ -2,7 +2,7 @@
 include "getparams.php";
 
 // Check if this is a system-level export (no project context needed)
-if ($tableName == 'system_changes') {
+if ($tableName == 'system-changes') {
     require_once APP_PATH_DOCROOT . "/Config/init_global.php";
 } else {
     require_once APP_PATH_DOCROOT . "/Config/init_project.php";
@@ -76,19 +76,19 @@ if($exportType == 'everything') {
 //run the stored proc
 $result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName);
 
-// Apply privilege filter if set (for project_changes table)
-if ($tableName == 'project_changes' && !empty($privilegeFilter)) {
+// Apply privilege filter if set (for project-changes table)
+if ($tableName == 'project-changes' && !empty($privilegeFilter)) {
     $result['dataChanges'] = $module->filterByPrivilege($result['dataChanges'], $tableName, $privilegeFilter);
 }
 // Set headers
-if($tableName == 'user_role_changes') {
+if($tableName == 'user-role-changes') {
     $headers = array("role id", "timestamp", "action", "changed privilege", "old value", "new value");
     // Set file name and path
     $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName . '.csv';
     $app_title = strip_tags(label_decode($Proj->project['app_title']));
     $download_filename = camelCase(html_entity_decode($app_title, ENT_QUOTES)) . "_UserRoleChanges_" . date("Y-m-d_Hi") . ".csv";
 
-} else if ($tableName == 'project_changes') {
+} else if ($tableName == 'project-changes') {
     $headers = array("timestamp", "changed property", "old value", "new value");
     // Set file name and path
     $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName . '.csv';
@@ -116,7 +116,7 @@ if ($fp && ($count != 0))
         fputcsv($fp, $headers, $delim);
 
         // Set values for this row and write to file
-        if ($tableName == 'user_role_changes') {
+        if ($tableName == 'user-role-changes') {
             foreach ($result["dataChanges"] as $dc) {
 
                 $dcChanges = $module->recordDiff($dc, $tableName);
@@ -132,7 +132,7 @@ if ($fp && ($count != 0))
                     }
                 }
             }
-        } else if ($tableName == 'project_changes') {
+        } else if ($tableName == 'project-changes') {
             foreach ($result["dataChanges"] as $dc) {
 
                 $dcChanges = $module->recordDiff($dc, $tableName);
@@ -174,7 +174,7 @@ if ($fp && ($count != 0))
         unlink($filename);
 
         // Logging for exports done from projects for User Role Changes and Project Changes
-        if ($tableName != 'system_changes')
+        if ($tableName != 'system-changes')
             Logging::logEvent("", Logging::getLogEventTable($projId),"MANAGE",$projId,"project_id = $projId", "Export user role changes (custom)");
 
     } catch (Exception $e) {

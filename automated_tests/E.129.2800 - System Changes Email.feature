@@ -6,21 +6,24 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
   Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
-    Given I click on the link labeled exactly "Manage"
+    Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "Enable a module"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor"
-    And I click on the button labeled "Enable" in the dialog box
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
 
-    When I click on the button labeled exactly "Configure"
+    When I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable System Changes"
     And I check the checkbox labeled "Enable Email"
-    And I enter "from@sys.edu" into the input field labeled "Provide the email address used to send notifications:" in the dialog box
-    And I enter "to@sys.edu" into the input field labeled "1. Provide the email address to receive configuration change notifications" in the dialog box
-    When I click on the button labeled "Save" in the dialog box
+    And I enter "from@sys.edu" into the input field labeled "Provide the email address used to send notifications:"
+    And I enter "to@sys.edu" into the input field labeled "1. Provide the email address to receive configuration change notifications"
+    When I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.0.0"
 
     When I click on the link labeled "General Configuration"
@@ -38,16 +41,19 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
 
     # Disable external module in Control Center
     Given I click on the link labeled "Control Center"
-    When I click on the link labeled exactly "Manage"
-    And I click on the button labeled exactly "Disable"
-    Then I should see "Disable module?" in the dialog box
-    When I click on the button labeled "Disable module" in the dialog box
+    When I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
 
     # Re-enable EM to verify data persistence
     When I click on the button labeled "Enable a module"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor"
-    And I click on the button labeled "Enable" in the dialog box
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
     # E.129.1200 - verify system changes are retained
     When I click on the link labeled "System Changes" 
@@ -58,12 +64,13 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
       |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
 
     # Wait for email notification to be triggered
-    And I wait for 10 seconds
+    # For testing purposes, set cron_frequency to 30 seconds in config.json
+    And I wait for 15 seconds
     # Disable external module in Control Center
-    Given I click on the link labeled exactly "Manage"
-    And I click on the button labeled exactly "Disable"
-    Then I should see "Disable module?" in the dialog box
-    When I click on the button labeled "Disable module" in the dialog box
+    Given I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
@@ -74,7 +81,7 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
     # Verify no exceptions are thrown in the system
     Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"
     When I open the email for user "to@sys.edu" with subject "System Configuration Changes Notification"
-    Then I should see "Please find attached the log detailing the recent changes to the system configuration within the last 3 hours"
+    Then I should see "Please find attached the log detailing the recent changes to the system configuration within the last 3 hours" in the email body
     And I should see a system changes table in the email with the following rows:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |

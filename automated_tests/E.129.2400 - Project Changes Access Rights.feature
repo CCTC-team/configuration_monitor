@@ -6,32 +6,38 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
   Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
-    Given I click on the link labeled exactly "Manage"
+    Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "Enable a module"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor"
-    And I click on the button labeled "Enable" in the dialog box
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
 
-    Given I create a new project named "E.129.2400" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "redcap_val/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    Given I create a new project named "E.129.2400" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     # Enable external module in project
-    When I click on the link labeled exactly "Manage"
+    When I click on the link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.0.0"
     When I click on the button labeled "Enable a module"
+    And I wait for 2 seconds
     Then I should see "Available Modules"
-    And I click on the button labeled Enable for the external module named "Configuration Monitor - v1.0.0"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
     And I should NOT see a link labeled "Project Changes"
     And I should NOT see a link labeled "User Role Changes"
 
     # Configure module with Project Changes and Email notifications
-    When I click on the button labeled exactly "Configure"
+    When I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable Project Changes"
     When I check the checkbox labeled "Enable User Role Changes"
-    And I click on the button labeled "Save" in the dialog box
+    And I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.0.0"
     # E.129.2400 - validate project changes access rights - superuser
     And I should see a link labeled "Project Changes"
@@ -42,7 +48,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     And I enter "Test_User1" into the input field labeled "Add with custom rights"
     And I click on the button labeled "Add with custom rights"
     # User Rights - No Access
-    And I check the radio labeled "No Access" in the dialog box
+    And I check the radio labeled "No Access"
     And I click on the button labeled "Add user"
     Then I should see "successfully added"
 
@@ -50,7 +56,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     When I enter "Test_User2" into the input field labeled "Add with custom rights"
     And I click on the button labeled "Add with custom rights"
     # User Rights - Read Only
-    And I check the radio labeled "Read Only" in the dialog box
+    And I check the radio labeled "Read Only"
     And I click on the button labeled "Add user"
     Then I should see "successfully added"
 
@@ -58,7 +64,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     When I enter "Test_User3" into the input field labeled "Add with custom rights"
     And I click on the button labeled "Add with custom rights"
     # User Rights - Full Access
-    And I check the radio labeled "Full Access" in the dialog box
+    And I check the radio labeled "Full Access"
     And I click on the button labeled "Add user"
     Then I should see "successfully added"
     And I logout
@@ -84,10 +90,10 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     # Disable external module in Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
-    And I click on the link labeled exactly "Manage"
-    And I click on the button labeled exactly "Disable"
-    Then I should see "Disable module?" in the dialog box
-    When I click on the button labeled "Disable module" in the dialog box
+    And I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 

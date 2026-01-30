@@ -46,13 +46,14 @@ $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days
 
 // echo "minDate: $minDate<br>";
 
-//get form values
+//get form values with input sanitization
 if (isset($_GET['startdt'])) {
-    $minDate = $_GET['startdt'];
+    // Sanitize date input - strip tags and limit length
+    $minDate = htmlspecialchars(substr($_GET['startdt'], 0, 20), ENT_QUOTES, 'UTF-8');
 }
 $maxDate = null;
 if (isset($_GET['enddt'])) {
-    $maxDate = $_GET['enddt'];
+    $maxDate = htmlspecialchars(substr($_GET['enddt'], 0, 20), ENT_QUOTES, 'UTF-8');
 }
 
 //set the default to one week
@@ -64,7 +65,9 @@ $monthActive = "";
 $yearActive = "";
 
 if (isset($_GET['defaulttimefilter'])) {
-    $defaultTimeFilter = $_GET['defaulttimefilter'];
+    // Whitelist allowed time filter values
+    $allowedFilters = ['customrange', 'onedayago', 'oneweekago', 'onemonthago', 'oneyearago'];
+    $defaultTimeFilter = in_array($_GET['defaulttimefilter'], $allowedFilters) ? $_GET['defaulttimefilter'] : 'customrange';
     $customActive = $defaultTimeFilter == "customrange" ? "active" : "";
     $dayActive = $defaultTimeFilter == "onedayago" ? "active" : "";
     $weekActive = $defaultTimeFilter == "oneweekago" ? "active" : "";
@@ -73,23 +76,27 @@ if (isset($_GET['defaulttimefilter'])) {
 }
 
 $roleID = NULL; //default to NULL meaning all roles
-if (isset($_GET['role_id'])) {
-    $roleID = $_GET['role_id'];
+if (isset($_GET['role_id']) && $_GET['role_id'] !== '') {
+    // Cast to integer for role ID
+    $roleID = (int)$_GET['role_id'];
 }
 
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
-    $dataDirection = $_GET['retdirection'];
+    // Whitelist allowed direction values
+    $dataDirection = in_array($_GET['retdirection'], ['asc', 'desc']) ? $_GET['retdirection'] : 'desc';
 }
 
 $pageSize = 10;
 if (isset($_GET['pagesize'])) {
-    $pageSize = $_GET['pagesize'];
+    // Cast to integer and limit to reasonable values
+    $pageSize = max(10, min(250, (int)$_GET['pagesize']));
 }
 
 $pageNum = 0;
 if (isset($_GET['pagenum'])) {
-    $pageNum = $_GET['pagenum'];
+    // Cast to integer, ensure non-negative
+    $pageNum = max(0, (int)$_GET['pagenum']);
 }
 
 $skipCount = (int)$pageSize * (int)$pageNum;
@@ -113,7 +120,7 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 // echo "<br> pageSize: $pageSize<br>";
 // echo "<br> pageNum: $pageNum<br>";
 
-$tableName = 'user_role_changes';
+$tableName = 'user-role-changes';
 
 //run the stored proc
 $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID);
@@ -195,7 +202,7 @@ $exportIcons =
                                                                     
         <table>
             <tr>
-                <td style='width: 100px;'><label for='role_id'>User Role</label></td>
+                <td style='width: 100px;'><label>User Role</label></td>
                 <td style='width: 200px;'>$roleSelect</td>
             </tr>
             <tr>

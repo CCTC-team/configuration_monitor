@@ -4,12 +4,29 @@ namespace CCTC\ConfigurationMonitorModule;
 
 class GetDbData
 {
+    /**
+     * Validate date parameter format (YmdHis) for SQL queries
+     * @param mixed $date The date value to validate
+     * @return string 'null' or the validated numeric date string
+     */
+    private static function validateDateParam($date): string
+    {
+        if ($date === null || $date === '') {
+            return 'null';
+        }
+        // Ensure date is numeric only (YmdHis format)
+        $cleanDate = preg_replace('/[^0-9]/', '', $date);
+        if (strlen($cleanDate) === 14 && ctype_digit($cleanDate)) {
+            return $cleanDate;
+        }
+        return 'null';
+    }
 
     static function GetDataChangesFromResult($result, $tableName) : array
     {
         $dataChanges = array();
 
-        if ($tableName == "user_role_changes") {
+        if ($tableName == "user-role-changes") {
             while ($row = db_fetch_assoc($result))
             {  
                 $dc = [
@@ -22,7 +39,7 @@ class GetDbData
 
                 $dataChanges[] = $dc;
             }
-        } else if ($tableName == "project_changes") {
+        } else if ($tableName == "project-changes") {
             while ($row = db_fetch_assoc($result))
             {  
                 $dc = [
@@ -63,19 +80,31 @@ class GetDbData
 
         global $module;
         global $conn;
-        $roleId = $roleId == null ? "null" : $roleId;
-        $minDate = $minDate == null ? "null" : $minDate;
-        $maxDate = $maxDate == null ? "null" : $maxDate;
-        $fieldName = $fieldName == null ? "null" : $fieldName;
 
-        if ($tableName == "user_role_changes") {
+        // Sanitize and validate all parameters to prevent SQL injection
+        $projId = ($projId === null || $projId === '') ? 'null' : (int)$projId;
+        $roleId = ($roleId === null || $roleId === '') ? 'null' : (int)$roleId;
+        $skipCount = (int)$skipCount;
+        $pageSize = (int)$pageSize;
+
+        // Whitelist dataDirection to prevent injection
+        $dataDirection = in_array(strtolower($dataDirection), ['asc', 'desc']) ? strtolower($dataDirection) : 'desc';
+
+        // Validate date format (YmdHis) or set to null
+        $minDate = self::validateDateParam($minDate);
+        $maxDate = self::validateDateParam($maxDate);
+
+        // Sanitize fieldName - allow only alphanumeric and underscores
+        $fieldName = ($fieldName === null || $fieldName === '') ? 'null' : "'" . preg_replace('/[^a-zA-Z0-9_]/', '', $fieldName) . "'";
+
+        if ($tableName == "user-role-changes") {
             $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId);";
 
-        } else if ($tableName == "project_changes") {
+        } else if ($tableName == "project-changes") {
             $query = "call GetProjectChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
 
         } else {
-            $query = "call GetSystemChanges('$fieldName', $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
+            $query = "call GetSystemChanges($fieldName, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";
         }
         
         $currentIndex = 0;
@@ -99,13 +128,13 @@ class GetDbData
                         }
                     }
 
-                    if ($currentIndex == 2 && $tableName == "user_role_changes") {
+                    if ($currentIndex == 2 && $tableName == "user-role-changes") {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $roleIds[] = $row['role_id'];
                         }
                     }
 
-                    if ($currentIndex == 2 && $tableName == "system_changes") {
+                    if ($currentIndex == 2 && $tableName == "system-changes") {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $fieldNames[] = $row['field_name'];
                         }
@@ -116,20 +145,19 @@ class GetDbData
                 }
             } while (mysqli_next_result($conn));
 
-            $updateTable .= "</tbody></table>";
-
         } else {
-            echo "Error: " . $conn->error;
+            // Log error instead of echoing to prevent information disclosure
+            error_log("Configuration Monitor DB Error: " . $conn->error);
         }
 
-        if($tableName == "user_role_changes") {
+        if($tableName == "user-role-changes") {
             return
             [
                 "dataChanges" => $dataChanges,
                 "roleIds" => $roleIds,
                 "totalCount" => $totalCount
             ];
-        } else if($tableName == "project_changes") {
+        } else if($tableName == "project-changes") {
             return
             [
                 "dataChanges" => $dataChanges,
