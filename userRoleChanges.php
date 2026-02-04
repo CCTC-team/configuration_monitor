@@ -44,8 +44,6 @@ $oneYearAgo = Utility::NowAdjusted('-1 years');
 
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
 
-// echo "minDate: $minDate<br>";
-
 //get form values with input sanitization
 if (isset($_GET['startdt'])) {
     // Sanitize date input - strip tags and limit length
@@ -109,17 +107,6 @@ $actMaxAsDate = $maxDate == "" ? Utility::Now() : Utility::DateStringAsDateTime(
 $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
 
 $diff = $actMaxAsDate->diff($actMinAsDate);
-
-
-// echo "<br>Project ID: $projId<br>";
-// echo"<br> Module directory name: $moduleName<br>";
-
-// echo "<br> projId: $projId<br>";
-// echo "<br> maxDay: $maxDay<br>";
-// echo "<br> skipCount: $skipCount<br>";
-// echo "<br> pageSize: $pageSize<br>";
-// echo "<br> pageNum: $pageNum<br>";
-
 $tableName = 'user-role-changes';
 
 //run the stored proc
@@ -129,15 +116,9 @@ $roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
 $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
-
-// echo "<br>showingCount: $showingCount<br>";
-
 $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
-// echo "<br> showingCount: $showingCount<br>";
-// echo "<br> totalCount: $totalCount<br>";
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
-// echo "<br> dataDirection: $dataDirection<br>";
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
 // adjust skipTo in cases where last page isn't a full page
@@ -146,8 +127,6 @@ if($showingCount < $pageSize) {
 } else {
     $skipTo = $skipCount + (int)$pageSize;
 }
-
- // $csvExportPage = $module->getUrl('csv_export.php');
 
 $pagingInfo = "records {$skipFrom} to {$skipTo} of {$totalCount}";
 $moduleName = "configuration_monitor";
@@ -184,7 +163,7 @@ echo "<script type='text/javascript'>
             $doReset 
         }
     </script>";
-// echo "<br>totalpages: $totPages<br>";
+
 $exportIcons = 
     "<div class='blue' style='padding-left:8px; padding-right:8px; border-width:1px; '>    
     <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
@@ -350,11 +329,6 @@ if ($showingCount == 0) {
         submitForm('startdt');
     }
 
-    // function resetRoleID() {
-    //     let editor = document.getElementById('role_id');
-    //     editor.value = '';
-    // }
-
     function resetDataForm() {
         let dataForm = document.getElementById('datafrm');
         dataForm.value = '';
@@ -395,18 +369,12 @@ if ($showingCount == 0) {
 
     // use this when a field changes so can run request on any change
     function submitForm(src) {
-        // alert("submitForm called with src: " + src);
         showProgress(1);
 
         let frm = document.getElementById('filterForm');
-        // // apply this for the role_id drop down to work
-        // let logRole = document.getElementById('role_id');
-        // logRole.name = 'role_id';
-
         //clear the csrfToken
         let csrfToken = document.querySelector('input[name="redcap_csrf_token"]');
         csrfToken.value = '';
-        // alert("Submitting form with " + src + " changed");
         frm.submit();
     }
 

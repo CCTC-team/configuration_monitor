@@ -27,7 +27,6 @@ if ($tableName != 'system-changes') {
 
 //get form values
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
-// $minDate = $oneWeekAgo;
 
 if (isset($_GET['startdt'])) {
     $minDate = $_GET['startdt'];

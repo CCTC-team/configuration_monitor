@@ -15,7 +15,6 @@ use CCTC\ConfigurationMonitorModule\Rendering;
 use CCTC\ConfigurationMonitorModule\GetDbData;
 
 $maxDay = $module->getSystemSetting('sys-max-days-page') ?? 7; // Default to 7 days if not set
-// echo "maxDay: $maxDay";
 
 echo "
 <h4 style='margin-top: 0;'>
@@ -34,8 +33,6 @@ $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
 $minDate = Utility::NowAdjusted('-'. $maxDay . 'days'); //default to maxDay days ago
-
-// echo "minDate: $minDate<br>";
 
 //get form values with input sanitization
 if (isset($_GET['startdt'])) {
@@ -100,21 +97,10 @@ $actMaxAsDate = $maxDate == "" ? Utility::Now() : Utility::DateStringAsDateTime(
 $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
 
 $diff = $actMaxAsDate->diff($actMinAsDate);
-
-
-// echo"<br> Module directory name: $moduleName<br>";
-
-// echo "<br> maxDay: $maxDay<br>";
-// echo "<br> skipCount: $skipCount<br>";
-// echo "<br> pageSize: $pageSize<br>";
-// echo "<br> pageNum: $pageNum<br>";
-// echo "<br> maxDateDb: $maxDateDb";
-// echo "<br>minDateDb: $minDateDb<br>";
-
 $tableName = 'system-changes';
 $projId = NULL;
 $roleID = NULL;
-// echo "fieldName: $fieldName";
+
 //run the stored proc
 $logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName);
 
@@ -122,13 +108,9 @@ $fieldNames = $logDataSets['fieldNames'];
 $dcs = $logDataSets['dataChanges'];
 $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
-// echo "<br> TotalCount: $totalCount<br>";
-// echo "<br>showingCount: $showingCount<br>";
-// print_array($fieldNames);
 $fieldNameSelect = Rendering::MakeFieldNameSelect($fieldNames, $fieldName);
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
-// echo "<br> dataDirection: $dataDirection<br>";
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
 // adjust skipTo in cases where last page isn't a full page
@@ -144,7 +126,6 @@ $page = "systemChanges";
 
 //create the reset to return to default original state
 $resetUrl = APP_PATH_WEBROOT . "/ExternalModules/?prefix=$moduleName&page=$page";
-// echo "resetUrl: $resetUrl";
 $doReset = "window.location.href='$resetUrl';";
 $pageSizeSelect = Rendering::MakePageSizeSelect($pageSize);
 $retDirectionSelect = Rendering::MakeRetDirectionSelect($dataDirection);

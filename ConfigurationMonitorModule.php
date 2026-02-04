@@ -104,13 +104,6 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         // Get the URL from the link (whether it's an array or string)
         $url = is_array($link) ? $link['url'] : $link;
 
-        // // DEBUG: Log what we're checking
-        // REDCap::logEvent("Link Check Debug",
-        //     "URL: $url\n" .
-        //     "user-role-changes-enable: " . var_export($this->getProjectSetting('user-role-changes-enable'), true) . "\n" .
-        //     "project-changes-enable: " . var_export($this->getProjectSetting('project-changes-enable'), true)
-        // );
-
         // Check specific link against corresponding config setting
         if(strpos($url, 'userRoleChanges') == true) {
             return $this->getProjectSetting('user-role-changes-enable') ? $link : null;
@@ -377,10 +370,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             if ($tableName != 'system-changes') {
                 $changes = self::recordDiff($dc, $tableName);
                 $table .= self::createRow($changes, $tableName);
-                // print_r($changes);
 
             } else {
-                // print_r($dc);
                 $table .= self::createSystemRow($dc);
             }
                 

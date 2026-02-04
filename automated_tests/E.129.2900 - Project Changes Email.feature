@@ -1,8 +1,9 @@
-Feature: E.129.1000 - The system shall allow enabling or disabling User Role Changes tracking at the project level.
+Feature: E.129.2900 - The system shall send automated email summaries containing Project Changes and/or User Role Changes when changes occur and email notifications are enabled at the project level.
 
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
 
+  # For testing purposes, set cron_frequency to 30 seconds in config.json
   Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
@@ -66,8 +67,8 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
       |  mm/dd/yyyy hh:mm | Auto Inc Set	   | 1	       | 0         |
 
     # Wait for email notification to be triggered
-    # For testing purposes, set cron_frequency to 30 seconds in config.json
-    And I wait for 15 seconds
+    # For testing purposes, set cron_frequency to 30 seconds in config.json for email notification test
+    And I wait for 30 seconds
     # Disable external module in Control Center
     Given I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"
@@ -77,7 +78,6 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Then I should NOT see "Configuration Monitor - v1.0.0"
     And I logout
 
-    # Change cron_frequency in config.json to 30 seconds for email notification test
     Given I open Email
     # Verify email notification for system configuration changes
     Then I should see an email for user "to@sys.edu" with subject "Project Configuration Changes Notification"

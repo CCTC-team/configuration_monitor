@@ -4,11 +4,7 @@ namespace CCTC\ConfigurationMonitorModule;
 
 class GetDbData
 {
-    /**
-     * Validate date parameter format (YmdHis) for SQL queries
-     * @param mixed $date The date value to validate
-     * @return string 'null' or the validated numeric date string
-     */
+    // Validate date parameter format (YmdHis) for SQL queries
     private static function validateDateParam($date): string
     {
         if ($date === null || $date === '') {
@@ -46,7 +42,6 @@ class GetDbData
                     "oldValue"  => $row["old_value"],
                     "newValue"  => $row["new_value"],
                     "timestamp" => $row["ts"],
-                    //delete column from table ???
                     "action"    => "UPDATE"
                 ];
 
@@ -61,14 +56,12 @@ class GetDbData
                     "oldValue"  => $row["old_value"],
                     "newValue"  => $row["new_value"],
                     "timestamp" => $row["ts"]
-                    //delete column from table ???
                 ];
 
                 $dataChanges[] = $dc;
             }
         }
        
-        // print_r($dataChanges);
         return $dataChanges;
     }
 
