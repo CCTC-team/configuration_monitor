@@ -14,13 +14,6 @@ use CCTC\ConfigurationMonitorModule\Utility;
 use CCTC\ConfigurationMonitorModule\Rendering;
 use CCTC\ConfigurationMonitorModule\GetDbData;
 
-// // Check user's expiration date (if exists)
-// if ($user_rights['expiration'] != "" && $user_rights['expiration'] <= TODAY)
-// {
-//     $GLOBALS['no_access'] = 1;
-//     // Instead of returning 'false', return '2' specifically so we can note to user that the password has expired
-//     return '2';
-// }
 $projId = $module->getProjectId();
 $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
 
