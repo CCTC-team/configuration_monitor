@@ -2,7 +2,7 @@
   "name": "Configuration Monitor",
   "description": "Module that displays the configuration changes",
   "namespace": "CCTC\\ConfigurationMonitorModule",
-  "framework-version": 14,
+  "framework-version": 16,
   "authors": [
     {
       "name": "Mintoo Xavier",
