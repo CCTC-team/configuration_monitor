@@ -64,9 +64,8 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
       |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
 
-    # Wait for email notification to be triggered
-    # For testing purposes, set cron_frequency to 30 seconds in config.json for email notification test
-    And I wait for 30 seconds
+    # Trigger cron job to send email notification
+    And I trigger the cron job
     # Disable external module in Control Center
     Given I click on the link labeled "Manage"
     And I click on the button labeled "Disable"

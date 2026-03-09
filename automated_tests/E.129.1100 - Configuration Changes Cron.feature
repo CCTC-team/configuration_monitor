@@ -17,10 +17,9 @@ Feature: E.129.1100 - The system shall register a cron job (configuration_monito
     And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
 
-    # Change cron_frequency in config.json to 30 seconds for email notification test
-    And I wait for 35 seconds
     # E.129.1100
     When I click on the link labeled "Cron Jobs"
+    And I trigger the cron job
     Then I should see a table header and row containing the following values in a table:
       | Job Name                                           | Description                                                |
       | configuration_monitor_cron (configuration_monitor) |  Send email notifications for recent configuration changes |

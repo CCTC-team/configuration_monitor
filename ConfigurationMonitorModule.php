@@ -105,11 +105,11 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         $url = is_array($link) ? $link['url'] : $link;
 
         // Check specific link against corresponding config setting
-        if(strpos($url, 'userRoleChanges') == true) {
+        if(strpos($url, 'userRoleChanges') !== false) {
             return $this->getProjectSetting('user-role-changes-enable') ? $link : null;
-        } elseif(strpos($url, 'projectChanges') == true) {
+        } elseif(strpos($url, 'projectChanges') !== false) {
             return $this->getProjectSetting('project-changes-enable') ? $link: null;
-        } elseif(strpos($url, 'systemChanges') == true) {
+        } elseif(strpos($url, 'systemChanges') !== false) {
             return $this->getSystemSetting('system-changes-enable') ? $link: null;
         }
 
@@ -421,7 +421,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
 
         $projId = $this->getProjectId();
-        $maxHour = $this->getProjectSetting('max-hours-email') ?? 3; // Default to 3 hours if not set
+        $maxHour = $this->getProjectSetting('max-hours-email') ?: 3; // Default to 3 hours if not set
         $roleID = NULL; //all roles
         $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
         $minDateDb = Utility::DateStringToDbFormat($minDate);
@@ -517,7 +517,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
         // run the stored proc if user role changes is enabled
         if ($this->getSystemSetting('sys-email-enable')) {
-            $maxHour = $this->getSystemSetting('sys-max-hours-email') ?? 3; // Default to 3 hours if not set
+            $maxHour = $this->getSystemSetting('sys-max-hours-email') ?: 3; // Default to 3 hours if not set
             $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
             $minDateDb = Utility::DateStringToDbFormat($minDate);
             $maxDateDb = NULL; //no max date

@@ -66,9 +66,8 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
       |  Date / Time      | Changed Property | Old Value | New Value |
       |  mm/dd/yyyy hh:mm | Auto Inc Set	   | 1	       | 0         |
 
-    # Wait for email notification to be triggered
-    # For testing purposes, set cron_frequency to 30 seconds in config.json for email notification test
-    And I wait for 30 seconds
+    # Trigger cron job to send email notification
+    And I trigger the cron job
     # Disable external module in Control Center
     Given I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"

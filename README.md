@@ -249,3 +249,13 @@ When system email settings are configured (`sys-email-enable`, `sys-from-emailid
 - Emails are only sent if there are actual system configuration changes
 - The cron job checks for system changes in addition to project changes
 - System-level emails are sent to the configured system-level recipient list
+
+#### Automation Testing
+
+The module includes comprehensive **Cypress automated** tests using the **Cucumber/Gherkin framework**. To set up Cypress, refer to [CCTC REDCap Cypress Test Suite](https://github.com/CCTC-team/redcap_cypress/blob/redcap_val/README.md).
+
+All automated test scripts are located in the `automated_tests` directory. The test suite automatically picks up the scripts from this folder. These scripts can also be used to manually test the external module. The directory contains:
+- Custom step definitions created by our team
+- Fixture files
+- User Requirement Specification (URS) documents
+- Feature test scripts

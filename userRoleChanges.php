@@ -15,7 +15,7 @@ use CCTC\ConfigurationMonitorModule\Rendering;
 use CCTC\ConfigurationMonitorModule\GetDbData;
 
 $projId = $module->getProjectId();
-$maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
+$maxDay = $module->getProjectSetting('max-days-page') ?: 7; // Default to 7 days if not set
 
 echo "
 <div class='projhdr'>

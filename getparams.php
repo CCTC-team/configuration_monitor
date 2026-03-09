@@ -18,10 +18,10 @@ if (isset($_GET['tableName'])) {
 
 if ($tableName != 'system-changes') {
     $projId = $module->getProjectId();
-    $maxDay = $module->getProjectSetting('max-days-page') ?? 7; // Default to 7 days if not set
+    $maxDay = $module->getProjectSetting('max-days-page') ?: 7; // Default to 7 days if not set
 
 } else {
-    $maxDay = $module->getSystemSetting('sys-max-days-page') ?? 7; // Default to 7 days if not set
+    $maxDay = $module->getSystemSetting('sys-max-days-page') ?: 7; // Default to 7 days if not set
 
 }
 
