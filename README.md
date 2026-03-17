@@ -260,6 +260,14 @@ All automated test scripts are located in the `automated_tests` directory. The t
 - User Requirement Specification (URS) documents
 - Feature test scripts
 
+**Step Definition Locations:**
+
+Step definitions are organized across multiple locations in the `redcap_cypress` repo under `redcap_cypress/cypress/support/step_definitions/`:
+
+- **Non-core feature step definitions** are in `redcap_cypress/cypress/support/step_definitions/noncore.js`
+- **Shared EM step definitions** (used by more than one external module) are in `redcap_cypress/cypress/support/step_definitions/external_module.js`
+- **EM-specific step definitions** (used only by this module) are in `automated_tests/step_definitions/external_module.js` within this module's repo
+
 ---
 
 ## Who are we
