@@ -672,7 +672,7 @@ Given('I should see a {emTableName} table in the email with the following rows:'
 Given("I trigger the cron job", () => {
     cy.url().then((currentUrl) => {
         cy.request({
-            url: 'https://localhost:8443/cron.php',
+            url: `${Cypress.config('baseUrl')}/cron.php`,
             failOnStatusCode: false
         }).then(() => {
             cy.visit(currentUrl)
