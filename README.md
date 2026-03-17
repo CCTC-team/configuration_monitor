@@ -252,10 +252,18 @@ When system email settings are configured (`sys-email-enable`, `sys-from-emailid
 
 #### Automation Testing
 
-The module includes comprehensive **Cypress automated** tests using the **Cucumber/Gherkin framework**. To set up Cypress, refer to [CCTC REDCap Cypress Test Suite](https://github.com/CCTC-team/redcap_cypress/blob/redcap_val/README.md).
+The module includes comprehensive **Cypress automated** tests using the **Cucumber/Gherkin framework**. To set up Cypress, refer to [Setup_Overview.md](https://github.com/CCTC-team/CCTC_REDCap_Docker/blob/redcap_val/Setup_Overview.md).
 
 All automated test scripts are located in the `automated_tests` directory. The test suite automatically picks up the scripts from this folder. These scripts can also be used to manually test the external module. The directory contains:
 - Custom step definitions created by our team
 - Fixture files
 - User Requirement Specification (URS) documents
 - Feature test scripts
+
+---
+
+## Who are we
+
+The Cambridge Cancer Trials Centre (CCTC) is a collaboration between Cambridge University Hospitals NHS Foundation Trust, the University of Cambridge, and Cancer Research UK. Founded in 2007, CCTC designs and conducts clinical trials and studies to improve outcomes for patients with cancer or those at risk of developing it. In 2011, CCTC began hosting the Cambridge Clinical Trials Unit - Cancer Theme (CCTU-CT).
+
+CCTC has two divisions: Cancer Theme, which coordinates trial delivery, and Clinical Operations.
