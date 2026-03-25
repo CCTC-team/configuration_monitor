@@ -16,6 +16,14 @@ Feature: E.129.100 - The system shall support the ability to enable/disable Conf
     And I wait for 1 second
     And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.0.0"
+
+    When I click on the link labeled "View Logs"
+    Then I should see "External Module Logs"
+    And I should see a table header and row containing the following values in a table:
+      | Module                | Message                                   | UserName   |
+      | configuration_monitor | Database objects created successfully     | Test_Admin |
+      | configuration_monitor | Module system enable initiated            | Test_Admin |
+
     And I logout
     
     Given I login to REDCap with the user "Test_User1"
@@ -31,6 +39,16 @@ Feature: E.129.100 - The system shall support the ability to enable/disable Conf
     Then I should see "Disable module?"
     When I click on the button labeled "Disable module"
     Then I should NOT see "Configuration Monitor - v1.0.0"
+
+    When I click on the link labeled "View Logs"
+    Then I should see "External Module Logs"
+    And I should see a table header and row containing the following values in a table:
+      | Module                | Message                               | UserName   |
+      | configuration_monitor | Database objects dropped successfully | Test_Admin |
+      | configuration_monitor | Module system disable initiated       | Test_Admin |
+      | configuration_monitor | Database objects created successfully | Test_Admin |
+      | configuration_monitor | Module system enable initiated        | Test_Admin |
+
     And I logout
 
     # Verify no exceptions are thrown in the system
