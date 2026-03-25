@@ -123,7 +123,10 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
     }
 
     function redcap_module_system_enable($version): void
-    {// Create the necessary table and triggers when the module is enabled
+    {
+        $this->log('Module system enable initiated', ['version' => $version]);
+
+        // Create the necessary table and triggers when the module is enabled
 
         //User Role Change Log Table, Triggers and Stored Procedure
         self::execFromFile("0010_create_table_user_role_changelog.sql");
@@ -141,10 +144,15 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         // System Change Log Table, Update Trigger and Stored Procedure
         self::execFromFile("0090_create_table_system_changelog.sql");
         self::execFromFile("0100_system_UpdateTrigger.sql");
-        self::execFromFile("0110_create_SystemChange_proc.sql");    } 
+        self::execFromFile("0110_create_SystemChange_proc.sql");
+
+        $this->log('Database objects created successfully');
+    }
 
     function redcap_module_system_disable($version): void
     {
+        $this->log('Module system disable initiated', ['version' => $version]);
+
         // Clean up the database objects when the module is disabled
 
         // Drop the User Role Change Log table, triggers, and stored procedure
@@ -169,6 +177,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         // db_query("DROP TABLE IF EXISTS system_changelog;");
         db_query("DROP TRIGGER IF EXISTS system_update_trigger;");
         db_query("DROP PROCEDURE IF EXISTS GetSystemChanges;");
+
+        $this->log('Database objects dropped successfully');
     }
 
     function getUniquePrivileges($dcs, $tableName): array
