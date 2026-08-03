@@ -28,7 +28,7 @@ The Configuration Monitor module tracks and logs changes to REDCap configuration
 ## File Structure
 
 ```
-configuration_monitor_v1.0.0/
+configuration_monitor_v1.1.0/
 ├── ConfigurationMonitorModule.php   # Main module class with hooks
 ├── config.json                      # Module configuration
 ├── GetDbData.php                    # Database query helper class

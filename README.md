@@ -252,6 +252,15 @@ When system email settings are configured (`sys-email-enable`, `sys-from-emailid
 - The cron job checks for system changes in addition to project changes
 - System-level emails are sent to the configured system-level recipient list
 
+#### Configuration audit log ####
+
+Separately from the REDCap configuration changes this module reports on, every change to **this module's own**
+configuration — at both system and project scope — is recorded to the module's **View Logs** page (Control Center →
+External Modules → View Logs). One entry is written per changed setting, recording the setting name, its old and new
+values, the user who made the change and when. The first save on a freshly configured module logs the values that were
+actually set (as `(empty) -> value`); settings left blank are not logged. Old and new values are held as log
+parameters, which REDCap shows to super-users via the **Show Parameters** button.
+
 #### Automation Testing
 
 The module includes comprehensive **Cypress automated** tests using the **Cucumber/Gherkin framework**. To set up Cypress, refer to [Setup_Overview.md](https://github.com/CCTC-team/CCTC_REDCap_Docker/blob/redcap_val/Setup_Overview.md).
@@ -282,21 +291,21 @@ The module ships with a CI workflow at [.github/workflows/cypress-tests.yml](.gi
 1. Checks out the Configuration Monitor EM (this repo) into `configuration_monitor_em/`.
 2. Logs in to GHCR and pulls two prebuilt images: `redcap-aio` (REDCap + MariaDB + MailHog in one container via supervisord) and `cypress-runner-aio` (the suite with `rctf` + `redcap_rsvc` baked in).
 3. Stages the EM under test — strips `.git`/`.github` so only the module payload remains.
-4. Starts the AIO container (ports `8443`/`8025`, volume `cctc_mariadb_data`), bind-mounting **this commit's** EM over the image's `modules/configuration_monitor_v1.0.0` so REDCap serves the code under test with no rebuild.
+4. Starts the AIO container (ports `8443`/`8025`, volume `cctc_mariadb_data`), bind-mounting **this commit's** EM over the image's `modules/configuration_monitor_v1.1.0` so REDCap serves the code under test with no rebuild.
 5. Waits for REDCap to come up (first boot initialises the DB).
 6. Runs the runner image, which copies this module's `automated_tests` out of the container and runs only its `E.129.*` specs (excluding `*REDUNDANT*`), up to 3 attempts per spec, on Chromium. It reaches the DB/files over the mounted Docker socket and the UI over host networking.
 7. Uploads the mochawesome reports (and, on failure, screenshots) as artifacts retained for 7 days.
 
 **Follow-on jobs**
 - `prune-artifacts` — deletes artifacts from older runs, keeping only the latest 2.
-- `publish-report` — merges the run's mochawesome JSON into one combined HTML report and publishes it to GitHub Pages (report named `configuration_monitor_v1.0.0.html`, also served at the Pages root as `index.html`).
+- `publish-report` — merges the run's mochawesome JSON into one combined HTML report and publishes it to GitHub Pages **per module version**: the report for this run lands at `/<EM_VERSION>/index.html` (e.g. `/v1.1.0/`) and the Pages root serves an index linking every published version, newest first. Previously published versions are preserved by restoring the cumulative site from the `pages-store` branch before the new version is added and the snapshot force-pushed back.
 
 **Required repository secrets**
 - `CCTC_TEAM_PAT` — PAT with `read:packages` for the private `redcap-aio` / `cypress-runner-aio` GHCR images.
 
 **Version pins** (set as `env` at the top of the workflow)
 - `AIO_IMAGE` / `RUNNER_IMAGE` — the GHCR image refs; both must be built for the **same** REDCap version.
-- `EM_NAME` / `EM_VERSION` — `configuration_monitor` / `v1.0.0`. `EM_MODULE` (`configuration_monitor_v1.0.0`) is the directory REDCap discovers the module by and the runner uses to locate the specs. Bump `EM_VERSION`/`EM_MODULE` when releasing a new module version so the mount path and spec discovery stay aligned.
+- `EM_NAME` / `EM_VERSION` — `configuration_monitor` / `v1.1.0`. `EM_MODULE` (`configuration_monitor_v1.1.0`) is the directory REDCap discovers the module by and the runner uses to locate the specs. Bump `EM_VERSION`/`EM_MODULE` when releasing a new module version so the mount path and spec discovery stay aligned.
 
 ---
 

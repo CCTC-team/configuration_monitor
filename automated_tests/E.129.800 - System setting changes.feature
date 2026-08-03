@@ -8,21 +8,21 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     When I click on the link labeled "Control Center"
     Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
-    And I should NOT see "Configuration Monitor - v1.0.0"
+    And I should NOT see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Enable a module"
     And I wait for 2 seconds
     Then I should see "Available Modules"
     And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
     And I wait for 1 second
     And I click on the button labeled "Enable"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Configuration Monitor - v1.1.0"
     Then I should NOT see a link labeled "System Changes"
 
     When I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable System Changes"
     And I click on the button labeled "Save"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Configuration Monitor - v1.1.0"
     # E.129.2500 - verify System Changes link appears
     And I should see a link labeled "System Changes"
 
@@ -92,7 +92,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     And I click on the button labeled "Disable"
     Then I should see "Disable module?"
     When I click on the button labeled "Disable module"
-    Then I should NOT see "Configuration Monitor - v1.0.0"
+    Then I should NOT see "Configuration Monitor - v1.1.0"
     And I logout
   
     # Verify no exceptions are thrown in the system

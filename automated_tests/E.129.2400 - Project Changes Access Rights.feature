@@ -8,27 +8,27 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     When I click on the link labeled "Control Center"
     Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
-    And I should NOT see "Configuration Monitor - v1.0.0"
+    And I should NOT see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Enable a module"
     And I wait for 2 seconds
     Then I should see "Available Modules"
     And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
     And I wait for 1 second
     And I click on the button labeled "Enable"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Configuration Monitor - v1.1.0"
 
     Given I create a new project named "E.129.2400" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     # Enable external module in project
     When I click on the link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
-    And I should NOT see "Configuration Monitor - v1.0.0"
+    And I should NOT see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Enable a module"
     And I wait for 2 seconds
     Then I should see "Available Modules"
     And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
     And I wait for 1 second
     And I click on the button labeled "Enable"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Configuration Monitor - v1.1.0"
     And I should NOT see a link labeled "Project Changes"
     And I should NOT see a link labeled "User Role Changes"
 
@@ -38,7 +38,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     When I check the checkbox labeled "Enable Project Changes"
     When I check the checkbox labeled "Enable User Role Changes"
     And I click on the button labeled "Save"
-    Then I should see "Configuration Monitor - v1.0.0"
+    Then I should see "Configuration Monitor - v1.1.0"
     # E.129.2400 - validate project changes access rights - superuser
     And I should see a link labeled "Project Changes"
     And I should see a link labeled "User Role Changes"
@@ -94,7 +94,7 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     And I click on the button labeled "Disable"
     Then I should see "Disable module?"
     When I click on the button labeled "Disable module"
-    Then I should NOT see "Configuration Monitor - v1.0.0"
+    Then I should NOT see "Configuration Monitor - v1.1.0"
     And I logout
 
     # Verify no exceptions are thrown in the system
