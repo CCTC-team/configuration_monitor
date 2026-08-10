@@ -111,6 +111,16 @@ When the module is enabled at the system level, the following database objects a
 | `to-emailids` | Email (repeatable) | Recipient email addresses | - |
 | `max-hours-email` | Text | Hours to look back for email reports | 3 |
 
+### Configuration audit log
+
+`redcap_module_save_configuration($project_id)` records every configuration change to the module's **View Logs**
+page. On save it diffs the submitted settings against the values held beforehand and writes one
+`Configuration changed (<scope>)` entry per changed key, carrying the setting name and its old and new values as
+log parameters — REDCap shows these to super-users via the **Show Parameters** button. Scope is derived from
+whether `$project_id` is empty, so saving the Control Center dialog logs `(system)` and saving a project's dialog
+logs `(project)`; each scope diffs only its own settings, so the two never collide. The first save diffs against an
+empty baseline, so initial values are logged as `(empty) -> value`; settings left blank are not logged.
+
 ## Access Control
 
 - **Project Pages**: Requires User Rights privileges or Super User status
