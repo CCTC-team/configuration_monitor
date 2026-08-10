@@ -58,9 +58,9 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     Then I should see a button labeled "Disable" in the row labeled "Scheduling module"
 
     Given I click on the button labeled "Additional customizations"
-    When I check the checkbox labeled Require a 'reason' when making changes to existing records in additional customizations
+    When I check the checkbox labeled "Require a 'reason' when making changes to existing records"
     And I select "Data Resolution Workflow" in the dropdown field labeled "Enable:"
-    And I check the checkbox labeled Enable the Data History popup for all data collection instruments in additional customizations
+    And I check the checkbox labeled "Enable the Data History popup for all data collection instruments"
     When I click on the button labeled "Save"
     Then I should see "The Data Resolution Workflow has now been enabled!"
     And I click on the button labeled "Close"
