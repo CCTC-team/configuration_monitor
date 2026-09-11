@@ -93,6 +93,40 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     And I should see 4 rows in the user role changes table
     And I wait for 2 seconds
 
+    # E.129.2100 - validate filtering user role changes by action
+    When I select "DELETE" on the dropdown field labeled "Action"
+    And I should see a table header and rows with rowspan containing the following values in a table:
+      | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
+      | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+
+    And I should see 1 row in the user role changes table
+    And I should NOT see "TestRole"
+    And I should NOT see "DataManager"
+
+    When I select "INSERT" on the dropdown field labeled "Action"
+    And I should see a table header and rows with rowspan containing the following values in a table:
+      | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value | New Value                                                                                                                                          |
+      | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+
+    And I should see 1 row in the user role changes table
+    And I should NOT see "Monitor"
+    And I should NOT see "DataManager"
+
+    When I select "UPDATE" on the dropdown field labeled "Action"
+    And I should see a table header and rows with rowspan containing the following values in a table:
+      | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
+
+    And I should see 2 rows in the user role changes table
+    And I should NOT see "All Privileges"
+    And I should NOT see "TestRole"
+    And I should NOT see "Monitor"
+
+    # reset the action filter so the checks below run against every action again
+    When I select "any action" on the dropdown field labeled "Action"
+    Then I should see 4 rows in the user role changes table
+
     # E.129.2100 - validate filtering user role changes
     When I select "DataManager (2)" on the dropdown field labeled "User Role"
     And I should see a table header and rows with rowspan containing the following values in a table:

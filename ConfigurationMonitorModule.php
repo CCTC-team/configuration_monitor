@@ -128,6 +128,12 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
 
         // Create the necessary table and triggers when the module is enabled
 
+        // Drop the procedures first so re-enabling picks up a changed signature
+        // (CREATE PROCEDURE fails outright if one is already there from an earlier version)
+        db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
+        db_query("DROP PROCEDURE IF EXISTS GetProjectChanges;");
+        db_query("DROP PROCEDURE IF EXISTS GetSystemChanges;");
+
         //User Role Change Log Table, Triggers and Stored Procedure
         self::execFromFile("0010_create_table_user_role_changelog.sql");
         self::execFromFile("0020_user_roles_InsertTrigger.sql");

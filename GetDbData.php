@@ -18,6 +18,25 @@ class GetDbData
         return 'null';
     }
 
+    // Normalise a user-supplied action filter to one of ACTION_TYPES, or null for "any action"
+    public static function NormaliseActionType($actionType): ?string
+    {
+        if ($actionType === null || $actionType === '') {
+            return null;
+        }
+        $actionType = strtoupper(trim((string)$actionType));
+
+        return in_array($actionType, self::ACTION_TYPES, true) ? $actionType : null;
+    }
+
+    // Turn an action filter into a SQL literal for the stored procedure call
+    private static function validateActionType($actionType): string
+    {
+        $actionType = self::NormaliseActionType($actionType);
+
+        return $actionType === null ? 'null' : "'" . $actionType . "'";
+    }
+
     static function GetDataChangesFromResult($result, $tableName) : array
     {
         $dataChanges = array();
@@ -65,9 +84,12 @@ class GetDbData
         return $dataChanges;
     }
 
+    // The operation types recorded by the user_roles insert/update/delete triggers
+    const ACTION_TYPES = ['INSERT', 'UPDATE', 'DELETE'];
+
     // calls the GetUserRoleChanges or  GetProjectChanges stored procedures (based on tableName) with the given parameters and returns the relevant data
     public static function GetChangesFromSP(
-        $projId, $minDate, $maxDate, $skipCount, $pageSize, $dataDirection, $tableName, $roleId = NULL, $fieldName = NULL)
+        $projId, $minDate, $maxDate, $skipCount, $pageSize, $dataDirection, $tableName, $roleId = NULL, $fieldName = NULL, $actionType = NULL)
     : array
     {
 
@@ -90,8 +112,11 @@ class GetDbData
         // Sanitize fieldName - allow only alphanumeric and underscores
         $fieldName = ($fieldName === null || $fieldName === '') ? 'null' : "'" . preg_replace('/[^a-zA-Z0-9_]/', '', $fieldName) . "'";
 
+        // Whitelist actionType against the operation types the triggers record
+        $actionType = self::validateActionType($actionType);
+
         if ($tableName == "user-role-changes") {
-            $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId);";
+            $query = "call GetUserRoleChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection', $roleId, $actionType);";
 
         } else if ($tableName == "project-changes") {
             $query = "call GetProjectChanges($projId, $minDate, $maxDate, $skipCount, $pageSize, '$dataDirection');";

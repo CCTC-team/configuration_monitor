@@ -82,6 +82,11 @@ if (isset($_GET['field_name'])) {
     $fieldName = $_GET['field_name'];
 }
 
+$actionType = NULL; //default to NULL meaning all actions
+if (isset($_GET['action_type'])) {
+    $actionType = $_GET['action_type'];
+}
+
 $privilegeFilter = ''; //default to empty meaning all privileges
 if (isset($_GET['privilege_filter'])) {
     $privilegeFilter = $_GET['privilege_filter'];

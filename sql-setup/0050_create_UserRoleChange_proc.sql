@@ -10,12 +10,18 @@ CREATE PROCEDURE GetUserRoleChanges
         in skipCount int,
         in pageSize int,
         in retDirection varchar(4) collate utf8mb4_unicode_ci,
-        in roleId int
+        in roleId int,
+        in actionType varchar(10) collate utf8mb4_unicode_ci
     )
 BEGIN
 
     DECLARE sqlQuery mediumtext;
     DECLARE roleidfilter mediumtext;
+
+    -- treat an empty action filter as 'no filter'
+    if actionType = '' then
+        set actionType = null;
+    end if;
 
    -- if skip not given then default to 0
     if skipCount is null then
@@ -55,13 +61,16 @@ BEGIN
 					-- minDate
                     and (? is null or ts >= ?)
                     -- maxDate
-                    and (? is null or ts <= ?)');
+                    and (? is null or ts <= ?)
+                    -- action filter (INSERT / UPDATE / DELETE)
+                    and (? is null or operation_type = ?)');
 
     prepare qry FROM sqlQuery;
     EXECUTE qry using
         roleId, roleId,
         minDate, minDate,
-        maxDate, maxDate;
+        maxDate, maxDate,
+        actionType, actionType;
     DEALLOCATE prepare qry;
 
     SET sqlQuery =
@@ -90,5 +99,6 @@ BEGIN
 
 END;
 
--- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', NULL, NULL); -- all roles
--- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', 24, NULL);   -- one role
+-- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', NULL, NULL);     -- all roles, all actions
+-- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', 24, NULL);       -- one role, all actions
+-- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', NULL, 'DELETE'); -- all roles, deletions only

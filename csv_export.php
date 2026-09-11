@@ -50,6 +50,7 @@ use CCTC\ConfigurationMonitorModule\DataEntryLogModule;
 /** @var $exportType */
 /** @var $tableName */
 /** @var $privilegeFilter */
+/** @var $actionType */
 
 
 //run the query using the same params as on the page when the query called
@@ -71,10 +72,11 @@ if($exportType == 'everything') {
     $minDateDb = null;
     $maxDateDb = null;
     $fieldName = null;
+    $actionType = null; //all actions
 }
 
 //run the stored proc
-$result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName);
+$result = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, $fieldName, $actionType);
 
 // Apply privilege filter if set (for project-changes table)
 if ($tableName == 'project-changes' && !empty($privilegeFilter)) {

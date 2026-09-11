@@ -54,6 +54,21 @@ class Rendering
             </select>";
     }
 
+    public static function MakeActionSelect($actions, $selected) : string
+    {
+        $anySelected = ($selected === null || $selected === '') ? "selected" : "";
+        $options = "<option value='' $anySelected>any action</option>";
+        foreach ($actions as $action) {
+            $sel = $selected === $action ? "selected" : "";
+            $options .= "<option value='{$action}' {$sel}>{$action}</option>";
+        }
+
+        return
+            "<select id='action_type' name='action_type' class='x-form-text x-form-field' onchange='onFilterChanged(\"action_type\")' style='max-width: 180px;'>
+            {$options}
+            </select>";
+    }
+
     public static function MakePrivilegeSelect($privileges, $selected) : string
     {
         $anySelected = $selected == null ? "selected": "";

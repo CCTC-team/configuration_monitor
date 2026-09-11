@@ -72,6 +72,9 @@ if (isset($_GET['role_id']) && $_GET['role_id'] !== '') {
     $roleID = (int)$_GET['role_id'];
 }
 
+//default to NULL meaning all actions; anything not INSERT/UPDATE/DELETE falls back to NULL
+$actionType = GetDbData::NormaliseActionType($_GET['action_type'] ?? null);
+
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
     // Whitelist allowed direction values
@@ -103,13 +106,14 @@ $diff = $actMaxAsDate->diff($actMinAsDate);
 $tableName = 'user-role-changes';
 
 //run the stored proc
-$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID);
+$logDataSets = GetDbData::GetChangesFromSP($projId, $minDateDb, $maxDateDb, $skipCount, $pageSize, $dataDirection, $tableName, $roleID, NULL, $actionType);
 
 $roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
 $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
 $roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID, $logDataSets['roleNames']);
+$actionSelect = Rendering::MakeActionSelect(GetDbData::ACTION_TYPES, $actionType);
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
@@ -176,6 +180,9 @@ $exportIcons =
             <tr>
                 <td style='width: 100px;'><label>User Role</label></td>
                 <td style='width: 200px;'>$roleSelect</td>
+                <td></td>
+                <td style='width: 100px;'><label>Action</label></td>
+                <td>$actionSelect</td>
             </tr>
             <tr>
                 <td><label for='startdt'>Min edit date</label></td>
