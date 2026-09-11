@@ -109,7 +109,7 @@ $roleIds = $logDataSets['roleIds'];
 $dcs = $logDataSets['dataChanges'];
 $totalCount = $logDataSets['totalCount']; // number of User Roles being changed
 $showingCount = count($dcs); // number of User Roles being shown on this page
-$roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID);
+$roleSelect = Rendering::MakeRoleSelect($roleIds, $roleID, $logDataSets['roleNames']);
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;

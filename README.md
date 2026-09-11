@@ -97,7 +97,8 @@ The module respects REDCap's user rights system:
 The "Changes in User Role Privileges" page (`userRoleChanges.php`) displays a comprehensive log of all modifications to user role privileges, including:
 
 **Logged information:**
-- Role ID - The unique identifier of the role that was changed
+- User Role - The role that was changed, shown as `Role Name (Role ID)`. The name is the one recorded on the
+change itself, so deleted roles still show a name; the id is included because role names are not unique
 - Timestamp - When the change occurred
 - Action - The type of change (INSERT, UPDATE, or DELETE)
 - Changed Privilege - The specific privilege that was modified (or "All Privileges" for INSERT/DELETE actions)
@@ -117,7 +118,8 @@ Random Perform, Realtime Webservice Mapping, Realtime Webservice Adjudicate, Ext
 - The module intelligently compares these complex values and displays only the specific forms/permissions that changed
 
 **Page features:**
-- **Filter by User Role** - Dropdown to show changes for a specific role or all roles
+- **Filter by User Role** - Dropdown to show changes for a specific role or all roles. Options are labelled
+`Role Name (Role ID)`; role names are not unique in REDCap, so the filter always acts on the role ID
 - **Date range filtering** - Set custom start and end dates, or use quick filters:
   - Past day, Past week, Past month, Past year, Custom range
 - **Sorting** - Order results by timestamp (ascending or descending)

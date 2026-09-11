@@ -36,13 +36,16 @@ class Rendering
         </select>";
     }
 
-    public static function MakeRoleSelect($roles, $selected) : string
+    public static function MakeRoleSelect($roles, $selected, $roleNames) : string
     {
         $anySelected = $selected == null ? "selected": "";
         $usrroles = "<option value='' $anySelected>any user role</option>";
         foreach ($roles as $role) {
             $sel = $selected == $role ? "selected" : "";
-            $usrroles .= "<option value='{$role}' {$sel}>{$role}</option>";
+            // Role names are not unique, so the id is shown alongside the name and
+            // remains the value being filtered on
+            $name = htmlspecialchars($roleNames[$role], ENT_QUOTES, 'UTF-8');
+            $usrroles .= "<option value='{$role}' {$sel}>{$name} ({$role})</option>";
         }
 
         return

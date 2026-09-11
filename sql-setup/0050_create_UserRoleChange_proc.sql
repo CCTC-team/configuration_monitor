@@ -51,14 +51,14 @@ BEGIN
                     FROM user_role_changelog
                     WHERE project_id = ',  projectId,
                     ' -- role_id filter
-					and (? is null or role_id = ?) 
+					and (? is null or role_id = ?)
 					-- minDate
                     and (? is null or ts >= ?)
                     -- maxDate
                     and (? is null or ts <= ?)');
 
     prepare qry FROM sqlQuery;
-    EXECUTE qry using 
+    EXECUTE qry using
         roleId, roleId,
         minDate, minDate,
         maxDate, maxDate;
@@ -75,10 +75,20 @@ BEGIN
     -- return total count
     select count(*) as total_count from user_role_change_temp;
 
-    -- return distinct role ids in the result
-    SELECT DISTINCT role_id from user_role_change_temp ORDER BY role_id;
+    -- return the distinct role ids in the result, each with the role name recorded on its
+    -- most recent change (the name is the first value of the concatenated privileges).
+    -- Names are not unique, so the id remains the thing the page filters on.
+    SELECT t.role_id,
+           SUBSTRING_INDEX(COALESCE(t.new_value, t.old_value), '/', 1) as role_name
+    FROM user_role_change_temp t
+    INNER JOIN (
+        SELECT role_id, MAX(id) as max_id
+        FROM user_role_change_temp
+        GROUP BY role_id
+    ) latest ON latest.max_id = t.id
+    ORDER BY t.role_id;
 
 END;
 
--- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, NULL); -- all roles
--- call GetUserRoleChanges(13, 3, 'DAY', NULL, NULL, NULL, 24);
+-- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', NULL, NULL); -- all roles
+-- call GetUserRoleChanges(13, null, null, 0, 10, 'desc', 24, NULL);   -- one role

@@ -53,8 +53,8 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
     When I click on the link labeled "User Role Changes"
     And I should see "This log shows changes made to user role privileges"
     And I should see a table header and rows containing the following values in the a table:
-      | Role ID |  Action | Date / Time      | Changed Privilege | Old Value | New Value |
-      | 2       |  UPDATE | mm/dd/yyyy hh:mm | User Rights	     | 0	       | 2         |
+      | User Role        |  Action | Date / Time      | Changed Privilege | Old Value | New Value |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	     | 0	       | 2         |
 
     When I click on the link labeled "Setup"
     And I click on the button labeled "Disable" in the row labeled "Auto-numbering for records"
@@ -87,8 +87,8 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
     And I should see "Project Configuration Changes for Project ID: 13 - E.129.1000" in the email body
     And I should see "Changes in User Role Privileges" in the email body
     And I should see a user role changes table in the email with the following rows:
-      | Role ID |  Action | Date / Time      | Changed Privilege | Old Value | New Value |
-      | 2       |  UPDATE | mm/dd/yyyy hh:mm | User Rights	     | 0	       | 2         |
+      | User Role        |  Action | Date / Time      | Changed Privilege | Old Value | New Value |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	     | 0	       | 2         |
 
     And I should see "Changes in Project settings" in the email body
     And I should see a project changes table in the email with the following rows:

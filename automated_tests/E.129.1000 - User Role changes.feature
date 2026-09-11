@@ -60,8 +60,8 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I click on the link labeled "User Role Changes"
     And I should see "This log shows changes made to user role privileges"
     And I should see a table header and rows containing the following values in the a table:
-      | Role ID |  Action | Date / Time      | Changed Privilege | Old Value | New Value                                                                                                                                          |
-      | 4       |  INSERT | mm/dd/yyyy hh:mm | All Privileges    | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | User Role     |  Action | Date / Time      | Changed Privilege | Old Value | New Value                                                                                                                                          |
+      | TestRole (4)  |  INSERT | mm/dd/yyyy hh:mm | All Privileges    | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
 
     And I should see 1 row in the user role changes table
 
@@ -84,21 +84,21 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I click on the link labeled "User Role Changes"
     And I should see "This log shows changes made to user role privileges"
     And I should see a table header and rows with rowspan containing the following values in a table:
-      | Role ID |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value                                                                                                                                          |
-      | 3       |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
-      | 2       |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                                                                                                                                                  |
-      | 2       |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1]                                                                                                                                |
-      | 4       |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	               | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value                                                                                                                                          |
+      | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                                                                                                                                                  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1]                                                                                                                                |
+      | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	               | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
 
     And I should see 4 rows in the user role changes table
     And I wait for 2 seconds
 
     # E.129.2100 - validate filtering user role changes
-    When I select "2" on the dropdown field labeled "User Role"
+    When I select "DataManager (2)" on the dropdown field labeled "User Role"
     And I should see a table header and rows with rowspan containing the following values in a table:
-      | Role ID |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
-      | 2       |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
-      | 2       |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
+      | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
 
     And I should see 2 rows in the user role changes table
     And I should NOT see "All Privileges"
@@ -110,17 +110,17 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     # E.129.3000 - validate exporting user role changes to CSV
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
-      | role id |  action | changed privilege       | old value           | new value           |
-      | 2       |  UPDATE | User Rights	            | 0	                  | 2                   |
-      | 2       |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
+      | role id | role name   |  action | changed privilege       | old value           | new value           |
+      | 2       | DataManager |  UPDATE | User Rights	            | 0	                  | 2                   |
+      | 2       | DataManager |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
 
     When I click on the button labeled "Export everything ignoring filters"
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
-      | role id |  action | changed privilege       | old value           | new value           |
-      | 3       |  DELETE | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
-      | 2       |  UPDATE | User Rights	            | 0	                  | 2                   |
-      | 2       |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
-      | 4       |  INSERT | All Privileges          | N/A	                | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | role id | role name   |  action | changed privilege       | old value           | new value           |
+      | 3       | Monitor     |  DELETE | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | 2       | DataManager |  UPDATE | User Rights	            | 0	                  | 2                   |
+      | 2       | DataManager |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
+      | 4       | TestRole    |  INSERT | All Privileges          | N/A	                | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
 
     # Disable external module in project
     Given I click on the link labeled "Manage"

@@ -225,13 +225,27 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         return $filtered;
     }
 
+    // The role name is the first value of the concatenated privileges written by the
+    // triggers (see "Role Name" in $userroleColumnNames below), so it can be read
+    // straight off the changelog row - INSERTs and UPDATEs carry the current name in
+    // the new value, DELETEs only have the old value.
+    function roleNameFromChange($dc): string
+    {
+        $values = empty($dc["newValue"]) ? $dc["oldValue"] : $dc["newValue"];
+
+        return explode("/", (string)$values)[0];
+    }
+
     function recordDiff($dc, $tableName): array
     {
+        $roleName = $tableName == 'user-role-changes' ? self::roleNameFromChange($dc) : '';
+
         //Only UserRoleChanges has insert and delete actions
         if ($dc["action"] !== 'UPDATE') {
             // For INSERT and DELETE actions, return a single row with all values
             $finalRow[] = [
                 'id' => $dc["id"],
+                'roleName' => $roleName,
                 'privilege' => 'All Privileges',
                 'oldValue' => $dc["oldValue"] ?: 'N/A',
                 'newValue' => $dc["newValue"] ?: 'N/A',
@@ -312,6 +326,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                                 if ($oval != $nval) {           // Value differs
                                     $row = [
                                         'id' => $dc["id"],
+                                        'roleName' => $roleName,
                                         'privilege' => $columnNames[$i],
                                         'oldValue' => "[$key,$oval]",
                                         'newValue' => "[$key,$nval]",
@@ -327,6 +342,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                         // For other privileges, show full difference
                         $finalRow[] = [
                             'id' => $dc["id"],
+                            'roleName' => $roleName,
                             'privilege' => $columnNames[$i],
                             'oldValue' => $o,
                             'newValue' => $n,
@@ -355,12 +371,12 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         if ($tableName == "user-role-changes") {
             $table = "<table id='{$tableName}-table' border='1'>
             <thead><tr style='background-color: #FFFFE0;'>
-                <th style='width: 5%;padding: 5px'>Role ID</th>
-                <th style='width: 15%;padding: 5px'>Action</th>
-                <th style='width: 15%;padding: 5px'>Date / Time</th>
-                <th style='width: 15%;padding: 5px'>Changed Privilege</th>
-                <th style='width: 15%;padding: 5px'>Old Value</th>
-                <th style='width: 15%;padding: 5px'>New Value</th>
+                <th style='width: 14%;padding: 5px'>User Role</th>
+                <th style='width: 6%;padding: 5px'>Action</th>
+                <th style='width: 10%;padding: 5px'>Date / Time</th>
+                <th style='width: 12%;padding: 5px'>Changed Privilege</th>
+                <th style='width: 29%;padding: 5px'>Old Value</th>
+                <th style='width: 29%;padding: 5px'>New Value</th>
             </tr></thead><tbody>";
         } else {
             $table = "<table id='{$tableName}-table' border='1'>
@@ -396,11 +412,14 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         $row = "<tr>";
 
         if ($tableName == "user-role-changes") {
-            $row .= "<td rowspan='$span'>" . $this->escape($changes[0]['id']) . "</td>
-                    <td rowspan='$span'>" . $this->escape($changes[0]['action']) . "</td>";
+            // Role names are not unique, so the id is always shown with the name
+            $userRole = $this->escape($changes[0]['roleName']) . " (" . $this->escape($changes[0]['id']) . ")";
+
+            $row .= "<td rowspan='$span'>" . $userRole . "</td>
+                    <td rowspan='$span' style='white-space: nowrap;'>" . $this->escape($changes[0]['action']) . "</td>";
         }
 
-        $row .= "<td rowspan='$span'>" . $this->escape($changes[0]['timestamp']) . "</td>";
+        $row .= "<td rowspan='$span' style='white-space: nowrap;'>" . $this->escape($changes[0]['timestamp']) . "</td>";
 
         foreach ($changes as $r) {
             $row .= "<td>" . $this->escape($r['privilege']) . "</td>

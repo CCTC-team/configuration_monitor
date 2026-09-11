@@ -82,7 +82,7 @@ if ($tableName == 'project-changes' && !empty($privilegeFilter)) {
 }
 // Set headers
 if($tableName == 'user-role-changes') {
-    $headers = array("role id", "timestamp", "action", "changed privilege", "old value", "new value");
+    $headers = array("role id", "role name", "timestamp", "action", "changed privilege", "old value", "new value");
     // Set file name and path
     $filename = APP_PATH_TEMP . date("YmdHis") . '_' . PROJECT_ID . '_' . $tableName . '.csv';
     $app_title = strip_tags(label_decode($Proj->project['app_title']));
@@ -123,6 +123,7 @@ if ($fp && ($count != 0))
                 if (is_array($dcChanges)) {
                     foreach ($dcChanges as $dc) {
                         $row["id"] = $dc["id"];
+                        $row["roleName"] = $dc["roleName"];
                         $row["timestamp"] = DateTime::createFromFormat('YmdHis', $dc["timestamp"])->format('Y-m-d H:i:s');
                         $row["action"] = $dc["action"];
                         $row["privilege"] = $dc["privilege"];

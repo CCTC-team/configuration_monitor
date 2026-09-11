@@ -102,6 +102,7 @@ class GetDbData
         
         $currentIndex = 0;
         $roleIds = array();
+        $roleNames = array();
         $dataChanges = array();
         $totalCount = array();
         $fieldNames = array();
@@ -124,6 +125,7 @@ class GetDbData
                     if ($currentIndex == 2 && $tableName == "user-role-changes") {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $roleIds[] = $row['role_id'];
+                            $roleNames[$row['role_id']] = $row['role_name'];
                         }
                     }
 
@@ -148,6 +150,7 @@ class GetDbData
             [
                 "dataChanges" => $dataChanges,
                 "roleIds" => $roleIds,
+                "roleNames" => $roleNames,
                 "totalCount" => $totalCount
             ];
         } else if($tableName == "project-changes") {
