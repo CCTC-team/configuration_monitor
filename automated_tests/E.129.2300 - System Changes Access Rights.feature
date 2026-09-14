@@ -60,7 +60,40 @@ Feature: E.129.2300 - The system shall restrict access to the System Changes pag
     Then I should NOT see a link labeled "Control Center"
     And I logout
 
+    # E.129.2300 - a non-admin cannot open the System Changes page or export by URL
+    Given I login to REDCap with the user "Test_User2"
+    When I visit the Configuration Monitor page "systemChanges" by URL
+    Then I should see "You do not have permission to access this page."
+    And I should NOT see "This log shows changes made to system settings"
+    And the Configuration Monitor CSV export of "system-changes" should be denied
+    And I logout
+
+    # E.129.2300 - an admin who is not a super user cannot see System Changes either
     Given I login to REDCap with the user "Test_Admin"
+    When I click on the link labeled "Control Center"
+    And I click on the link labeled "Administrator Privileges"
+    Then I should see "Set administrator privileges"
+    Given I enter "Test_User1" into the field with the placeholder text of "Search users to add as admin"
+    And I enable the Administrator Privilege "Access to Control Center dashboards" for a new administrator
+    And I click on the button labeled "Add"
+    Then I should see 'The user "Test_User1" has now been granted one or more administrator privileges'
+    And I click on the button labeled "OK"
+    And I logout
+
+    Given I login to REDCap with the user "Test_User1"
+    When I click on the link labeled "Control Center"
+    Then I should NOT see a link labeled "System Changes"
+    When I visit the Configuration Monitor page "systemChanges" by URL
+    Then I should see "You do not have permission to access this page."
+    And I should NOT see "This log shows changes made to system settings"
+    And the Configuration Monitor CSV export of "system-changes" should be denied
+    And I logout
+
+    # E.129.2300 - a super user can still open the page and export
+    Given I login to REDCap with the user "Test_Admin"
+    When I visit the Configuration Monitor page "systemChanges" by URL
+    Then I should see "This log shows changes made to system settings"
+    And the Configuration Monitor CSV export of "system-changes" should be allowed
     # Disable external module in Control Center
     And I click on the link labeled "Control Center"
     When I click on the link labeled "Manage"

@@ -99,6 +99,10 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             if(!($rights['user_rights'] or $this->isSuperUser())) {
                 return null;
             }
+        } elseif (!$this->isSuperUser()) {
+            // Control Center pages are also open to admins with limited privileges,
+            // but system changes are for super users only
+            return null;
         }
 
         // Get the URL from the link (whether it's an array or string)

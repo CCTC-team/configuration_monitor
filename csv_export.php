@@ -1,6 +1,17 @@
 <?php
 include "getparams.php";
 
+// This page is not a config.json link, so the framework does not run
+// redcap_module_link_check_display() for it - apply the same access rules here
+// before any data is read
+$hasAccess = $tableName !== '' && ($module->isSuperUser()
+    || ($tableName != 'system-changes' && !empty($projId) && $module->getUser()->getRights()['user_rights']));
+
+if (!$hasAccess) {
+    http_response_code(403);
+    exit("You do not have permission to access this page.");
+}
+
 // Check if this is a system-level export (no project context needed)
 if ($tableName == 'system-changes') {
     require_once APP_PATH_DOCROOT . "/Config/init_global.php";
@@ -177,8 +188,10 @@ if ($fp && ($count != 0))
         unlink($filename);
 
         // Logging for exports done from projects for User Role Changes and Project Changes
-        if ($tableName != 'system-changes')
-            Logging::logEvent("", Logging::getLogEventTable($projId),"MANAGE",$projId,"project_id = $projId", "Export user role changes (custom)");
+        if ($tableName != 'system-changes') {
+            $exportDescription = $tableName == 'user-role-changes' ? "Export user role changes (custom)" : "Export project changes (custom)";
+            Logging::logEvent("", Logging::getLogEventTable($projId),"MANAGE",$projId,"project_id = $projId", $exportDescription);
+        }
 
     } catch (Exception $e) {
         $module->log("ex: ". $e->getMessage());
