@@ -12,8 +12,10 @@ $oneWeekAgo = Utility::NowAdjusted('-7 days');
 $oneMonthAgo = Utility::NowAdjusted('-1 months');
 $oneYearAgo = Utility::NowAdjusted('-1 years');
 
+$tableName = '';
 if (isset($_GET['tableName'])) {
-    $tableName = $_GET['tableName'];
+    $allowedTableNames = ['user-role-changes', 'project-changes', 'system-changes'];
+    $tableName = in_array($_GET['tableName'], $allowedTableNames, true) ? $_GET['tableName'] : '';
 }
 
 if ($tableName != 'system-changes') {

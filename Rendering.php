@@ -45,7 +45,8 @@ class Rendering
             // Role names are not unique, so the id is shown alongside the name and
             // remains the value being filtered on
             $name = htmlspecialchars($roleNames[$role], ENT_QUOTES, 'UTF-8');
-            $usrroles .= "<option value='{$role}' {$sel}>{$name} ({$role})</option>";
+            $roleId = htmlspecialchars($role, ENT_QUOTES, 'UTF-8');
+            $usrroles .= "<option value='{$roleId}' {$sel}>{$name} ({$roleId})</option>";
         }
 
         return
@@ -60,7 +61,8 @@ class Rendering
         $options = "<option value='' $anySelected>any action</option>";
         foreach ($actions as $action) {
             $sel = $selected === $action ? "selected" : "";
-            $options .= "<option value='{$action}' {$sel}>{$action}</option>";
+            $escaped = htmlspecialchars($action, ENT_QUOTES, 'UTF-8');
+            $options .= "<option value='{$escaped}' {$sel}>{$escaped}</option>";
         }
 
         return
@@ -75,7 +77,8 @@ class Rendering
         $options = "<option value='' $anySelected>any property</option>";
         foreach ($privileges as $privilege) {
             $sel = $selected == $privilege ? "selected" : "";
-            $options .= "<option value='{$privilege}' {$sel}>{$privilege}</option>";
+            $escaped = htmlspecialchars($privilege, ENT_QUOTES, 'UTF-8');
+            $options .= "<option value='{$escaped}' {$sel}>{$escaped}</option>";
         }
 
         return
@@ -90,7 +93,8 @@ class Rendering
         $options = "<option value='' $anySelected>any property</option>";
         foreach ($fieldNames as $fieldName) {
             $sel = $selected == $fieldName ? "selected" : "";
-            $options .= "<option value='{$fieldName}' {$sel}>{$fieldName}</option>";
+            $escaped = htmlspecialchars($fieldName, ENT_QUOTES, 'UTF-8');
+            $options .= "<option value='{$escaped}' {$sel}>{$escaped}</option>";
         }
 
         return

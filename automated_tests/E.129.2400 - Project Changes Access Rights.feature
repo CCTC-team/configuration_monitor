@@ -73,12 +73,34 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     Given I login to REDCap with the user "Test_User1"
     Then I should NOT see a link labeled "Project Changes"
     And I should NOT see a link labeled "User Role Changes"
+
+    # E.129.2400 - without the User Rights privilege, the pages and exports are refused by URL too
+    When I click on the link labeled "My Projects"
+    And I click on the link labeled "E.129.2400"
+    And I visit the Configuration Monitor page "projectChanges" by URL
+    Then I should see "You do not have permission to access this page."
+    And I should NOT see "This log shows changes made to project settings"
+    And the Configuration Monitor CSV export of "project-changes" should be denied
+    When I visit the Configuration Monitor page "userRoleChanges" by URL
+    Then I should see "You do not have permission to access this page."
+    And I should NOT see "This log shows changes made to user role privileges"
+    And the Configuration Monitor CSV export of "user-role-changes" should be denied
     And I logout
 
     # E.129.2400 - validate project changes access rights
     Given I login to REDCap with the user "Test_User2"
     Then I should see a link labeled "Project Changes"
     And I should see a link labeled "User Role Changes"
+
+    # E.129.2400 - with User Rights (Read Only), the pages and exports are allowed by URL
+    When I click on the link labeled "My Projects"
+    And I click on the link labeled "E.129.2400"
+    And I visit the Configuration Monitor page "projectChanges" by URL
+    Then I should see "This log shows changes made to project settings"
+    And the Configuration Monitor CSV export of "project-changes" should be allowed
+    When I visit the Configuration Monitor page "userRoleChanges" by URL
+    Then I should see "This log shows changes made to user role privileges"
+    And the Configuration Monitor CSV export of "user-role-changes" should be allowed
     And I logout
 
     # E.129.2400 - validate project changes access rights
