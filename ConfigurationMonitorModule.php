@@ -123,7 +123,9 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
     function execFromFile($file): void
     {
         $sql = file_get_contents(dirname(__FILE__) . "/sql-setup/$file");
-        db_query($sql);
+        if (db_query($sql) === false) {
+            $this->log("Failed to run setup script $file", ['error' => db_error()]);
+        }
     }
 
     function redcap_module_system_enable($version): void
@@ -137,6 +139,13 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         db_query("DROP PROCEDURE IF EXISTS GetUserRoleChanges;");
         db_query("DROP PROCEDURE IF EXISTS GetProjectChanges;");
         db_query("DROP PROCEDURE IF EXISTS GetSystemChanges;");
+
+        // Likewise for the triggers, which are left behind if an earlier disable failed partway
+        db_query("DROP TRIGGER IF EXISTS user_roles_insert_trigger;");
+        db_query("DROP TRIGGER IF EXISTS user_roles_update_trigger;");
+        db_query("DROP TRIGGER IF EXISTS user_roles_delete_trigger;");
+        db_query("DROP TRIGGER IF EXISTS projects_update_trigger;");
+        db_query("DROP TRIGGER IF EXISTS system_update_trigger;");
 
         //User Role Change Log Table, Triggers and Stored Procedure
         self::execFromFile("0010_create_table_user_role_changelog.sql");
@@ -249,6 +258,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
     function recordDiff($dc, $tableName): array
     {
         $roleName = $tableName == 'user-role-changes' ? self::roleNameFromChange($dc) : '';
+        $finalRow = [];
 
         //Only UserRoleChanges has insert and delete actions
         if ($dc["action"] !== 'UPDATE') {
@@ -494,12 +504,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             }
 
             // Prepare to-email parameters
-            $to_emails = $this->getProjectSetting('to-emailids');
-            $to = null;
-            // Handle multiple email addresses separated by commas
-            foreach ($to_emails as $to_email) {
-                $to .= $to_email . ",";
-            }
+            // Multiple email addresses are separated by commas
+            $to = implode(',', array_filter((array)$this->getProjectSetting('to-emailids')));
 
             $from = $this->getProjectSetting('from-emailid');
             $projectTitle = $this->getTitle();
@@ -553,8 +559,9 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         require_once dirname(APP_PATH_DOCROOT, 1) . "/modules/$modName/Utility.php";
 
         $tableName = 'system-changes';
+        $dcs = [];
 
-        // run the stored proc if user role changes is enabled
+        // run the stored proc if system email is enabled
         if ($this->getSystemSetting('sys-email-enable')) {
             $maxHour = $this->getSystemSetting('sys-max-hours-email') ?: 3; // Default to 3 hours if not set
             $minDate = Utility::NowAdjusted('-'. $maxHour . 'hours'); //default to maxHour hours ago
@@ -579,12 +586,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
             }
 
             // Prepare to-email parameters
-            $to_emails = $this->getSystemSetting('sys-to-emailids');
-            $to = null;
-            // Handle multiple email addresses separated by commas
-            foreach ($to_emails as $to_email) {
-                $to .= $to_email . ",";
-            }
+            // Multiple email addresses are separated by commas
+            $to = implode(',', array_filter((array)$this->getSystemSetting('sys-to-emailids')));
 
             $from = $this->getSystemSetting('sys-from-emailid');
 

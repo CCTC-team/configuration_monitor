@@ -16,6 +16,17 @@ use CCTC\ConfigurationMonitorModule\GetDbData;
 
 $maxDay = $module->getSystemSetting('sys-max-days-page') ?: 7; // Default to 7 days if not set
 
+//gets the users preferred data format which is used as data attribute on the datetimepicker field
+global $datetime_format;
+
+$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+
+if(ends_with($datetime_format, "_24")){
+    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+} else {
+    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+}
+
 echo "
 <h4 style='margin-top: 0;'>
     <i class='fas fa-clipboard-list'></i> Changes in System Settings
@@ -244,16 +255,6 @@ if ($showingCount == 0) {
         });
     </script>";
 } else {
-    //gets the users preferred data format which is used as data attribute on the datetimepicker field
-    global $datetime_format;
-
-    $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-
-    if(ends_with($datetime_format, "_24")){
-        $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-    } else {
-        $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-    }
     $table = $module->makeTable($dcs, $userDateFormat, $tableName);
     echo $table;
 }

@@ -17,6 +17,17 @@ use CCTC\ConfigurationMonitorModule\GetDbData;
 $projId = $module->getProjectId();
 $maxDay = $module->getProjectSetting('max-days-page') ?: 7; // Default to 7 days if not set
 
+//gets the users preferred data format which is used as data attribute on the datetimepicker field
+global $datetime_format;
+
+$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
+
+if(ends_with($datetime_format, "_24")){
+    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
+} else {
+    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
+}
+
 echo "
 <div class='projhdr'>
     <div style='float:left;'>
@@ -250,16 +261,6 @@ if ($showingCount == 0) {
         });
     </script>";
 }else {
-    //gets the users preferred data format which is used as data attribute on the datetimepicker field
-    global $datetime_format;
-
-    $userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-
-    if(ends_with($datetime_format, "_24")){
-        $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-    } else {
-        $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-    }
     $table = $module->makeTable($dcs, $userDateFormat, $tableName);
     echo $table;
 }
