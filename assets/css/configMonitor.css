@@ -1,0 +1,19 @@
+/* Filter form shared by the change log pages (systemChanges, projectChanges, userRoleChanges) */
+
+#filterForm > table > tbody > tr > td:nth-child(2) {
+    width: 150px;
+}
+
+#startdt + button, #enddt + button {
+    background-color: transparent;
+    border: none;
+}
+
+.clear-button {
+    background-color: transparent;
+    border: none;
+    color: #0a53be;
+    margin-right: 4px;
+    margin-left: 4px;
+    margin-top: 1px;
+}
