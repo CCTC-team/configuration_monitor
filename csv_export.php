@@ -2,10 +2,21 @@
 include "getparams.php";
 
 // This page is not a config.json link, so the framework does not run
-// redcap_module_link_check_display() for it - apply the same access rules here
-// before any data is read
-$hasAccess = $tableName !== '' && ($module->isSuperUser()
-    || ($tableName != 'system-changes' && !empty($projId) && $module->getUser()->getRights()['user_rights']));
+// redcap_module_link_check_display() for it. Run that check here for the page
+// the export belongs to, before any data is read, so the export is refused
+// whenever its page would be - including when that change log is turned off.
+$pageForTable = [
+    'system-changes'    => 'systemChanges.php',
+    'project-changes'   => 'projectChanges.php',
+    'user-role-changes' => 'userRoleChanges.php',
+];
+$isProjectTable = $tableName != 'system-changes';
+
+// Without a project, the link check would treat a project table as a Control
+// Center page and skip the User Rights check
+$hasAccess = isset($pageForTable[$tableName])
+    && (!$isProjectTable || !empty($projId))
+    && $module->redcap_module_link_check_display($isProjectTable ? $projId : null, ['url' => $pageForTable[$tableName]]) !== null;
 
 if (!$hasAccess) {
     http_response_code(403);
