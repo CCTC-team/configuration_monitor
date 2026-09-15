@@ -109,6 +109,27 @@ Feature: E.129.2400 - The system shall restrict access to Project Changes and Us
     Then I should see a link labeled "User Role Changes"
     And I logout
 
+    # E.129.2400 - with Project Changes turned off, its export is refused even with User Rights
+    Given I login to REDCap with the user "Test_Admin"
+    When I click on the link labeled "My Projects"
+    And I click on the link labeled "E.129.2400"
+    And I click on the link labeled "Manage"
+    And I click on the button labeled "Configure"
+    Then I should see "Configure Module"
+    When I uncheck the checkbox labeled "Enable Project Changes"
+    And I click on the button labeled "Save"
+    Then I should see "Configuration Monitor - v1.1.0"
+    And I logout
+
+    Given I login to REDCap with the user "Test_User2"
+    When I click on the link labeled "My Projects"
+    And I click on the link labeled "E.129.2400"
+    Then I should NOT see a link labeled "Project Changes"
+    And I should see a link labeled "User Role Changes"
+    And the Configuration Monitor CSV export of "project-changes" should be denied
+    And the Configuration Monitor CSV export of "user-role-changes" should be allowed
+    And I logout
+
     # Disable external module in Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"

@@ -94,6 +94,18 @@ Feature: E.129.2300 - The system shall restrict access to the System Changes pag
     When I visit the Configuration Monitor page "systemChanges" by URL
     Then I should see "This log shows changes made to system settings"
     And the Configuration Monitor CSV export of "system-changes" should be allowed
+
+    # E.129.2300 - with System Changes turned off, even a super user cannot export it
+    When I click on the link labeled "Control Center"
+    And I click on the link labeled "Manage"
+    And I click on the button labeled "Configure"
+    Then I should see "Configure Module"
+    When I uncheck the checkbox labeled "Enable System Changes"
+    And I click on the button labeled "Save"
+    Then I should see "Configuration Monitor - v1.1.0"
+    And I should NOT see a link labeled "System Changes"
+    And the Configuration Monitor CSV export of "system-changes" should be denied
+
     # Disable external module in Control Center
     And I click on the link labeled "Control Center"
     When I click on the link labeled "Manage"
