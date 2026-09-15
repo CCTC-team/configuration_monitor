@@ -44,7 +44,6 @@ require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
 use CCTC\ConfigurationMonitorModule\GetDbData;
-use CCTC\ConfigurationMonitorModule\DataEntryLogModule;
 
 // Increase memory limit in case needed for intensive processing
 //System::increaseMemory(2048);
@@ -183,7 +182,6 @@ if ($fp && ($count != 0))
 
         // Close file for writing
         fclose($fp);
-        db_free_result($result);
 
         // Open file for downloading
         header('Pragma: anytextexeptno-cache', true);

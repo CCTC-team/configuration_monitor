@@ -25,7 +25,7 @@ Enabling the module at a system level will AUTOMATICALLY do the following via th
 1. Create the `system_changelog` table in the REDCap database to store a log of all system-level configuration changes (Control Center settings)
 1. Create the `system_update_trigger` database trigger on table redcap_config to automatically log changes to system settings
 1. Create the `GetSystemChanges` stored procedure to retrieve filtered system change logs with pagination support
-1. Register the `configuration_monitor_cron` cron job to run every 2 hours. When executed, it:
+1. Register the `configuration_monitor_cron` cron job to run every 30 minutes. Each email covers the changes made within the look-back window (`max-hours-email` / `sys-max-hours-email`, default 3 hours), so a change can appear in more than one email. When executed, it:
    - Checks all projects with both the module and email notifications enabled, then sends summary emails of recent project configuration changes
    - Checks system-level email settings and sends summary emails of recent system configuration changes if enabled
    
