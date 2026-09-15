@@ -37,7 +37,9 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
     When I uncheck the checkbox labeled "Enable Project Changes"
     # E.129.1300 - at least one tracking option must be enabled
     When I click on the button labeled "Save"
-    Then I should see "Enable Project Changes"
+    Then I should see an alert box with the following text: "Please ensure either Project Configuration Changes or User Role Changes is enabled."
+    # the settings are not saved, so the configuration dialog stays open
+    And I should see "Enable Project Changes"
     When I check the checkbox labeled "Enable Project Changes"
     And I click on the button labeled "Save"
     Then I should see "Configuration Monitor - v1.1.0"

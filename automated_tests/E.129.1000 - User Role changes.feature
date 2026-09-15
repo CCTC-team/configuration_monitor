@@ -59,6 +59,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
 
     When I click on the link labeled "User Role Changes"
     And I should see "This log shows changes made to user role privileges"
+    # E.129.2000 - changes are displayed in a table
     And I should see a table header and rows containing the following values in the a table:
       | User Role     |  Action | Date / Time      | Changed Privilege | Old Value | New Value                                                                                                                                          |
       | TestRole (4)  |  INSERT | mm/dd/yyyy hh:mm | All Privileges    | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
@@ -71,6 +72,8 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Then I should see "Editing existing user role"
     And I check the radio labeled "Read Only"
     And I click on the radio in the column labeled "View & Edit" and the row labeled "Text Validation"
+    # E.129.2200 - change an instrument-level Data Export right as well as a Data Entry right
+    And I click on the radio in the column labeled "Full Data Set" and the row labeled "Text Validation"
     And I click on the button labeled "Save Changes"
     Then I should see "successfully edited"
 
@@ -83,14 +86,17 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
 
     When I click on the link labeled "User Role Changes"
     And I should see "This log shows changes made to user role privileges"
+    # E.129.2000 - changes are displayed in a table
+    # E.129.2200 - instrument-level Data Export and Data Entry changes are shown per instrument
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value                                                                                                                                          |
       | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1]                                                                                                                                |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                                                                                                                                                  |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1]                                                                                                                                |
       | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	               | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
 
-    And I should see 4 rows in the user role changes table
+    And I should see 5 rows in the user role changes table
     And I wait for 2 seconds
 
     # E.129.2100 - validate filtering user role changes by action
@@ -115,26 +121,28 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I select "UPDATE" on the dropdown field labeled "Action"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1] |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
 
-    And I should see 2 rows in the user role changes table
+    And I should see 3 rows in the user role changes table
     And I should NOT see "All Privileges"
     And I should NOT see "TestRole"
     And I should NOT see "Monitor"
 
     # reset the action filter so the checks below run against every action again
     When I select "any action" on the dropdown field labeled "Action"
-    Then I should see 4 rows in the user role changes table
+    Then I should see 5 rows in the user role changes table
 
     # E.129.2100 - validate filtering user role changes
     When I select "DataManager (2)" on the dropdown field labeled "User Role"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1] |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
 
-    And I should see 2 rows in the user role changes table
+    And I should see 3 rows in the user role changes table
     And I should NOT see "All Privileges"
     And I should NOT see "TestRole"
     And I should NOT see "Monitor"
@@ -145,6 +153,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | role id | role name   |  action | changed privilege       | old value           | new value           |
+      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0] | [text_validation,1] |
       | 2       | DataManager |  UPDATE | User Rights	            | 0	                  | 2                   |
       | 2       | DataManager |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
 
@@ -152,9 +161,32 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | role id | role name   |  action | changed privilege       | old value           | new value           |
       | 3       | Monitor     |  DELETE | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0] | [text_validation,1] |
       | 2       | DataManager |  UPDATE | User Rights	            | 0	                  | 2                   |
       | 2       | DataManager |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
       | 4       | TestRole    |  INSERT | All Privileges          | N/A	                | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+
+    # E.129.1200 - user role changes are kept when the module is disabled at system level and enabled again
+    Given I click on the link labeled "My Projects"
+    And I click on the link labeled "Control Center"
+    When I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
+    Then I should NOT see "Configuration Monitor - v1.1.0"
+    When I click on the button labeled "Enable a module"
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
+    Then I should see "Configuration Monitor - v1.1.0"
+
+    When I click on the link labeled "My Projects"
+    And I click on the link labeled "E.129.1000"
+    And I click on the link labeled "User Role Changes"
+    Then I should see "This log shows changes made to user role privileges"
+    And I should see 5 rows in the user role changes table
 
     # Disable external module in project
     Given I click on the link labeled "Manage"
