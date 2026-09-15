@@ -19,14 +19,7 @@ $maxDay = $module->getProjectSetting('max-days-page') ?: 7; // Default to 7 days
 
 //gets the users preferred data format which is used as data attribute on the datetimepicker field
 global $datetime_format;
-
-$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-
-if(ends_with($datetime_format, "_24")){
-    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-} else {
-    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-}
+$userDateFormat = Utility::PhpDateTimeFormat($datetime_format);
 
 echo "
 <div class='projhdr'>

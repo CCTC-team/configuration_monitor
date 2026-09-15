@@ -16,6 +16,17 @@ class Utility {
         return DateTimeRC::get_user_format_php();
     }
 
+    //converts a REDCap date/time format setting (e.g. 'd-m-y_24') to a PHP date format
+    //with hours and minutes (e.g. 'd-m-Y H:i'), as used by the datetimepicker and change tables
+    public static function PhpDateTimeFormat(?string $redcapFormat) : string
+    {
+        $format = str_replace('y', 'Y', strtolower((string)$redcapFormat));
+
+        return ends_with((string)$redcapFormat, "_24")
+            ? str_replace('_24', ' H:i', $format)
+            : str_replace('_12', ' H:i a', $format);
+    }
+
     //users preferred format as date and time
     static function UserDateTimeFormat() : string
     {

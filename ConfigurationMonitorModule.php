@@ -495,13 +495,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         if ($dcCountRole != 0 or $dcCountProj != 0) { // Only send email if there are changes
 
             global $default_datetime_format;
-
-            $userDateFormat = str_replace('y', 'Y', strtolower($default_datetime_format));
-            if(ends_with($default_datetime_format, "_24")){
-                $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-            } else {
-                $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-            }
+            $userDateFormat = Utility::PhpDateTimeFormat($default_datetime_format);
 
             // Prepare to-email parameters
             // Multiple email addresses are separated by commas
@@ -577,13 +571,7 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         if (count($dcs) != 0) { // Only send email if there are changes
 
             global $default_datetime_format;
-
-            $userDateFormat = str_replace('y', 'Y', strtolower($default_datetime_format));
-            if(ends_with($default_datetime_format, "_24")){
-                $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-            } else {
-                $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-            }
+            $userDateFormat = Utility::PhpDateTimeFormat($default_datetime_format);
 
             // Prepare to-email parameters
             // Multiple email addresses are separated by commas

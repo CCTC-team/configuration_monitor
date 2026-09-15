@@ -19,14 +19,7 @@ $maxDay = $module->getProjectSetting('max-days-page') ?: 7; // Default to 7 days
 
 //gets the users preferred data format which is used as data attribute on the datetimepicker field
 global $datetime_format;
-
-$userDateFormat = str_replace('y', 'Y', strtolower($datetime_format));
-
-if(ends_with($datetime_format, "_24")){
-    $userDateFormat = str_replace('_24', ' H:i', $userDateFormat);
-} else {
-    $userDateFormat = str_replace('_12', ' H:i a', $userDateFormat);
-}
+$userDateFormat = Utility::PhpDateTimeFormat($datetime_format);
 
 echo "
 <div class='projhdr'>
@@ -112,15 +105,6 @@ $fixMaxDate = $actMaxAsDate > Utility::Now() ? Utility::Now() : $actMaxAsDate;
 
 $diff = $actMaxAsDate->diff($actMinAsDate);
 
-
-// echo "<br>Project ID: $projId<br>";
-// echo"<br> Module directory name: $moduleName<br>";
-// echo "<br> projId: $projId<br>";
-// echo "<br> maxDay: $maxDay<br>";
-// echo "<br> skipCount: $skipCount<br>";
-// echo "<br> pageSize: $pageSize<br>";
-// echo "<br> pageNum: $pageNum<br>";
-
 $tableName = 'project-changes';
 
 //run the stored proc - get ALL records without pagination first if privilege filter is set
@@ -152,7 +136,6 @@ if (!empty($privilegeFilter)) {
 
 }
 
-// echo "<br>showingCount: $showingCount<br>";
 
 if ($showingCount == 0) {
     echo "<br><i>No changes to project settings have been made in this project.</i><br>";
@@ -162,11 +145,8 @@ if ($showingCount == 0) {
 $privilegeSelect = Rendering::MakePrivilegeSelect($privilegesList, $privilegeFilter);
 
 $table = $module->makeTable($dcs, $userDateFormat, $tableName);
-// echo "<br> showingCount: $showingCount<br>";
-// echo "<br> totalCount: $totalCount<br>";
 $totPages = ceil($totalCount / $pageSize);
 $actPage = (int)$pageNum + 1;
-// echo "<br> dataDirection: $dataDirection<br>";
 // $showingCount = $totalCount;
 $skipFrom = $showingCount == 0 ? 0 : $skipCount + 1;
 
@@ -212,7 +192,6 @@ echo "<script type='text/javascript'>
             $doReset 
         }
     </script>";
-// echo "<br>totalpages: $totPages<br>";
 $exportIcons = 
     "<div class='blue' style='padding-left:8px; padding-right:8px; border-width:1px; '>    
     <form class='mt-1' id='filterForm' name='queryparams' method='get' action=''>
