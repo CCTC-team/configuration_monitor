@@ -19,7 +19,7 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
     Then I should see "Configuration Monitor - v1.1.0"
  
   Scenario: Enable external module in project
-    Given I create a new project named "E.129.1000" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
+    Given I create a new project named "E.129.2900" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     When I click on the link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.1.0"
@@ -84,7 +84,7 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
     Then I should NOT see an email with subject "REDCap External Module Hook Exception - configuration_monitor"
     When I open the email for user "to@sys.edu" with subject "Project Configuration Changes Notification"
     Then I should see "Please find attached the log detailing the recent changes to the project configuration within the last 3 hours" in the email body
-    And I should see "Project Configuration Changes for Project ID: 13 - E.129.1000" in the email body
+    And I should see "Project Configuration Changes for Project ID: 13 - E.129.2900" in the email body
     And I should see "Changes in User Role Privileges" in the email body
     And I should see a user role changes table in the email with the following rows:
       | User Role        |  Action | Date / Time      | Changed Privilege | Old Value | New Value |

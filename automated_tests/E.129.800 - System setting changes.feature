@@ -39,6 +39,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
 
     When I click on the link labeled "System Changes"
     Then I should see "This log shows changes made to system settings"
+    # E.129.2000 - changes are displayed in a table
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |

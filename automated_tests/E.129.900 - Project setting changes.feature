@@ -47,6 +47,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
 
     When I click on the link labeled "Project Changes"
     Then I should see "This log shows changes made to project settings"
+    # E.129.2000 - changes are displayed in a table
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property | Old Value | New Value |
       |  mm/dd/yyyy hh:mm | Auto Inc Set	   | 1	       | 0         |
@@ -67,6 +68,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
 
     When I click on the link labeled "Project Changes"
     Then I should see "This log shows changes made to project settings"
+    # E.129.2000 - changes are displayed in a table
     And I should see a table header and rows with rowspan containing the following values in a table:
       |  Date / Time      | Changed Property                        | Old Value | New Value               |
       |  mm/dd/yyyy hh:mm | Require Change Reason	                  | 0	        | 1                       |
@@ -115,6 +117,28 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
       | Protected Email Mode Custom Text	      | 	        | REDCap Secure Messaging |
       | Scheduling                              | 0	        | 1                       |
       | Auto Inc Set	                          | 1	        | 0                       |
+
+    # E.129.1200 - project changes are kept when the module is disabled at system level and enabled again
+    Given I click on the link labeled "My Projects"
+    And I click on the link labeled "Control Center"
+    When I click on the link labeled "Manage"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
+    Then I should NOT see "Configuration Monitor - v1.1.0"
+    When I click on the button labeled "Enable a module"
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
+    Then I should see "Configuration Monitor - v1.1.0"
+
+    When I click on the link labeled "My Projects"
+    And I click on the link labeled "E.129.900"
+    And I click on the link labeled "Project Changes"
+    Then I should see "This log shows changes made to project settings"
+    And I should see 9 rows in the project changes table
 
     # Disable external module in project
     Given I click on the link labeled "Manage"
