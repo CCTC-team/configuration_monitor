@@ -60,7 +60,9 @@ After enabling the module at the system level, you can optionally configure syst
    - `sys-max-hours-email` - Maximum number of hours to look back when generating email reports (default: 3 hours). The cron job will email a summary of system changes that occurred within this time window.
 
 **Access to System Changes:**
-- Only **Super Users** can access the System Changes page from the Control Center
+- Only **Super Users** can access the System Changes page and its CSV exports. Administrators with
+limited privileges (for example "Access to Control Center dashboards" only) are refused, whether they
+follow a link or enter the page or export URL directly
 - The "System Changes" link appears in the Control Center's External Modules section when `system-changes-enable` is checked
 
 #### Set up module configuration by project ####
@@ -86,11 +88,19 @@ After enabling the module at the system level, configure the following settings 
 
 #### Module access and permissions ####
 
-The module respects REDCap's user rights system:
+The module respects REDCap's user rights system. The same rules apply to a page and to its CSV exports,
+and they are enforced on the request itself — hiding a link is not the only protection, so entering a page
+or export URL directly gives "You do not have permission to access this page." rather than data.
 
-- Only users with **User Rights** privileges or **Super Users** can access the module pages
+| Page | Who may see it and export from it | Also requires |
+|------|-----------------------------------|---------------|
+| User Role Changes (project) | **User Rights** privileges in that project, or a **Super User** | `user-role-changes-enable` for the project |
+| Project Changes (project) | **User Rights** privileges in that project, or a **Super User** | `project-changes-enable` for the project |
+| System Changes (Control Center) | **Super Users** only | `system-changes-enable` at system level |
+
 - Users without these privileges will not see the module links in the project's External Modules menu
-- Individual link visibility is controlled by the `user-role-changes-enable` and `project-changes-enable` settings
+- Turning a log off hides its link, its page and its CSV export — an export of a log that is not enabled
+is refused even for a user who would otherwise be allowed it
 
 #### User Role Changes log page ####
 
@@ -215,9 +225,10 @@ The "System Changes" page (`systemChanges.php`) displays a comprehensive log of 
 - **Reset button** - Clear all filters and return to default view
 
 **Access Requirements:**
-- Only **Super Users** can access this page
+- Only **Super Users** can access this page and its CSV exports
 - Accessible from the Control Center's External Modules section
-- Requires `system-changes-enable` setting to be checked
+- Requires `system-changes-enable` setting to be checked; with it unchecked the page and the exports are
+refused, not just hidden
 
 #### Email notifications ####
 
