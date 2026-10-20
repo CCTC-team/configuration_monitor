@@ -3,7 +3,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
 
-  Scenario: Verify external module is enabled in Control Center
+  Scenario: Enable external Module from Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"
