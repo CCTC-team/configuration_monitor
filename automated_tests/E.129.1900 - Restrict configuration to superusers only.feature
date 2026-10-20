@@ -8,7 +8,10 @@ Feature: E.129.1900 - The system shall restrict Configuration Monitor settings t
     When I click on the link labeled "Control Center"
     Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
-    And I should NOT see "Configuration Monitor - v1.1.1"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
+    Then I should NOT see "Configuration Monitor - v1.1.1"
     When I click on the button labeled "Enable a module"
     And I wait for 2 seconds
     Then I should see "Available Modules"
