@@ -55,7 +55,11 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value            |
       | setting   | sys-max-days-page |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value            |
       | new_value | 14               |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value            |
       | old_value | (empty)          |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
@@ -65,7 +69,11 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value                 |
       | setting   | system-changes-enable |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                 |
       | new_value | 1                     |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                 |
       | old_value | (empty)               |
 
   Scenario: First project configuration save logs the initial values
@@ -100,7 +108,11 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value         |
       | setting   | max-days-page |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
       | new_value | 10            |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
       | old_value | (empty)       |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
@@ -110,7 +122,11 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value                    |
       | setting   | user-role-changes-enable |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                    |
       | new_value | 1                        |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                    |
       | old_value | (empty)                  |
 
   Scenario: Changing a setting logs an old->new audit entry
@@ -141,7 +157,11 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value         |
       | setting   | max-days-page |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
       | new_value | 20            |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
       | old_value | 10            |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
