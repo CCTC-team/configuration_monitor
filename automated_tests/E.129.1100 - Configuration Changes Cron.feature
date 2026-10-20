@@ -9,6 +9,12 @@ Feature: E.129.1100 - The system shall register a cron job (configuration_monito
     When I click on the link labeled "Control Center"
     Given I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
+    When I click on the button labeled "Enable a module"
+    And I wait for 2 seconds
+    Then I should see "Available Modules"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
+    And I wait for 1 second
+    And I click on the button labeled "Enable"
     Then I should see "Configuration Monitor - v1.1.1"
 
     # E.129.1100
