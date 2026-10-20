@@ -4,7 +4,7 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
   I want to see that Configuration Monitor External Module work as expected
 
   # For testing purposes, set cron_frequency to 30 seconds in config.json
-  Scenario: Enable external Module from Control Center
+  Scenario: Verify external module is enabled in Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"

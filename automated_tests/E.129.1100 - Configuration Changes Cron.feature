@@ -3,7 +3,7 @@ Feature: E.129.1100 - The system shall register a cron job (configuration_monito
   As a REDCap end user
   I want to see that Configuration Monitor External Module work as expected
 
-  Scenario: Enable external Module from Control Center
+  Scenario: Verify external module is enabled in Control Center
     Given I login to REDCap with the user "Test_Admin"
     # Enable external module from Control Center
     When I click on the link labeled "Control Center"

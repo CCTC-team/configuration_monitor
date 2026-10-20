@@ -5,7 +5,7 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
 
   System settings are validated in E.129.2300 - System Changes Access Rights.feature
   
-  Scenario: Enable external Module from Control Center
+  Scenario: Verify external module is enabled in Control Center
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "Control Center"
     Given I click on the link labeled "Manage"
