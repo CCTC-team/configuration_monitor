@@ -21,7 +21,7 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
 
     Given I create a new project named "E.129.1800" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
     # Enable external module in project
-    When I click on the link labeled "Manage"
+    When I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Enable a module"
@@ -80,7 +80,7 @@ Feature: E.129.1800 - The system shall validate that email settings are complete
     Then I should see "Configuration Monitor - v1.1.0"
 
     # Disable external module in project
-    Given I click on the link labeled "Manage"
+    Given I click on the second link labeled "Manage"
     And I click on the button labeled "Disable"
     Then I should see "Disable module?"
     When I click on the button labeled "Disable module"

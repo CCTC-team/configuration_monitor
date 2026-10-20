@@ -20,7 +20,7 @@ Feature: E.129.2900 - The system shall send automated email summaries containing
  
   Scenario: Enable external module in project
     Given I create a new project named "E.129.2900" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
-    When I click on the link labeled "Manage"
+    When I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Enable a module"

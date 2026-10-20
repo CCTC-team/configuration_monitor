@@ -52,8 +52,8 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value            |
       | setting   | sys-max-days-page |
-      | old_value | (empty)          |
       | new_value | 14               |
+      | old_value | (empty)          |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
 
@@ -62,13 +62,13 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value                 |
       | setting   | system-changes-enable |
-      | old_value | (empty)               |
       | new_value | 1                     |
+      | old_value | (empty)               |
 
   Scenario: First project configuration save logs the initial values
     Given I login to REDCap with the user "Test_Admin"
     And I create a new project named "E.129.3100" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
-    And I click on the link labeled "Manage"
+    And I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     When I click on the button labeled "Enable a module"
     And I click on the button labeled "Enable" in the row labeled "Configuration Monitor - v1.1.0"
@@ -97,8 +97,8 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value         |
       | setting   | max-days-page |
-      | old_value | (empty)       |
       | new_value | 10            |
+      | old_value | (empty)       |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
 
@@ -107,8 +107,8 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value                    |
       | setting   | user-role-changes-enable |
-      | old_value | (empty)                  |
       | new_value | 1                        |
+      | old_value | (empty)                  |
 
   Scenario: Changing a setting logs an old->new audit entry
     # rctf starts each scenario from a clean browser page, so re-navigate to the
@@ -116,7 +116,7 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "My Projects"
     And I click on the link labeled "E.129.3100"
-    And I click on the link labeled "Manage"
+    And I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should see "Configuration Monitor - v1.1.0"
 
@@ -138,8 +138,8 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value         |
       | setting   | max-days-page |
-      | old_value | 10            |
       | new_value | 20            |
+      | old_value | 10            |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
 

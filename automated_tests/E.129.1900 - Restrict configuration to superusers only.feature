@@ -36,7 +36,7 @@ Feature: E.129.1900 - The system shall restrict Configuration Monitor settings t
     
     # Enable external module in project
     Given I login to REDCap with the user "Test_Admin"
-    When I click on the link labeled "Manage"
+    When I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     And I should NOT see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Enable a module"
@@ -59,7 +59,7 @@ Feature: E.129.1900 - The system shall restrict Configuration Monitor settings t
     Given I login to REDCap with the user "Test_User1"
     Then I should see a link labeled "Project Changes"
     And I should see a link labeled "User Role Changes"
-    When I click on the link labeled "Manage"
+    When I click on the second link labeled "Manage"
     Then I should see "Configuration Monitor - v1.1.0"
     When I click on the button labeled "Configure"
     Then I should see "Configure Module"
