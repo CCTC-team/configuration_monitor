@@ -9,14 +9,17 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     When I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
-    And I should NOT see "Configuration Monitor - v1.1.0"
+    And I click on the button labeled "Disable"
+    Then I should see "Disable module?"
+    When I click on the button labeled "Disable module"
+    Then I should NOT see "Configuration Monitor - v1.1.1"
     When I click on the button labeled "Enable a module"
     And I wait for 2 seconds
     Then I should see "Available Modules"
     And I click on the button labeled "Enable" in the row labeled "Configuration Monitor"
     And I wait for 1 second
     And I click on the button labeled "Enable"
-    Then I should see "Configuration Monitor - v1.1.0"
+    Then I should see "Configuration Monitor - v1.1.1"
 
   Scenario: First system configuration save logs the initial values
     # This module carries system-scope settings as well as project-scope ones, so
@@ -26,14 +29,14 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     When I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"
     Then I should see "External Modules - Module Manager"
-    And I should see "Configuration Monitor - v1.1.0"
+    And I should see "Configuration Monitor - v1.1.1"
 
     Given I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable System Changes"
     And I enter "14" into the input field labeled "Specify the maximum number of days to look back when displaying system configuration changes"
     And I click on the button labeled "Save"
-    Then I should see "Configuration Monitor - v1.1.0"
+    Then I should see "Configuration Monitor - v1.1.1"
 
     #VERIFY - the audit trail on the module's own View Logs page
     When I click on the link labeled "View Logs"
@@ -52,8 +55,12 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value            |
       | setting   | sys-max-days-page |
-      | old_value | (empty)          |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value            |
       | new_value | 14               |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value            |
+      | old_value | (empty)          |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
 
@@ -62,24 +69,28 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value                 |
       | setting   | system-changes-enable |
-      | old_value | (empty)               |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                 |
       | new_value | 1                     |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                 |
+      | old_value | (empty)               |
 
   Scenario: First project configuration save logs the initial values
     Given I login to REDCap with the user "Test_Admin"
     And I create a new project named "E.129.3100" by clicking on "New Project" in the menu bar, selecting "Practice / Just for fun" from the dropdown, choosing file "fixtures/cdisc_files/Project_redcap_val_nodata.xml", and clicking the "Create Project" button
-    And I click on the link labeled "Manage"
+    And I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
     When I click on the button labeled "Enable a module"
-    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor - v1.1.0"
-    Then I should see "Configuration Monitor - v1.1.0"
+    And I click on the button labeled "Enable" in the row labeled "Configuration Monitor - v1.1.1"
+    Then I should see "Configuration Monitor - v1.1.1"
 
     Given I click on the button labeled "Configure"
     Then I should see "Configure Module"
     When I check the checkbox labeled "Enable User Role Changes"
     And I enter "10" into the input field labeled "Specify the maximum number of days to look back when displaying configuration changes"
     And I click on the button labeled "Save"
-    Then I should see "Configuration Monitor - v1.1.0"
+    Then I should see "Configuration Monitor - v1.1.1"
 
     #VERIFY - the audit trail on the module's own View Logs page
     When I click on the link labeled "View Logs"
@@ -97,8 +108,12 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value         |
       | setting   | max-days-page |
-      | old_value | (empty)       |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
       | new_value | 10            |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
+      | old_value | (empty)       |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
 
@@ -107,8 +122,12 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value                    |
       | setting   | user-role-changes-enable |
-      | old_value | (empty)                  |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                    |
       | new_value | 1                        |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value                    |
+      | old_value | (empty)                  |
 
   Scenario: Changing a setting logs an old->new audit entry
     # rctf starts each scenario from a clean browser page, so re-navigate to the
@@ -116,15 +135,15 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     Given I login to REDCap with the user "Test_Admin"
     When I click on the link labeled "My Projects"
     And I click on the link labeled "E.129.3100"
-    And I click on the link labeled "Manage"
+    And I click on the second link labeled "Manage"
     Then I should see "External Modules - Project Module Manager"
-    And I should see "Configuration Monitor - v1.1.0"
+    And I should see "Configuration Monitor - v1.1.1"
 
     When I click on the button labeled "Configure"
     Then I should see "Configure Module"
     And I clear field and enter "20" into the input field labeled "Specify the maximum number of days to look back when displaying configuration changes"
     Then I click on the button labeled "Save"
-    And I should see "Configuration Monitor - v1.1.0"
+    And I should see "Configuration Monitor - v1.1.1"
 
     #VERIFY - the audit trail on the module's own View Logs page
     When I click on the link labeled "View Logs"
@@ -138,8 +157,12 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I should see a table header and row containing the following values in a table:
       | Name      | Value         |
       | setting   | max-days-page |
-      | old_value | 10            |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
       | new_value | 20            |
+    And I should see a table header and row containing the following values in a table:
+      | Name      | Value         |
+      | old_value | 10            |
     And I click on the button labeled "Close"
     Then I should see "External Module Logs"
 
@@ -150,7 +173,7 @@ Feature: E.129.3100 - The system shall record configuration changes for the Conf
     And I click on the button labeled "Disable"
     Then I should see "Disable module?"
     When I click on the button labeled "Disable module"
-    Then I should NOT see "Configuration Monitor - v1.1.0"
+    Then I should NOT see "Configuration Monitor - v1.1.1"
 
     # Verify no exceptions are thrown in the system
     Given I open Email
