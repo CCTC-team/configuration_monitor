@@ -18,12 +18,16 @@ The Configuration Monitor module tracks and logs changes to REDCap configuration
 - **CSV Export**: Export change logs to CSV format
 - **Filtering & Pagination**: Search and filter changes by date, role, property, and more
 
-## Compatibility
+## Tested With
 
-| Requirement | Version |
-|-------------|---------|
-| PHP | 8.0.27 - 8.2.29 |
-| REDCap | 14.7.0 - 15.9.1 |
+The module has been tested with:
+
+| | Versions |
+|---|---|
+| PHP | 8.2 |
+| REDCap | 14.7.0, 15.5.36, 17.5.6 |
+
+`config.json` sets no PHP or REDCap version limits.
 
 ## File Structure
 
