@@ -116,12 +116,12 @@ change itself, so deleted roles still show a name; the id is included because ro
 - New Value - The new value of the privilege
 
 **Tracked privileges include:**
-- Role Name, Lock Record, Lock Record Multiform, Lock Record Customize, Data Export Instruments, 
+- Role Name, Lock Record, Lock Record Multiform, Lock Record Customize, Data Export Tool, Data Export Instruments, 
 Data Import Tool, Data Comparison Tool, Data Logging, Email Logging, File Repository, Double Data, 
 User Rights, Data Access Groups, Graphical, Reports, Design, Alerts, Calendar, Data Entry, API Export, 
 API Import, API Modules, Mobile App, Mobile App Download Data, Record Create, Record Rename, Record Delete, 
 Dts, Participants, Data Quality Design, Data Quality Execute, Data Quality Resolution, Random Setup, Random Dashboard, 
-Random Perform, Realtime Webservice Mapping, Realtime Webservice Adjudicate, External Module Config, Mycap Participants
+Random Perform, Realtime Webservice Mapping, Realtime Webservice Adjudicate, External Module Config, Mycap Participants, Share
 
 **Special handling for complex privileges:**
 - "Data Export Instruments" and "Data Entry" privileges contain multiple form-specific values in the format `[form_name,permission_level]`

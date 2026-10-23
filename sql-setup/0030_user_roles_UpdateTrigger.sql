@@ -29,25 +29,25 @@ BEGIN
 		-- During insert, values are inserted and then unique_role_name is updated.
 		-- So not including unique_role_name here else an update record will be created during insert.
 		SET old_values = CONCAT_WS('/',
-			OLD.role_name, OLD.lock_record, OLD.lock_record_multiform, OLD.lock_record_customize,
-			OLD.data_export_tool, OLD.data_export_instruments, OLD.data_import_tool, OLD.data_comparison_tool, OLD.data_logging,
-			OLD.email_logging, OLD.file_repository, OLD.double_data, OLD.user_rights, OLD.data_access_groups, OLD.graphical,
-			OLD.reports, OLD.design, OLD.alerts, OLD.calendar, OLD.data_entry, OLD.api_export, OLD.api_import, OLD.api_modules,
-			OLD.mobile_app, OLD.mobile_app_download_data, OLD.record_create, OLD.record_rename, OLD.record_delete,
-			OLD.dts, OLD.participants, OLD.data_quality_design, OLD.data_quality_execute, OLD.data_quality_resolution,
-			OLD.random_setup, OLD.random_dashboard, OLD.random_perform, OLD.realtime_webservice_mapping,
-			OLD.realtime_webservice_adjudicate, OLD.external_module_config, OLD.mycap_participants
+			COALESCE(OLD.role_name, ''), COALESCE(OLD.lock_record, ''), COALESCE(OLD.lock_record_multiform, ''), COALESCE(OLD.lock_record_customize, ''),
+			COALESCE(OLD.data_export_tool, ''), COALESCE(OLD.data_export_instruments, ''), COALESCE(OLD.data_import_tool, ''), COALESCE(OLD.data_comparison_tool, ''), COALESCE(OLD.data_logging, ''),
+			COALESCE(OLD.email_logging, ''), COALESCE(OLD.file_repository, ''), COALESCE(OLD.double_data, ''), COALESCE(OLD.user_rights, ''), COALESCE(OLD.data_access_groups, ''), COALESCE(OLD.graphical, ''),
+			COALESCE(OLD.reports, ''), COALESCE(OLD.design, ''), COALESCE(OLD.alerts, ''), COALESCE(OLD.calendar, ''), COALESCE(OLD.data_entry, ''), COALESCE(OLD.api_export, ''), COALESCE(OLD.api_import, ''), COALESCE(OLD.api_modules, ''),
+			COALESCE(OLD.mobile_app, ''), COALESCE(OLD.mobile_app_download_data, ''), COALESCE(OLD.record_create, ''), COALESCE(OLD.record_rename, ''), COALESCE(OLD.record_delete, ''),
+			COALESCE(OLD.dts, ''), COALESCE(OLD.participants, ''), COALESCE(OLD.data_quality_design, ''), COALESCE(OLD.data_quality_execute, ''), COALESCE(OLD.data_quality_resolution, ''),
+			COALESCE(OLD.random_setup, ''), COALESCE(OLD.random_dashboard, ''), COALESCE(OLD.random_perform, ''), COALESCE(OLD.realtime_webservice_mapping, ''),
+			COALESCE(OLD.realtime_webservice_adjudicate, ''), COALESCE(OLD.external_module_config, ''), COALESCE(OLD.mycap_participants, ''), COALESCE(OLD.share, '')
 		);
 
 		SET new_values = CONCAT_WS('/',
-			NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
-			NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
-			NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
-			NEW.reports, NEW.design, NEW.alerts, NEW.calendar, NEW.data_entry, NEW.api_export, NEW.api_import, NEW.api_modules,
-			NEW.mobile_app, NEW.mobile_app_download_data, NEW.record_create, NEW.record_rename, NEW.record_delete,
-			NEW.dts, NEW.participants, NEW.data_quality_design, NEW.data_quality_execute, NEW.data_quality_resolution,
-			NEW.random_setup, NEW.random_dashboard, NEW.random_perform, NEW.realtime_webservice_mapping,
-			NEW.realtime_webservice_adjudicate, NEW.external_module_config, NEW.mycap_participants
+			COALESCE(NEW.role_name, ''), COALESCE(NEW.lock_record, ''), COALESCE(NEW.lock_record_multiform, ''), COALESCE(NEW.lock_record_customize, ''),
+			COALESCE(NEW.data_export_tool, ''), COALESCE(NEW.data_export_instruments, ''), COALESCE(NEW.data_import_tool, ''), COALESCE(NEW.data_comparison_tool, ''), COALESCE(NEW.data_logging, ''),
+			COALESCE(NEW.email_logging, ''), COALESCE(NEW.file_repository, ''), COALESCE(NEW.double_data, ''), COALESCE(NEW.user_rights, ''), COALESCE(NEW.data_access_groups, ''), COALESCE(NEW.graphical, ''),
+			COALESCE(NEW.reports, ''), COALESCE(NEW.design, ''), COALESCE(NEW.alerts, ''), COALESCE(NEW.calendar, ''), COALESCE(NEW.data_entry, ''), COALESCE(NEW.api_export, ''), COALESCE(NEW.api_import, ''), COALESCE(NEW.api_modules, ''),
+			COALESCE(NEW.mobile_app, ''), COALESCE(NEW.mobile_app_download_data, ''), COALESCE(NEW.record_create, ''), COALESCE(NEW.record_rename, ''), COALESCE(NEW.record_delete, ''),
+			COALESCE(NEW.dts, ''), COALESCE(NEW.participants, ''), COALESCE(NEW.data_quality_design, ''), COALESCE(NEW.data_quality_execute, ''), COALESCE(NEW.data_quality_resolution, ''),
+			COALESCE(NEW.random_setup, ''), COALESCE(NEW.random_dashboard, ''), COALESCE(NEW.random_perform, ''), COALESCE(NEW.realtime_webservice_mapping, ''),
+			COALESCE(NEW.realtime_webservice_adjudicate, ''), COALESCE(NEW.external_module_config, ''), COALESCE(NEW.mycap_participants, ''), COALESCE(NEW.share, '')
 		);
 
 		-- Only insert if old and new values are different.

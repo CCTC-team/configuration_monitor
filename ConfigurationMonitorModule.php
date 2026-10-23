@@ -123,6 +123,15 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
     function execFromFile($file): void
     {
         $sql = file_get_contents(dirname(__FILE__) . "/sql-setup/$file");
+        // redcap_user_roles.share (REDCap SHARE permission) only exists from REDCap 17.3.0.
+        // On older versions log an empty value in its slot, so the trigger can still be
+        // created and the values keep their positions against $userroleColumnNames.
+        if (strpos($sql, ".share, ''") !== false) {
+            $result = db_query("SHOW COLUMNS FROM redcap_user_roles LIKE 'share'");
+            if ($result !== false && db_num_rows($result) === 0) {
+                $sql = str_replace(["COALESCE(OLD.share, '')", "COALESCE(NEW.share, '')"], "''", $sql);
+            }
+        }
         if (db_query($sql) === false) {
             $this->log("Failed to run setup script $file", ['error' => db_error()]);
         }
@@ -275,12 +284,12 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         } else {
             //For update action, compare old and new values and return only changed privileges
             // Column names corresponding to the order of values in the concatenated string
-            $userroleColumnNames = array("Role Name", "Lock Record", "Lock Record Multiform", "Lock Record Customize", "Data Export Instruments", 
+            $userroleColumnNames = array("Role Name", "Lock Record", "Lock Record Multiform", "Lock Record Customize", "Data Export Tool", "Data Export Instruments",
                                     "Data Import Tool", "Data Comparison Tool", "Data Logging", "Email Logging", "File Repository", "Double Data", 
                                     "User Rights", "Data Access Groups", "Graphical", "Reports", "Design", "Alerts", "Calendar", "Data Entry", "API Export", 
                                     "API Import", "API Modules", "Mobile App", "Mobile App Download Data", "Record Create", "Record Rename", "Record Delete", 
                                     "Dts", "Participants", "Data Quality Design", "Data Quality Execute", "Data Quality Resolution", "Random Setup", "Random Dashboard", 
-                                    "Random Perform", "Realtime Webservice Mapping", "Realtime Webservice Adjudicate", "External Module Config", "Mycap Participants");
+                                    "Random Perform", "Realtime Webservice Mapping", "Realtime Webservice Adjudicate", "External Module Config", "Mycap Participants", "Share");
             $projectColumnNames = array("Project Name", "App Title", "Status", "Inactive Time", "Completed Time", "Completed By", "Data Locked", "Draft Mode", "Surveys Enabled",
                                     "Repeat Forms", "Scheduling", "Purpose", "Purpose Other", "Show Which Records", "Count Project", "Investigators", "Project Note", "Online Offline",
                                     "Auth Meth", "Double Data Entry", "Project Language", "Project Encoding", "Is Child Of", "Date Shift Max", "Institution", "Site Org Type",
