@@ -54,7 +54,7 @@ BEGIN
             COALESCE(OLD.fhir_include_email_address_project, ''), COALESCE(OLD.file_upload_vault_enabled, ''), COALESCE(OLD.file_upload_versioning_enabled, ''), COALESCE(OLD.missing_data_codes, ''), COALESCE(OLD.record_locking_pdf_vault_enabled, ''), 
             COALESCE(OLD.record_locking_pdf_vault_custom_text, ''), COALESCE(OLD.fhir_cdp_auto_adjudication_enabled, ''), COALESCE(OLD.fhir_cdp_auto_adjudication_cronjob_enabled, ''), COALESCE(OLD.project_dashboard_min_data_points, ''), 
             COALESCE(OLD.bypass_branching_erase_field_prompt, ''), COALESCE(OLD.protected_email_mode, ''), COALESCE(OLD.protected_email_mode_custom_text, ''), COALESCE(OLD.protected_email_mode_trigger, ''), COALESCE(OLD.protected_email_mode_logo, ''), 
-            COALESCE(OLD.hide_filled_forms, ''), COALESCE(OLD.hide_disabled_forms, ''), COALESCE(OLD.form_activation_survey_autocontinue, ''), COALESCE(OLD.sendgrid_enabled, ''), COALESCE(OLD.sendgrid_project_api_key, ''), COALESCE(OLD.mycap_enabled, ''), 
+            COALESCE(OLD.hide_filled_forms, ''), COALESCE(OLD.hide_disabled_forms, ''), COALESCE(OLD.sendgrid_enabled, ''), COALESCE(OLD.sendgrid_project_api_key, ''), COALESCE(OLD.mycap_enabled, ''), 
             COALESCE(OLD.file_repository_total_size, ''), COALESCE(OLD.ehr_id, ''), COALESCE(OLD.allow_econsent_allow_edit, ''), COALESCE(OLD.store_in_vault_snapshots_containing_completed_econsent, '')
         );
 
@@ -84,7 +84,7 @@ BEGIN
             COALESCE(NEW.fhir_include_email_address_project, ''), COALESCE(NEW.file_upload_vault_enabled, ''), COALESCE(NEW.file_upload_versioning_enabled, ''), COALESCE(NEW.missing_data_codes, ''), COALESCE(NEW.record_locking_pdf_vault_enabled, ''), 
             COALESCE(NEW.record_locking_pdf_vault_custom_text, ''), COALESCE(NEW.fhir_cdp_auto_adjudication_enabled, ''), COALESCE(NEW.fhir_cdp_auto_adjudication_cronjob_enabled, ''), COALESCE(NEW.project_dashboard_min_data_points, ''), 
             COALESCE(NEW.bypass_branching_erase_field_prompt, ''), COALESCE(NEW.protected_email_mode, ''), COALESCE(NEW.protected_email_mode_custom_text, ''), COALESCE(NEW.protected_email_mode_trigger, ''), COALESCE(NEW.protected_email_mode_logo, ''), 
-            COALESCE(NEW.hide_filled_forms, ''), COALESCE(NEW.hide_disabled_forms, ''), COALESCE(NEW.form_activation_survey_autocontinue, ''), COALESCE(NEW.sendgrid_enabled, ''), COALESCE(NEW.sendgrid_project_api_key, ''), COALESCE(NEW.mycap_enabled, ''), 
+            COALESCE(NEW.hide_filled_forms, ''), COALESCE(NEW.hide_disabled_forms, ''), COALESCE(NEW.sendgrid_enabled, ''), COALESCE(NEW.sendgrid_project_api_key, ''), COALESCE(NEW.mycap_enabled, ''), 
             COALESCE(NEW.file_repository_total_size, ''), COALESCE(NEW.ehr_id, ''), COALESCE(NEW.allow_econsent_allow_edit, ''), COALESCE(NEW.store_in_vault_snapshots_containing_completed_econsent, '')
         );
 

@@ -46,14 +46,14 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+      |  mm/dd/yyyy hh:mm | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     And I should see 2 rows in the system changes table
 
     Given I click on the link labeled "General Configuration"
     Then I should see "General Configuration"
-    And I should see the dropdown field labeled "Automatically send basic statistics to REDCap Consortium?" with the option "Yes, send stats automatically" selected
-    When I select "No, send stats manually" on the dropdown field labeled "Automatically send basic statistics to REDCap Consortium?"
+    And I should see the dropdown field labeled "Automatically send basic statistics to REDCap Consortium?" with the option "No, send stats manually" selected
+    When I select "Yes, send stats automatically" on the dropdown field labeled "Automatically send basic statistics to REDCap Consortium?"
     And I click on the button labeled "Save Changes"
     Then I should see "Your system configuration values have now been changed"
 
@@ -61,9 +61,9 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     Then I should see "This log shows changes made to system settings"
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
-      |  mm/dd/yyyy hh:mm | auto_report_stats     | 1                     	| 0                       |
+      |  mm/dd/yyyy hh:mm | auto_report_stats     | 0                     	| 1                       |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+      |  mm/dd/yyyy hh:mm | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     And I should see 3 rows in the system changes table
 
@@ -71,7 +71,7 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     When I select "project_contact_email" on the dropdown field labeled "Property"
     Then I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
-      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+      |  mm/dd/yyyy hh:mm | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     And I should see 1 row in the system changes table
     # And I should NOT see "auto_report_stats"
@@ -81,14 +81,14 @@ Feature: E.129.800 - The system shall allow enabling or disabling System Changes
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "SystemChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property      | old value               | new value               |
-      | project_contact_email |                        	| redcap@test.instance    |
+      | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     When I click on the button labeled "Export everything ignoring filters"
     Then the downloaded CSV with filename "SystemChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | changed property      | old value               | new value               |
-      | auto_report_stats     | 1                     	| 0                       |
+      | auto_report_stats     | 0                     	| 1                       |
       | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-      | project_contact_email |                        	| redcap@test.instance    |
+      | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     # Disable external module in Control Center
     Given I click on the link labeled "Control Center"

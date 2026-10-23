@@ -177,7 +177,7 @@ Datamart Enabled, Break The Glass Enabled, Datamart Cron Enabled, Datamart Cron 
 File Upload Vault Enabled, File Upload Versioning Enabled, Missing Data Codes, Record Locking Pdf Vault Enabled,
 Record Locking Pdf Vault Custom Text, Fhir Cdp Auto Adjudication Enabled, Fhir Cdp Auto Adjudication Cronjob Enabled, 
 Project Dashboard Min Data Points, Bypass Branching Erase Field Prompt, Protected Email Mode, Protected Email Mode Custom Text, 
-Protected Email Mode Trigger, Protected Email Mode Logo, Hide Filled Forms, Hide Disabled Forms, Form Activation Survey Autocontinue, 
+Protected Email Mode Trigger, Protected Email Mode Logo, Hide Filled Forms, Hide Disabled Forms, 
 Sendgrid Enabled, Sendgrid Project Api Key, Mycap Enabled, File Repository Total Size, Ehr Id, Allow Econsent Allow Edit, 
 Store In Vault Snapshots Containing Completed Econsent
 

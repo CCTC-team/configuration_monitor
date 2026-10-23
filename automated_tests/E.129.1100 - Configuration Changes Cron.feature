@@ -24,6 +24,7 @@ Feature: E.129.1100 - The system shall register a cron job (configuration_monito
     # E.129.1100
     When I click on the link labeled "Cron Jobs"
     And I trigger the cron job
+    And I enter "configuration_monitor_cron" into the input field labeled "Search"
     Then I should see a table header and row containing the following values in a table:
       | Job Name                                           | Description                                                |
       | configuration_monitor_cron (configuration_monitor) |  Send email notifications for recent configuration changes |
