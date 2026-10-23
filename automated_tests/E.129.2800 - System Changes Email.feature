@@ -41,7 +41,7 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+      |  mm/dd/yyyy hh:mm | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     # Disable external module in Control Center
     Given I click on the link labeled "Control Center"
@@ -65,7 +65,7 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
     And I should see a table header and rows containing the following values in the a table:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+      |  mm/dd/yyyy hh:mm | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |
 
     # Trigger cron job to send email notification
     And I trigger the cron job
@@ -87,4 +87,4 @@ Feature: E.129.2800 - The system shall send automated email summaries containing
     And I should see a system changes table in the email with the following rows:
       |  Date / Time      | Changed Property      | Old Value               | New Value               |
       |  mm/dd/yyyy hh:mm | redcap_base_url       | https://localhost:8443	| https://localhost:8443/ |
-      |  mm/dd/yyyy hh:mm | project_contact_email |                        	| redcap@test.instance    |
+      |  mm/dd/yyyy hh:mm | project_contact_email | fake-automated-testing-address@fake-domain.org | redcap@test.instance    |

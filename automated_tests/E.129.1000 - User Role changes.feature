@@ -51,7 +51,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Given I click on the link labeled "User Rights"
     And I enter "TestRole" into the field with the placeholder text of "Enter new role name"
     And I click on the button labeled "Create role"
-    Then I should see a dialog containing the following text: "Creating new role"
+    Then I should see "Creating new role"
     When I click on the button labeled "Create role"
     Then I should see a table header and rows containing the following values in a table:
       | Role name   |
@@ -83,7 +83,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     ##ACTION: Delete User role
     Given I click on the link labeled "Monitor"
     And I click on the button labeled "Delete role"
-    When I see a dialog containing the following text: "Delete role?"
+    Then I should see "Delete role?"
     And I click on the button labeled "Delete role"
     Then I should NOT see "Monitor"
 
