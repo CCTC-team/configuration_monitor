@@ -94,10 +94,10 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value                                                                                                                                          |
       | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0//[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0//1/0 | N/A                  |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] No Access | [text_validation,1] Full Data Set |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights             | 0                      | 2                      |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2]    | [text_validation,130]  |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2] Read Only | [text_validation,130] View & Edit |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2] Read Only | [data_types,129] Read Only |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Participants            | 1                      | 0                      |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Quality Resolution | 1                      | 0                      |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Mycap Participants      | 1                      | 0                      |
@@ -128,10 +128,10 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I select "UPDATE" on the dropdown field labeled "Action"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] No Access | [text_validation,1] Full Data Set |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights             | 0                      | 2                      |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2]    | [text_validation,130]  |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2] Read Only | [text_validation,130] View & Edit |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2] Read Only | [data_types,129] Read Only |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Participants            | 1                      | 0                      |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Quality Resolution | 1                      | 0                      |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Mycap Participants      | 1                      | 0                      |
@@ -149,10 +149,10 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I select "DataManager (2)" on the dropdown field labeled "User Role"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] No Access | [text_validation,1] Full Data Set |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights             | 0                      | 2                      |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2]    | [text_validation,130]  |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2] Read Only | [text_validation,130] View & Edit |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2] Read Only | [data_types,129] Read Only |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Participants            | 1                      | 0                      |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Quality Resolution | 1                      | 0                      |
       | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Mycap Participants      | 1                      | 0                      |
@@ -168,10 +168,10 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | role id | role name   |  action | changed privilege       | old value           | new value           |
-      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0] No Access | [text_validation,1] Full Data Set |
       | 2       | DataManager |  UPDATE | User Rights             | 0                      | 2                      |
-      | 2       | DataManager |  UPDATE | Data Entry              | [text_validation,2]    | [text_validation,130]  |
-      | 2       | DataManager |  UPDATE | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | 2       | DataManager |  UPDATE | Data Entry              | [text_validation,2] Read Only | [text_validation,130] View & Edit |
+      | 2       | DataManager |  UPDATE | Data Entry              | [data_types,2] Read Only | [data_types,129] Read Only |
       | 2       | DataManager |  UPDATE | Participants            | 1                      | 0                      |
       | 2       | DataManager |  UPDATE | Data Quality Resolution | 1                      | 0                      |
       | 2       | DataManager |  UPDATE | Mycap Participants      | 1                      | 0                      |
@@ -180,10 +180,10 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | role id | role name   |  action | changed privilege       | old value           | new value           |
       | 3       | Monitor     |  DELETE | All Privileges          | Monitor/0/0/0//[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0//1/0 | N/A                  |
-      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0] No Access | [text_validation,1] Full Data Set |
       | 2       | DataManager |  UPDATE | User Rights             | 0                      | 2                      |
-      | 2       | DataManager |  UPDATE | Data Entry              | [text_validation,2]    | [text_validation,130]  |
-      | 2       | DataManager |  UPDATE | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | 2       | DataManager |  UPDATE | Data Entry              | [text_validation,2] Read Only | [text_validation,130] View & Edit |
+      | 2       | DataManager |  UPDATE | Data Entry              | [data_types,2] Read Only | [data_types,129] Read Only |
       | 2       | DataManager |  UPDATE | Participants            | 1                      | 0                      |
       | 2       | DataManager |  UPDATE | Data Quality Resolution | 1                      | 0                      |
       | 2       | DataManager |  UPDATE | Mycap Participants      | 1                      | 0                      |

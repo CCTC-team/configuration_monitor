@@ -126,6 +126,10 @@ Random Perform, Realtime Webservice Mapping, Realtime Webservice Adjudicate, Ext
 **Special handling for complex privileges:**
 - "Data Export Instruments" and "Data Entry" privileges contain multiple form-specific values in the format `[form_name,permission_level]`
 - The module intelligently compares these complex values and displays only the specific forms/permissions that changed
+- Instruments added to or removed from a role are shown too; the missing side reads `N/A (not in role)`
+- Each value is followed by its meaning, e.g. `[demographics,146] View & Edit + Delete`:
+  - Data Entry: No Access, Read Only, View & Edit, plus "+ Edit survey responses" and/or "+ Delete". Both the REDCap 17 codes (128 No Access, 129 Read Only, 130 View & Edit, +8 Edit survey responses, +16 Delete) and the legacy codes (0 No Access, 1 View & Edit, 2 Read Only, 3 View & Edit + Edit survey responses) are understood. Roles keep legacy codes until they are saved on REDCap 17, so a role's first save can show e.g. `[demographics,2] Read Only` → `[demographics,129] Read Only`: same right, new code.
+  - Data Export: 0 No Access, 1 Full Data Set, 2 De-Identified, 3 Remove All Identifier Fields
 
 **Page features:**
 - **Filter by User Role** - Dropdown to show changes for a specific role or all roles. Options are labelled

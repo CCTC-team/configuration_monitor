@@ -264,6 +264,50 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
         return explode("/", (string)$values)[0];
     }
 
+    // A single instrument's Data Entry or Data Export right as "[form,value] Meaning",
+    // or "N/A (not in role)" when the instrument is missing on that side.
+    function describeFormRight($privilege, $form, $value): string
+    {
+        if ($value === null) {
+            return "N/A (not in role)";
+        }
+
+        return "[$form,$value] " . ($privilege == "Data Entry"
+            ? self::dataViewingRightText((int)$value)
+            : self::dataExportRightText((int)$value));
+    }
+
+    // Data Entry (data viewing) rights. REDCap 17 stores a bitmask (128 = marker, +1 read-only,
+    // +2 view & edit, +8 edit survey responses, +16 delete); roles saved on older versions, or
+    // imported from older project XML, keep the legacy codes until the role is saved again.
+    function dataViewingRightText(int $value): string
+    {
+        if ($value < 128) {
+            $legacy = [0 => "No Access", 1 => "View & Edit", 2 => "Read Only", 3 => "View & Edit + Edit survey responses"];
+            return $legacy[$value] ?? "Unknown";
+        }
+        if (!in_array($value, [128, 129, 130, 138, 146, 154], true)) {
+            return "Unknown";
+        }
+        if ($value == 128) {
+            return "No Access";
+        }
+        if (($value & 2) == 2) {
+            $text = "View & Edit";
+            if (($value & 8) == 8) $text .= " + Edit survey responses";
+            if (($value & 16) == 16) $text .= " + Delete";
+            return $text;
+        }
+        return ($value & 1) == 1 ? "Read Only" : "Unknown";
+    }
+
+    // Data Export rights per instrument
+    function dataExportRightText(int $value): string
+    {
+        $export = [0 => "No Access", 1 => "Full Data Set", 2 => "De-Identified", 3 => "Remove All Identifier Fields"];
+        return $export[$value] ?? "Unknown";
+    }
+
     function recordDiff($dc, $tableName): array
     {
         $roleName = $tableName == 'user-role-changes' ? self::roleNameFromChange($dc) : '';
@@ -349,22 +393,22 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                             $oresult[$key] = $val;
                         }
                         
-                        foreach ($oresult as $key => $oval) {
-                            if (isset($nresult[$key])) {         // Key exists in both arrays
-                                $nval = $nresult[$key];
-                                if ($oval != $nval) {           // Value differs
-                                    $row = [
-                                        'id' => $dc["id"],
-                                        'roleName' => $roleName,
-                                        'privilege' => $columnNames[$i],
-                                        'oldValue' => "[$key,$oval]",
-                                        'newValue' => "[$key,$nval]",
-                                        'timestamp' => $dc["timestamp"],
-                                        'action' => $dc["action"]
-                                    ];
-
-                                    $finalRow[] = $row;
-                                }
+                        // Every instrument on either side, so instruments added to or removed
+                        // from the role are reported too (old ones first, then new-only ones)
+                        $keys = array_unique(array_merge(array_keys($oresult), array_keys($nresult)));
+                        foreach ($keys as $key) {
+                            $oval = $oresult[$key] ?? null;
+                            $nval = $nresult[$key] ?? null;
+                            if ($oval !== $nval) {
+                                $finalRow[] = [
+                                    'id' => $dc["id"],
+                                    'roleName' => $roleName,
+                                    'privilege' => $columnNames[$i],
+                                    'oldValue' => self::describeFormRight($columnNames[$i], $key, $oval),
+                                    'newValue' => self::describeFormRight($columnNames[$i], $key, $nval),
+                                    'timestamp' => $dc["timestamp"],
+                                    'action' => $dc["action"]
+                                ];
                             }
                         }
                     } else if ($tableName == 'user-role-changes') {
