@@ -65,7 +65,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     # E.129.2000 - changes are displayed in a table
     And I should see a table header and rows containing the following values in the a table:
       | User Role     |  Action | Date / Time      | Changed Privilege | Old Value | New Value                                                                                                                                          |
-      | TestRole (4)  |  INSERT | mm/dd/yyyy hh:mm | All Privileges    | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | TestRole (4)  |  INSERT | mm/dd/yyyy hh:mm | All Privileges    | N/A	     | TestRole/0/0/0//[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,130][data_types,130]/0/0/0/0/0/1/0/0/0/0/0/0/0/0/0/0/0/0//0/0 |
 
     And I should see 1 row in the user role changes table
 
@@ -93,20 +93,24 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     # E.129.2200 - instrument-level Data Export and Data Entry changes are shown per instrument
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value                                                                                                                                          |
-      | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1]                                                                                                                                |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                                                                                                                                                  |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1]                                                                                                                                |
-      | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	               | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0//[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0//1/0 | N/A                  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights             | 0                      | 2                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2]    | [text_validation,130]  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Participants            | 1                      | 0                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Quality Resolution | 1                      | 0                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Mycap Participants      | 1                      | 0                      |
+      | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	               | TestRole/0/0/0//[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,130][data_types,130]/0/0/0/0/0/1/0/0/0/0/0/0/0/0/0/0/0/0//0/0 |
 
-    And I should see 5 rows in the user role changes table
+    And I should see 9 rows in the user role changes table
     And I wait for 2 seconds
 
     # E.129.2100 - validate filtering user role changes by action
     When I select "DELETE" on the dropdown field labeled "Action"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
-      | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
+      | Monitor (3)      |  DELETE | mm/dd/yyyy hh:mm | All Privileges          | Monitor/0/0/0//[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0//1/0 | N/A                  |
 
     And I should see 1 row in the user role changes table
     And I should NOT see "TestRole"
@@ -115,7 +119,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I select "INSERT" on the dropdown field labeled "Action"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value | New Value                                                                                                                                          |
-      | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	     | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | TestRole (4)     |  INSERT | mm/dd/yyyy hh:mm | All Privileges          | N/A	     | TestRole/0/0/0//[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,130][data_types,130]/0/0/0/0/0/1/0/0/0/0/0/0/0/0/0/0/0/0//0/0 |
 
     And I should see 1 row in the user role changes table
     And I should NOT see "Monitor"
@@ -124,28 +128,36 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I select "UPDATE" on the dropdown field labeled "Action"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1] |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights             | 0                      | 2                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2]    | [text_validation,130]  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Participants            | 1                      | 0                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Quality Resolution | 1                      | 0                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Mycap Participants      | 1                      | 0                      |
 
-    And I should see 3 rows in the user role changes table
+    And I should see 7 rows in the user role changes table
     And I should NOT see "All Privileges"
     And I should NOT see "TestRole"
     And I should NOT see "Monitor"
 
     # reset the action filter so the checks below run against every action again
     When I select "any action" on the dropdown field labeled "Action"
-    Then I should see 5 rows in the user role changes table
+    Then I should see 9 rows in the user role changes table
 
     # E.129.2100 - validate filtering user role changes
     When I select "DataManager (2)" on the dropdown field labeled "User Role"
     And I should see a table header and rows with rowspan containing the following values in a table:
       | User Role        |  Action | Date / Time      | Changed Privilege       | Old Value           | New Value           |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0] | [text_validation,1] |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights	           | 0	                 | 2                   |
-      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry		           | [text_validation,2] | [text_validation,1] |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | User Rights             | 0                      | 2                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [text_validation,2]    | [text_validation,130]  |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Participants            | 1                      | 0                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Data Quality Resolution | 1                      | 0                      |
+      | DataManager (2)  |  UPDATE | mm/dd/yyyy hh:mm | Mycap Participants      | 1                      | 0                      |
 
-    And I should see 3 rows in the user role changes table
+    And I should see 7 rows in the user role changes table
     And I should NOT see "All Privileges"
     And I should NOT see "TestRole"
     And I should NOT see "Monitor"
@@ -156,18 +168,26 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     When I click on the button labeled "Export current page"
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | role id | role name   |  action | changed privilege       | old value           | new value           |
-      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0] | [text_validation,1] |
-      | 2       | DataManager |  UPDATE | User Rights	            | 0	                  | 2                   |
-      | 2       | DataManager |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
+      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | 2       | DataManager |  UPDATE | User Rights             | 0                      | 2                      |
+      | 2       | DataManager |  UPDATE | Data Entry              | [text_validation,2]    | [text_validation,130]  |
+      | 2       | DataManager |  UPDATE | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | 2       | DataManager |  UPDATE | Participants            | 1                      | 0                      |
+      | 2       | DataManager |  UPDATE | Data Quality Resolution | 1                      | 0                      |
+      | 2       | DataManager |  UPDATE | Mycap Participants      | 1                      | 0                      |
 
     When I click on the button labeled "Export everything ignoring filters"
     Then the downloaded CSV with filename "E1291000_UserRoleChanges_yyyy-mm-dd_hhmm.csv" has the header and rows below
       | role id | role name   |  action | changed privilege       | old value           | new value           |
-      | 3       | Monitor     |  DELETE | All Privileges          | Monitor/0/0/0/[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0/1 | N/A                  |
-      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0] | [text_validation,1] |
-      | 2       | DataManager |  UPDATE | User Rights	            | 0	                  | 2                   |
-      | 2       | DataManager |  UPDATE | Data Entry		          | [text_validation,2] | [text_validation,1] |
-      | 4       | TestRole    |  INSERT | All Privileges          | N/A	                | TestRole/0/0/0/[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,1][data_types,1]/0/0/0/0/0/1/0/0/0/1/0/0/1/0/0/0/0/0/1 |
+      | 3       | Monitor     |  DELETE | All Privileges          | Monitor/0/0/0//[text_validation,0][data_types,0]/0/0/0/0/0/0/0/0/0/1/0/0/0/[text_validation,2][data_types,2]/0/0/0/0/0/0/0/0/0/1/0/1/1/0/0/0/0/0//1/0 | N/A                  |
+      | 2       | DataManager |  UPDATE | Data Export Instruments | [text_validation,0]    | [text_validation,1]    |
+      | 2       | DataManager |  UPDATE | User Rights             | 0                      | 2                      |
+      | 2       | DataManager |  UPDATE | Data Entry              | [text_validation,2]    | [text_validation,130]  |
+      | 2       | DataManager |  UPDATE | Data Entry              | [data_types,2]         | [data_types,129]       |
+      | 2       | DataManager |  UPDATE | Participants            | 1                      | 0                      |
+      | 2       | DataManager |  UPDATE | Data Quality Resolution | 1                      | 0                      |
+      | 2       | DataManager |  UPDATE | Mycap Participants      | 1                      | 0                      |
+      | 4       | TestRole    |  INSERT | All Privileges          | N/A	                | TestRole/0/0/0//[text_validation,1][data_types,1]/0/0/0/0/1/0/0/0/1/1/0/0/1/[text_validation,130][data_types,130]/0/0/0/0/0/1/0/0/0/0/0/0/0/0/0/0/0/0//0/0 |
 
     # E.129.1200 - user role changes are kept when the module is disabled at system level and enabled again
     Given I click on the link labeled "My Projects"
@@ -189,7 +209,7 @@ Feature: E.129.1000 - The system shall allow enabling or disabling User Role Cha
     And I click on the link labeled "E.129.1000"
     And I click on the link labeled "User Role Changes"
     Then I should see "This log shows changes made to user role privileges"
-    And I should see 5 rows in the user role changes table
+    And I should see 9 rows in the user role changes table
 
     # Disable external module in project
     Given I click on the second link labeled "Manage"

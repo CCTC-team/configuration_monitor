@@ -27,14 +27,14 @@ BEGIN
 		-- Compute new concatenated values
 		-- During insert, values are inserted and then unique_role_name is updated, so not include here as it will be empty string
 		SET new_values = CONCAT_WS('/',
-			NEW.role_name, NEW.lock_record, NEW.lock_record_multiform, NEW.lock_record_customize,
-			NEW.data_export_tool, NEW.data_export_instruments, NEW.data_import_tool, NEW.data_comparison_tool, NEW.data_logging,
-			NEW.email_logging, NEW.file_repository, NEW.double_data, NEW.user_rights, NEW.data_access_groups, NEW.graphical,
-			NEW.reports, NEW.design, NEW.alerts, NEW.calendar, NEW.data_entry, NEW.api_export, NEW.api_import, NEW.api_modules,
-			NEW.mobile_app, NEW.mobile_app_download_data, NEW.record_create, NEW.record_rename, NEW.record_delete,
-			NEW.dts, NEW.participants, NEW.data_quality_design, NEW.data_quality_execute, NEW.data_quality_resolution,
-			NEW.random_setup, NEW.random_dashboard, NEW.random_perform, NEW.realtime_webservice_mapping,
-			NEW.realtime_webservice_adjudicate, NEW.external_module_config, NEW.mycap_participants
+			COALESCE(NEW.role_name, ''), COALESCE(NEW.lock_record, ''), COALESCE(NEW.lock_record_multiform, ''), COALESCE(NEW.lock_record_customize, ''),
+			COALESCE(NEW.data_export_tool, ''), COALESCE(NEW.data_export_instruments, ''), COALESCE(NEW.data_import_tool, ''), COALESCE(NEW.data_comparison_tool, ''), COALESCE(NEW.data_logging, ''),
+			COALESCE(NEW.email_logging, ''), COALESCE(NEW.file_repository, ''), COALESCE(NEW.double_data, ''), COALESCE(NEW.user_rights, ''), COALESCE(NEW.data_access_groups, ''), COALESCE(NEW.graphical, ''),
+			COALESCE(NEW.reports, ''), COALESCE(NEW.design, ''), COALESCE(NEW.alerts, ''), COALESCE(NEW.calendar, ''), COALESCE(NEW.data_entry, ''), COALESCE(NEW.api_export, ''), COALESCE(NEW.api_import, ''), COALESCE(NEW.api_modules, ''),
+			COALESCE(NEW.mobile_app, ''), COALESCE(NEW.mobile_app_download_data, ''), COALESCE(NEW.record_create, ''), COALESCE(NEW.record_rename, ''), COALESCE(NEW.record_delete, ''),
+			COALESCE(NEW.dts, ''), COALESCE(NEW.participants, ''), COALESCE(NEW.data_quality_design, ''), COALESCE(NEW.data_quality_execute, ''), COALESCE(NEW.data_quality_resolution, ''),
+			COALESCE(NEW.random_setup, ''), COALESCE(NEW.random_dashboard, ''), COALESCE(NEW.random_perform, ''), COALESCE(NEW.realtime_webservice_mapping, ''),
+			COALESCE(NEW.realtime_webservice_adjudicate, ''), COALESCE(NEW.external_module_config, ''), COALESCE(NEW.mycap_participants, ''), COALESCE(NEW.share, '')
 		);
 		INSERT INTO user_role_changelog (
 			project_id, role_id, new_value, ts, operation_type

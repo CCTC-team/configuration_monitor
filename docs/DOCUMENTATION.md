@@ -259,19 +259,19 @@ All log pages (User Role Changes, Project Changes, System Changes) include:
 
 ## Tracked Properties
 
-### User Role Privileges (39 fields)
+### User Role Privileges (41 fields)
 
 - Role Name, Lock Record, Lock Record Multiform, Lock Record Customize
-- Data Export Instruments, Data Import Tool, Data Comparison Tool
+- Data Export Tool, Data Export Instruments, Data Import Tool, Data Comparison Tool
 - Data Logging, Email Logging, File Repository, Double Data
 - User Rights, Data Access Groups, Graphical, Reports, Design
 - Alerts, Calendar, Data Entry, API Export, API Import, API Modules
 - Mobile App, Mobile App Download Data, Record Create, Record Rename, Record Delete
 - DTS, Participants, Data Quality Design/Execute/Resolution
 - Random Setup/Dashboard/Perform, Realtime Webservice Mapping/Adjudicate
-- External Module Config, MyCap Participants
+- External Module Config, MyCap Participants, Share (REDCap SHARE; logged empty before REDCap 17.3.0)
 
-### Project Properties (173 fields)
+### Project Properties (152 fields)
 
 Including but not limited to:
 - Basic: Project Name, App Title, Status, Purpose, Institution

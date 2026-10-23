@@ -79,12 +79,11 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
       |  mm/dd/yyyy hh:mm | Secondary Pk Display Label	            | 1	        | 0                       |
       |  mm/dd/yyyy hh:mm | Data Resolution Enabled	                | 1	        | 2                       |
       |  mm/dd/yyyy hh:mm | Field Comment Edit Delete	              | 1	        | 0                       |
-      |  mm/dd/yyyy hh:mm | Drw Hide Closed Queries From Dq Results | 1	        | 0                       |
       |  mm/dd/yyyy hh:mm | Protected Email Mode Custom Text	      | 	        | REDCap Secure Messaging |
       |  mm/dd/yyyy hh:mm | Scheduling                              | 0	        | 1                       |
       |  mm/dd/yyyy hh:mm | Auto Inc Set	                          | 1	        | 0                       |
 
-    And I should see 9 rows in the project changes table
+    And I should see 8 rows in the project changes table
 
     # E.129.2100 - validate filtering project changes
     When I select "Scheduling" on the dropdown field labeled "Property"
@@ -116,7 +115,6 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
       | Secondary Pk Display Label	            | 1	        | 0                       |
       | Data Resolution Enabled	                | 1	        | 2                       |
       | Field Comment Edit Delete	              | 1	        | 0                       |
-      | Drw Hide Closed Queries From Dq Results | 1	        | 0                       |
       | Protected Email Mode Custom Text	      | 	        | REDCap Secure Messaging |
       | Scheduling                              | 0	        | 1                       |
       | Auto Inc Set	                          | 1	        | 0                       |
@@ -141,7 +139,7 @@ Feature: E.129.900 - The system shall allow enabling or disabling Project Change
     And I click on the link labeled "E.129.900"
     And I click on the link labeled "Project Changes"
     Then I should see "This log shows changes made to project settings"
-    And I should see 9 rows in the project changes table
+    And I should see 8 rows in the project changes table
 
     # Disable external module in project
     Given I click on the second link labeled "Manage"
