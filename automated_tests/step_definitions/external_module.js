@@ -76,3 +76,14 @@ Given("the Configuration Monitor CSV export of {string} should be allowed", (tab
         expect(response.body).not.to.contain(ACCESS_DENIED)
     })
 })
+
+/**
+ * @module ConfigurationMonitor
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example the Configuration Monitor role filter should contain {string}
+ * @param {string} text - expected option text
+ * @description Verifies the text appears in the role filter dropdown
+ */
+Given("the Configuration Monitor role filter should contain {string}", (text) => {
+    cy.get('#role_id').should('contain', text)
+})

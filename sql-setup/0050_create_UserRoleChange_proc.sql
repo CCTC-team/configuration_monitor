@@ -88,7 +88,12 @@ BEGIN
     -- most recent change (the name is the first value of the concatenated privileges).
     -- Names are not unique, so the id remains the thing the page filters on.
     SELECT t.role_id,
-           SUBSTRING_INDEX(COALESCE(t.new_value, t.old_value), '/', 1) as role_name
+           -- the triggers join 41 values, so any further '/' is part of the name
+           CASE WHEN CHAR_LENGTH(COALESCE(t.new_value, t.old_value)) - CHAR_LENGTH(REPLACE(COALESCE(t.new_value, t.old_value), '/', '')) > 40
+                THEN LEFT(COALESCE(t.new_value, t.old_value),
+                          CHAR_LENGTH(COALESCE(t.new_value, t.old_value)) - CHAR_LENGTH(SUBSTRING_INDEX(COALESCE(t.new_value, t.old_value), '/', -40)) - 1)
+                ELSE SUBSTRING_INDEX(COALESCE(t.new_value, t.old_value), '/', 1)
+           END as role_name
     FROM user_role_change_temp t
     INNER JOIN (
         SELECT role_id, MAX(id) as max_id
