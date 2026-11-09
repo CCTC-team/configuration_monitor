@@ -103,7 +103,7 @@ class GetDbData
         $pageSize = (int)$pageSize;
 
         // Whitelist dataDirection to prevent injection
-        $dataDirection = in_array(strtolower($dataDirection), ['asc', 'desc']) ? strtolower($dataDirection) : 'desc';
+        $dataDirection = strtolower((string)$dataDirection) === 'asc' ? 'asc' : 'desc';
 
         // Validate date format (YmdHis) or set to null
         $minDate = self::validateDateParam($minDate);

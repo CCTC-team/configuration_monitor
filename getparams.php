@@ -15,7 +15,7 @@ $oneYearAgo = Utility::NowAdjusted('-1 years');
 $tableName = '';
 if (isset($_GET['tableName'])) {
     $allowedTableNames = ['user-role-changes', 'project-changes', 'system-changes'];
-    $tableName = in_array($_GET['tableName'], $allowedTableNames, true) ? $_GET['tableName'] : '';
+    $tableName = Utility::allowedValue($_GET['tableName'], $allowedTableNames, '');
 }
 
 if ($tableName != 'system-changes') {
@@ -46,7 +46,7 @@ $weekActive = "active";
 $monthActive = "";
 $yearActive = "";
 if (isset($_GET['defaulttimefilter'])) {
-    $defaultTimeFilter = $_GET['defaulttimefilter'];
+    $defaultTimeFilter = Utility::allowedValue($_GET['defaulttimefilter'], ['customrange', 'onedayago', 'oneweekago', 'onemonthago', 'oneyearago'], 'oneweekago');
     $customActive = $defaultTimeFilter == "customrange" ? "active" : "";
     $dayActive = $defaultTimeFilter == "onedayago" ? "active" : "";
     $weekActive = $defaultTimeFilter == "oneweekago" ? "active" : "";
@@ -56,7 +56,7 @@ if (isset($_GET['defaulttimefilter'])) {
 
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
-    $dataDirection = $_GET['retdirection'];
+    $dataDirection = Utility::allowedValue($_GET['retdirection'], ['asc', 'desc'], 'desc');
 }
 $pageSize = 25;
 if (isset($_GET['pagesize'])) {
