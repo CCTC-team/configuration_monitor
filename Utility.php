@@ -10,6 +10,29 @@ require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
 class Utility {
 
+    // stops a value being run as a formula when a CSV export is opened in a spreadsheet, by adding a leading
+    // space to text starting with a formula character. Numbers such as -5 are left as they are
+    public static function CsvSafe($value)
+    {
+        if ($value === null || is_numeric($value)) {
+            return $value;
+        }
+
+        $text = (string)$value;
+        return in_array(substr($text, 0, 1), ['=', '+', '-', '@', "\t", "\r"], true) ? " $text" : $text;
+    }
+
+    // returns the matching entry from the list, so the input itself is never returned
+    public static function allowedValue($value, array $allowed, string $default): string
+    {
+        foreach ($allowed as $candidate) {
+            if ($value === $candidate) {
+                return $candidate;
+            }
+        }
+        return $default;
+    }
+
     //users preferred format
     static function UserDateFormat() : string
     {

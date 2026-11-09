@@ -44,13 +44,13 @@ $defaultTimeFilter = "customrange";
 if (isset($_GET['defaulttimefilter'])) {
     // Whitelist allowed time filter values
     $allowedFilters = ['customrange', 'onedayago', 'oneweekago', 'onemonthago', 'oneyearago'];
-    $defaultTimeFilter = in_array($_GET['defaulttimefilter'], $allowedFilters) ? $_GET['defaulttimefilter'] : 'customrange';
+    $defaultTimeFilter = Utility::allowedValue($_GET['defaulttimefilter'], $allowedFilters, 'customrange');
 }
 
 $dataDirection = "desc";
 if (isset($_GET['retdirection'])) {
     // Whitelist allowed direction values
-    $dataDirection = in_array($_GET['retdirection'], ['asc', 'desc']) ? $_GET['retdirection'] : 'desc';
+    $dataDirection = Utility::allowedValue($_GET['retdirection'], ['asc', 'desc'], 'desc');
 }
 
 $pageSize = 10;

@@ -44,6 +44,7 @@ require_once APP_PATH_DOCROOT . "/Classes/RCView.php";
 require_once APP_PATH_DOCROOT . "/Classes/DateTimeRC.php";
 
 use CCTC\ConfigurationMonitorModule\GetDbData;
+use CCTC\ConfigurationMonitorModule\Utility;
 
 // Increase memory limit in case needed for intensive processing
 //System::increaseMemory(2048);
@@ -136,7 +137,7 @@ if ($fp && ($count != 0))
         $delim = User::getCsvDelimiter();
 
         // Write headers to file
-        fputcsv($fp, $headers, $delim);
+        fputcsv($fp, $headers, $delim, '"', '\\');
 
         // Set values for this row and write to file
         if ($tableName == 'user-role-changes') {
@@ -152,7 +153,7 @@ if ($fp && ($count != 0))
                         $row["privilege"] = $dc["privilege"];
                         $row["oldValue"] = $dc["oldValue"];
                         $row["newValue"] = $dc["newValue"];
-                        fputcsv($fp, $row, $delim);
+                        fputcsv($fp, array_map([Utility::class, 'CsvSafe'], $row), $delim, '"', '\\');
                     }
                 }
             }
@@ -166,7 +167,7 @@ if ($fp && ($count != 0))
                         $row["privilege"] = $dc["privilege"];
                         $row["oldValue"] = $dc["oldValue"];
                         $row["newValue"] = $dc["newValue"];
-                        fputcsv($fp, $row, $delim);
+                        fputcsv($fp, array_map([Utility::class, 'CsvSafe'], $row), $delim, '"', '\\');
                     }
                 }
             }
@@ -176,7 +177,7 @@ if ($fp && ($count != 0))
                 $row["privilege"] = $dc["privilege"];
                 $row["oldValue"] = $dc["oldValue"];
                 $row["newValue"] = $dc["newValue"];
-                fputcsv($fp, $row, $delim);
+                fputcsv($fp, array_map([Utility::class, 'CsvSafe'], $row), $delim, '"', '\\');
             }
         }
 
