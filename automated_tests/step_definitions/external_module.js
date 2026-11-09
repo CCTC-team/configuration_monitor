@@ -87,3 +87,78 @@ Given("the Configuration Monitor CSV export of {string} should be allowed", (tab
 Given("the Configuration Monitor role filter should contain {string}", (text) => {
     cy.get('#role_id').should('contain', text)
 })
+
+/**
+ * @module ConfigurationMonitor
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example I set the Configuration Monitor filter {string} to {string}
+ * @param {string} id - id of the dropdown
+ * @param {string} value - option value
+ * @description Selects an option in a filter dropdown, which reloads the page
+ */
+Given("I set the Configuration Monitor filter {string} to {string}", (id, value) => {
+    cy.get(`#${id}`).should('not.be.disabled').select(value)
+    cy.location('search').should('include', `${id}=${value}`)
+})
+
+
+/**
+ * @module ConfigurationMonitor
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example I click the Configuration Monitor paging button {string}
+ * @param {string} id - id of the button
+ * @description Clicks the next or previous page button
+ */
+Given("I click the Configuration Monitor paging button {string}", (id) => {
+    const pagenum = id === 'btnnextpage' ? 'pagenum=1' : 'pagenum=0'
+    cy.document().its('readyState').should('eq', 'complete')
+    cy.get('input[name="redcap_csrf_token"]').should('exist')
+    cy.get(`#${id}`).should('not.be.disabled').then(($button) => $button[0].click())
+    cy.location('search').should('include', pagenum)
+})
+
+
+/**
+ * @module ConfigurationMonitor
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example I reset the Configuration Monitor filters
+ * @description Clicks the reset button on the filter form
+ */
+Given("I reset the Configuration Monitor filters", () => {
+    cy.document().its('readyState').should('eq', 'complete')
+    cy.contains('button.clear-button', 'reset').then(($button) => $button[0].click())
+    cy.location('search').should('not.include', 'defaulttimefilter=')
+})
+
+
+/**
+ * @module ConfigurationMonitor
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example the Configuration Monitor filter {string} should have the value {string}
+ * @param {string} id - id of the filter
+ * @param {string} value - expected value
+ * @description Verifies the value of a filter on the change log page
+ */
+Given("the Configuration Monitor filter {string} should have the value {string}", (id, value) => {
+    cy.get(`#${id}`).should('have.value', value)
+})
+
+
+/**
+ * @module ConfigurationMonitor
+ * @author Mintoo Xavier <min2xavier@gmail.com>
+ * @example I add {int} rows to the Configuration Monitor user role change log
+ * @param {int} count - number of rows to add
+ * @description Adds rows directly to the change log, so that the page has enough rows to test paging
+ */
+Given("I add {int} rows to the Configuration Monitor user role change log", (count) => {
+    const mysql = Cypress.env('mysql')
+    const container = mysql?.docker_container || 'CCTC_REDCap_Docker'
+    cy.url().then((url) => {
+        const pid = parseInt(new URL(url).searchParams.get('pid'), 10)
+        const ts = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)
+        const rows = Array.from({ length: count }, (_, i) => `(${pid}, 99, NULL, 'Paging role ${i}', ${ts}, 'INSERT')`).join(',')
+        const sql = `insert into user_role_changelog (project_id, role_id, old_value, new_value, ts, operation_type) values ${rows}`
+        cy.exec(`docker exec ${container} mysql -u${mysql.db_user} -p${mysql.db_pass} ${mysql.db_name} -e "${sql}"`)
+    })
+})
