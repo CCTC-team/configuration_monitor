@@ -66,6 +66,24 @@ Feature: E.129.3200 - The system shall show the full role name and the correct c
     And I should NOT see "Data Access Groups"
     And the Configuration Monitor role filter should contain "Nurse/Coordinator (4)"
 
+  Scenario: The filter controls keep their values and page through the results
+    Given I add 12 rows to the Configuration Monitor user role change log
+    Given I click on the link labeled "User Role Changes"
+    When I click on the button labeled "Past month"
+    And I wait for 2 seconds
+    Then the Configuration Monitor filter "defaulttimefilter" should have the value "onemonthago"
+    When I set the Configuration Monitor filter "retdirection" to "asc"
+    Then the Configuration Monitor filter "retdirection" should have the value "asc"
+    When I set the Configuration Monitor filter "pagesize" to "10"
+    Then the Configuration Monitor filter "pagesize" should have the value "10"
+    When I click the Configuration Monitor paging button "btnnextpage"
+    Then the Configuration Monitor filter "pagenum" should have the value "1"
+    When I click the Configuration Monitor paging button "btnprevpage"
+    Then the Configuration Monitor filter "pagenum" should have the value "0"
+    When I reset the Configuration Monitor filters
+    Then the Configuration Monitor filter "retdirection" should have the value "desc"
+    And the Configuration Monitor filter "pagenum" should have the value "0"
+
   Scenario: Disable external module
     Given I click on the link labeled "Control Center"
     And I click on the link labeled "Manage"
