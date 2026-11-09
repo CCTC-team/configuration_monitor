@@ -261,7 +261,22 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
     {
         $values = empty($dc["newValue"]) ? $dc["oldValue"] : $dc["newValue"];
 
-        return explode("/", (string)$values)[0];
+        return self::splitRoleValues((string)$values)[0];
+    }
+
+    // Number of values the user role triggers join with "/". Only the role name can contain a
+    // "/", so any values beyond this number belong to the name.
+    const RoleValueCount = 41;
+
+    static function splitRoleValues(string $values): array
+    {
+        $parts = explode("/", $values);
+        $extra = count($parts) - self::RoleValueCount;
+        if ($extra <= 0) {
+            return $parts;
+        }
+
+        return array_merge([implode("/", array_slice($parts, 0, $extra + 1))], array_slice($parts, $extra + 1));
     }
 
     // A single instrument's Data Entry or Data Export right as "[form,value] Meaning",
@@ -363,8 +378,8 @@ class ConfigurationMonitorModule extends AbstractExternalModule {
                                     );
             
             $columnNames = ($tableName == 'user-role-changes') ? $userroleColumnNames : $projectColumnNames;
-            $old_parts = explode("/", $dc["oldValue"]);
-            $new_parts = explode("/", $dc["newValue"]);
+            $old_parts = $tableName == 'user-role-changes' ? self::splitRoleValues((string)$dc["oldValue"]) : explode("/", $dc["oldValue"]);
+            $new_parts = $tableName == 'user-role-changes' ? self::splitRoleValues((string)$dc["newValue"]) : explode("/", $dc["newValue"]);
 
             $max = max(count($old_parts), count($new_parts));
 

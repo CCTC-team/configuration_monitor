@@ -29,3 +29,4 @@ E.129.2800 - The system shall send automated email summaries containing System C
 E.129.2900 - The system shall send automated email summaries containing Project Changes and/or User Role Changes when changes occur and email notifications are enabled at the project level.
 E.129.3000 - The system shall support the ability to export configuration changes to CSV format for System Changes, Project Changes, and User Role Changes.
 E.129.3100 - The system shall record every configuration change (who changed which setting, when, and from what value to what) for the Configuration Monitor external module to the module's View Logs page.
+E.129.3200 - The system shall show the full role name and the correct changed privilege when a role name contains a slash, in the Configuration Monitor external module.
