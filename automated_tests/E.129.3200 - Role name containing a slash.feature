@@ -66,6 +66,14 @@ Feature: E.129.3200 - The system shall show the full role name and the correct c
     And I should NOT see "Data Access Groups"
     And the Configuration Monitor role filter should contain "Nurse/Coordinator (4)"
 
+  # Filters and buttons are found by their page ID (the name also used in the page URL), not their on-screen label:
+  #   "defaulttimefilter" - hidden field set by the "Past month" button (the visible result is the "Min edit date")
+  #   "retdirection"      - the "Order by" dropdown ("asc" = Ascending, "desc" = Descending)
+  #   "pagesize"          - the "Page size" dropdown
+  #   "btnnextpage"       - the forward (right arrow) paging button
+  #   "btnprevpage"       - the back (left arrow) paging button
+  #   "pagenum"           - hidden field holding the current page number (first page = 0); not visible on screen,
+  #                         use the browser's Inspect to see it
   Scenario: The filter controls keep their values and page through the results
     Given I add 12 rows to the Configuration Monitor user role change log
     Given I click on the link labeled "User Role Changes"
